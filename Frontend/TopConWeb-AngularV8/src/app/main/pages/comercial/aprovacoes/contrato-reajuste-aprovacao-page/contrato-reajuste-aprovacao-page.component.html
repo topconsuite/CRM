@@ -1,0 +1,315 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>Confirma reajuste contrato</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+      [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+
+      <view-selector [key]="'APROV-CONTRATO-REAJUSTE'" [currentValue]="currentViewValue"
+      (selectedChange)="viewChanged($event)">
+      
+
+      </view-selector><br *ngIf="isSmallScreen"/>
+      
+    
+      <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="APROV-CONTRATO-REAJUSTE">
+
+        <mat-radio-group [(ngModel)]="filtro.tipoReajuste">
+          <mat-radio-button [value]="0" (click)="carregaVigenciasTraco()">Concreto</mat-radio-button>
+          <mat-radio-button [value]="1" (click)="carregaVigenciasBomba()">Bomba</mat-radio-button>
+        </mat-radio-group>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Central de Entrega" name="usinaEntrega" [list]="usinasCodigos"
+            [formatter]="usinaEntregaFormatter" [(model)]="filtro.usina"></suggest-combo>
+          <integer-input [formGroup]="filter.form" placeholder="Central de Entrega" name="==|contrato.usinaPrincipal"
+            [(model)]="filtro.usina" hidden *ngIf="filtro.usina > 0"></integer-input>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Vendedor" name="vendedor"  [list]="vendedoresPermitidos"
+            [(model)]="filtro.vendedor" [formatter]="vendedorFormatter"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Vendedor" name="==|contrato.vendedorCodigo"
+            [model]="filtro.vendedor.codigo" *ngIf="filtro.vendedor" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Início Validade" name="inicioValidade" [list]="vigencias"
+            [(model)]="filtro.inicioValidade" [formatter]="inicioValidadeFormatter"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Início Validade" name="==|inicioValidade"
+            [model]="filtro.inicioValidade.vigencia" *ngIf="filtro.inicioValidade" hidden></simple-input>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Cliente" name="interveniente"
+            (textChange)="filtrarIntervenientesPorRazao($event)" [list]="intervenientes" [mustBeValid]="false"
+            [(model)]="filtro.interveniente" [formatter]="intervenienteFormatter"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Razão" name="%=|contrato.interveniente.intervenienteRazao"
+            [(model)]="filtro.intervenienteRazao" hidden *ngIf="!filtro.interveniente"></simple-input>
+            <integer-input [formGroup]="filter.form" placeholder="Interveniente" name="==|contrato.interveniente.codigo"
+            [(model)]="filtro.interveniente.codigo" hidden *ngIf="filtro.interveniente"></integer-input>
+
+        <integer-input [formGroup]="filter.form" placeholder="Número contrato" name="==|contratoNumero"
+            [(model)]="filtro.contratoNumero"></integer-input>
+            
+        <integer-input [formGroup]="filter.form" placeholder="Ano contrato" name="==|contratoAno"
+          [(model)]="filtro.contratoAno" [maxIntegerChars]="2"></integer-input>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Status" name="status"
+          [list]="statusReajuste" [formatter]="statusFormatter" [(model)]="filtro.status">
+        </suggest-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status" name="==|status"
+          [model]="filtro.status" *ngIf="filtro.status" hidden></simple-input>
+
+        <mat-checkbox [(ngModel)]="filtro.pessoaFisica">Pessoa Física</mat-checkbox>
+            <simple-input [formGroup]="filter.form" placeholder="Pessoa Física" name="==|pessoaFisica"
+            [model]="filtro.pessoaFisica" hidden></simple-input>
+        
+        <span>&nbsp;&nbsp;&nbsp;</span>
+
+        <mat-checkbox [(ngModel)]="filtro.pessoaJuridica">Pessoa Jurídica</mat-checkbox>
+          <simple-input [formGroup]="filter.form" placeholder="Pessoa Jurídica" name="==|pessoaJuridica"
+          [model]="filtro.pessoaJuridica" hidden></simple-input>
+
+        <span>&nbsp;&nbsp;&nbsp;</span>
+
+        <mat-checkbox [(ngModel)]="filtro.construtora">Construtora</mat-checkbox>
+          <simple-input [formGroup]="filter.form" placeholder="Pessoa Jurídica" name="==|construtora"
+          [model]="filtro.construtora" hidden></simple-input>
+
+      </filter>
+
+    </paginator>
+
+    <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    </mat-accordion>
+    
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" >    
+      <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+        <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="getStatusIcon(element, column) != ''"><mat-icon class="material-icons {{getClassIcon(element, column)}}" matTooltip="{{getTooltipIcon(element, column)}}">{{ getStatusIcon(element, column) }}</mat-icon></span>
+          {{ getFormattedValue(element, column) }}
+        </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div>
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <b>{{ hColumn.placeholder }}: </b>
+                        <span *ngIf="hColumn.htmlValue" [innerHTML]="getFormattedValue(element, hColumn)"></span>
+                        <span *ngIf="getStatusIcon(element, hColumn) != ''"><mat-icon class="material-icons {{getClassIcon(element, hColumn)}}" matTooltip="{{getTooltipIcon(element, hColumn)}}">{{ getStatusIcon(element, hColumn) }}</mat-icon></span>
+                        <span *ngIf="!hColumn.htmlValue">{{ getFormattedValue(element, hColumn) }}</span>
+                      <mat-divider></mat-divider>
+                    </div>
+                    <div class="float-right">
+                      <button mat-button color="accent" (click)="showModal(reajusteLogModal, reajusteLogModalRef, undefined, undefined, element)">
+                        <mat-icon matTooltip="Logs">history</mat-icon>Logs
+                      </button>
+                    </div>
+                    <div *ngIf="element.tracos">
+                      <mat-divider></mat-divider>
+                      <table style="border: none; text-align: center;">
+                        <tr>
+                          <td></td>
+                          <td class="celula-normal" width="500">Traço</td>
+                          <td class="celula-normal" width="250">Preço Contrato</td>
+                          <td class="celula-normal" width="250">Preço Recalculado</td>
+                          <td></td>
+                        </tr>
+                        <tr *ngFor="let traco of element.tracos">
+                          <td></td>
+                          <td width="500">{{traco.descricao}}</td>
+                          <td width="250">{{traco.precoVigente.toFixed(2)}}</td>
+                          <td width="250">{{traco.precoRecalculado.toFixed(2)}}</td>
+                          <td></td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <div *ngIf="element.bombas">
+                      <mat-divider></mat-divider>
+                      <table style="border: none; text-align: center;">
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td colspan="3" class="celula-normal" width="375">Contrato</td>
+                          <td colspan="3" class="celula-normal" width="375">Recalculado</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td class="celula-normal" width="400">Bomba</td>
+                          <td class="celula-normal" width="200">Tx. Mín.</td>
+                          <td class="celula-normal" width="200">Até</td>
+                          <td class="celula-normal" width="200">M3 Bomb.</td>
+                          <td class="celula-normal" width="200">Tx. Mín.</td>
+                          <td class="celula-normal" width="200">Até</td>
+                          <td class="celula-normal" width="200">M3 Bomb.</td>
+                          <td></td>
+                        </tr>
+                        <tr *ngFor="let bomba of element.bombas">
+                          <td></td>
+                          <td width="400">{{bomba.bombaTipo.descricao}}</td>
+                          <td width="200">{{bomba.valorVigente.toFixed(2)}}</td>
+                          <td width="200">{{bomba.vigenteAteM3}}</td>
+                          <td width="200">{{bomba.m3ExcedenteVigente.toFixed(2)}}</td>
+                          <td width="200">{{bomba.valorReajustado.toFixed(2)}}</td>
+                          <td width="200">{{bomba.reajustadoAteM3}}</td>
+                          <td width="200">{{bomba.m3ExcedenteReajustado.toFixed(2)}}</td>
+                          <td></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+              </div>
+          </td>
+      </ng-container>
+
+      <ng-container matColumnDef="confirm">        
+        <th mat-header-cell *matHeaderCellDef>
+          <button *ngIf="temDireitoAprovacao" mat-icon-button style="color:#00A500;" (click)="abrirConfirmacaoModal(aprovarTodosModal)">
+            <mat-icon matTooltip="Aprovar Todos">done_all</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button *ngIf="element.dataConfirmacao == null && element.idReprovacao == '' && temDireitoAprovacao" mat-icon-button style="color:#00A500;" (click)="showModal(aprovarReajusteModal, reajusteAprovacaoModalVCR, aprovarReajuste, undefined, element)">
+            <mat-icon matTooltip="Aprovar">done</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="disapprove">        
+        <th mat-header-cell *matHeaderCellDef>
+          <button *ngIf="temDireitoReprovacao" mat-icon-button style="color:#FF3733;" (click)="abrirConfirmacaoModal(reprovarTodosModal)">
+            <mat-icon matTooltip="Reprovar Todos">cancel</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button *ngIf="element.dataConfirmacao == null && element.idReprovacao == '' && temDireitoReprovacao" mat-icon-button style="color:#FF3733;" (click)="showModal(reprovarReajusteModal, reajusteAprovacaoModalVCR, reprovarReajuste, undefined, element)">
+            <mat-icon matTooltip="Reprovar">clear</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+            <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnNames;"
+          class="element-row"
+          [class.expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+
+    <div #colunasVisualizacaoModalVCR></div>
+    <ng-template #colunasVisualizacaoModal>
+        
+        <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+        <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+          
+          <div *ngFor="let column of allColumnsOrdered">
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            
+            <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                (change)="setHiddenColumn(column.name, !$event.checked)">
+              {{ column.placeholder }}
+            </mat-checkbox>
+            <br/>
+          </div>
+        </div>
+
+        <div class="float-right">
+          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+        </div>
+        
+    </ng-template>
+    
+    <div #aprovarReajusteModalVCR></div>
+    <ng-template #aprovarReajusteModal>
+      <h3>Deseja realmente aprovar o reajuste?</h3>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <button mat-button color="accent" (click)="confirmModal(item)">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #aprovarTodosModalVCR></div>
+    <ng-template #aprovarTodosModal>
+      <h3>Deseja realmente aprovar todos os reajustes?</h3>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <button mat-button color="accent" (click)="aprovarTodos()">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #reprovarReajusteModalVCR></div>
+    <ng-template #reprovarReajusteModal>
+      <h3>Deseja realmente reprovar o reajuste?</h3>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <button mat-button color="accent" (click)="confirmModal(item)">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #reprovarTodosModalVCR></div>
+    <ng-template #reprovarTodosModal>
+      <h3>Deseja realmente reprovar todos os reajustes?</h3>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <button mat-button color="accent" (click)="reprovarTodos()">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #reajusteLogModalVCR></div>
+    <ng-template #reajusteLogModal>
+
+      <div class="form-container modal" [hidden]="!modalIsOpen">
+        <h2 cdkFocusRegionstart>LOGS</h2>
+
+        <div *ngFor="let log of logs">
+          <mat-card>
+            <h3>{{ log.evento }}</h3>
+              <mat-card-subtitle>{{ formataDataHora(log.dataHoraEvento) }} - {{ log.usuario }}</mat-card-subtitle>
+            <mat-card-content>
+              <div>{{ log.complemento }}</div>
+            </mat-card-content>
+          </mat-card><br/>
+        </div>
+
+        <mat-action-row>
+          <button cdkFocusRegionstart mat-button color="basic" class="float-right" (click)="closeModal()" style="position: fixed;">
+          FECHAR
+          </button>
+        </mat-action-row>
+
+      </div>
+
+    </ng-template>
+
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

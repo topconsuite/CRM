@@ -1,0 +1,34 @@
+<div class="form-container modal" fusePerfectScrollbar>
+  <paginator [pagedList]="propostas" (pageChange)="getPage($event)"
+    [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+  </paginator>
+
+  <div *ngFor="let proposta of propostas.records">
+    <mat-card>
+      <mat-card-content>
+        <div>Proposta: <b>{{ labelPropostaNumero(proposta) }}</b></div>
+        <div>Data: <b>{{ formataData(proposta.data) }}</b></div>
+        <div>Obra: <b>{{ ederecoToString(proposta.obra.endereco) }}</b></div>
+        <div>Usina entrega: <b>{{ usinaFormatter(proposta.obra.usinaEntrega) }}</b></div>
+        <div>Condição pagamento: <b>{{ condicaoPagamentoFormatter(proposta.obra.condicaoPagamento) }}</b></div>
+        <div>Tipo cobrança: <b>{{ tipoCobrancaFormatter(proposta.obra.tipoCobranca) }}</b></div>
+        <button mat-button color="accent" (click)="import(proposta)">
+          <mat-icon>file_download</mat-icon>IMPORTAR
+        </button>
+      </mat-card-content>
+    </mat-card><br/>
+  </div>
+
+  <div *ngIf="propostas.recordCount === 0">
+    <mat-card>
+      Nenhuma proposta para o cliente informado
+    </mat-card>
+  </div>
+</div>
+
+<mat-action-row>
+  <button cdkFocusRegionstart mat-button color="basic" class="float-right"
+      (click)="closeDialog()" style="position: fixed;">
+    FECHAR
+  </button>
+</mat-action-row>

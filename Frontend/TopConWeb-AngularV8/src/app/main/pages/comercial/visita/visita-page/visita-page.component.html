@@ -1,0 +1,118 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>VISITA</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg">  
+      
+      <wizard (onComplete)="onComplete()" innerHeightPercent="71"> 
+        
+        <!-- ABA GERAL -->
+        <wizard-step title="Geral" icon="receipt" [stepForm]="geralForm" (onNext)="onGeralNext()">
+          
+          <form [formGroup]="geralForm" class="form-container">
+
+            <simple-input [formGroup]="geralForm" placeholder="Numero Visita" name="numeroVisita"
+              [model]="numeroVisitaString()" disabled></simple-input>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Tipo Visita" name="visitaTipo" required [disabled]="alteracaoNaoPermitida()"
+              [formatter]="tipoVisitaFormatter" [list]="visitaTipos" (modelChange)="changeTipoVisita($event)" [(model)]="visita.tipoVisita"></suggest-combo>
+
+            <date-picker [formGroup]="geralForm" placeholder="Data Visita" name="data" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="visita.data" required></date-picker>
+            
+            <simple-input [formGroup]="geralForm" placeholder="Hora Visita" name="horaVisita" required [disabled]="alteracaoNaoPermitida()"
+              [(model)]="visita.horaVisitaString" (modelChange)="changeHoraVisita($event)" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator"></simple-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Nome do cliente" name="cliente" required
+              [(model)]="visita.cliente" (modelChange)="changeNomeCliente($event)" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            <phone-input [formGroup]="geralForm" placeholder="Telefone" name="telefone" required
+              [(modelDdd)]="visita.dddTelefone" (modelDddChange)="changeDddTelefone($event)" [disabled]="alteracaoNaoPermitida()"
+              [(modelNumber)]="visita.telefone" (modelNumberChange)="changeTelefone($event)"></phone-input>
+
+            <phone-input [formGroup]="geralForm" placeholder="Celular" name="celular"
+              [(modelDdd)]="visita.dddCelular" (modelDddChange)="changeDddCelular($event)" [disabled]="alteracaoNaoPermitida()"
+              [(modelNumber)]="visita.celular" (modelNumberChange)="changeCelular($event)"></phone-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Email" name="email" email lowerCase
+              [(model)]="visita.email" (modelChange)="changeEmail($event)" [disabled]="alteracaoNaoPermitida()"></simple-input>
+            
+            <suggest-combo [formGroup]="geralForm" placeholder="Vendedor" name="vendedor" required [disabled]="alteracaoNaoPermitida()"
+              [formatter]="vendedorFormatter" (modelChange)="changeVendedor($event)" [list]="vendedoresPermitidos" [(model)]="visita.vendedor"></suggest-combo>
+
+            <simple-input [formGroup]="geralForm" placeholder="Nome Obra" name="nomeObra"
+             [(model)]="visita.obraNome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            <address-group [formGroup]="geralForm" alias="endereco" [(model)]="visita.endereco" [disabled]="alteracaoNaoPermitida()"
+             obrigaMunicipio  obrigaBairro></address-group>
+
+            <simple-input [formGroup]="geralForm" placeholder="Observação Interna" name="observacaoInterna" multiline
+             [(model)]="visita.observacaoInterna" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+          </form>
+        </wizard-step>
+
+        <!-- ABA CONTATO  -->
+        <wizard-step title="Contato" icon="contact_phone" [stepForm]="contatoForm" (onNext)="onContatoNext()" (onPrevious)="onContatoPrevious()">
+          <form [formGroup]="contatoForm" class="form-container">
+            
+            <mat-card>
+              <h4>Contato 1</h4>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Nome Contato" name="contratoPrincipalNome"
+                [(model)]="visita.contatoPrincipal.nome" required [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <suggest-combo [formGroup]="contatoForm" placeholder="Função" name="contatoPrincipalFuncao"
+                [formatter]="cadastroGeralFormatter" (modelChange)="changeFuncao($event, visita.contatoPrincipal)" 
+                [list]="funcoes" [(model)]="visita.contatoPrincipal.funcao" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Telefone" name="contatoPrincipalTelefone"
+                [(modelDdd)]="visita.contatoPrincipal.dddTelefone" required
+                [(modelNumber)]="visita.contatoPrincipal.telefone" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Celular" name="contatoPrincipalCelular"
+                [(modelDdd)]="visita.contatoPrincipal.dddCelular"
+                [(modelNumber)]="visita.contatoPrincipal.celular" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Email" name="contatoPrincipalEmail" email lowerCase
+                [(model)]="visita.contatoPrincipal.email" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            </mat-card><br/>
+
+            <mat-card>
+              <h4>Contato 2</h4>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Nome Contato" name="contatoSecundarioNome"
+                [(model)]="visita.contatoSecundario.nome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <suggest-combo [formGroup]="contatoForm" placeholder="Função" name="contatoSecundarioFuncao"
+                [formatter]="cadastroGeralFormatter" (modelChange)="changeFuncao($event, visita.contatoSecundario)" 
+                [list]="funcoes" [(model)]="visita.contatoSecundario.funcao" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Telefone" name="contatoSecundarioTelefone"
+                [(modelDdd)]="visita.contatoSecundario.dddTelefone" [disabled]="alteracaoNaoPermitida()"
+                [(modelNumber)]="visita.contatoSecundario.telefone"></phone-input>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Celular" name="contatoSecundarioCelular"
+                [(modelDdd)]="visita.contatoSecundario.dddCelular" [disabled]="alteracaoNaoPermitida()"
+                [(modelNumber)]="visita.contatoSecundario.celular"></phone-input>
+                
+              <simple-input [formGroup]="contatoForm" placeholder="Email" name="contatoSecundarioEmail" email lowerCase
+                [(model)]="visita.contatoSecundario.email" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            </mat-card>
+
+          </form>
+        </wizard-step>
+        <!-- / ABA CONTATO  -->
+      </wizard>
+
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

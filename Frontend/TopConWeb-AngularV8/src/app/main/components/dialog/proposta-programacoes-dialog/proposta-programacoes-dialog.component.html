@@ -1,0 +1,60 @@
+
+<!-- CONTENT HEADER -->
+<div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+    <h2>PROGRAMAÇÕES</h2>
+</div>
+<!-- / CONTENT HEADER -->
+<div class="form-container modal" fusePerfectScrollbar>
+  <paginator [pagedList]="programacoes" (pageChange)="getPage($event)"
+  [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+  </paginator>  
+  <mat-accordion>
+    <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    <mat-expansion-panel  *ngFor="let programacao of programacoes.records">  
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{formataData(programacao.dataConcretagem) +' '+ formataHora(programacao.horario)}}
+          </mat-panel-title>
+          <mat-panel-description>
+            Volume:{{ formataValor(programacao.volumeTotal, 1) }} M3 
+          </mat-panel-description>
+          <mat-panel-description>
+            Valor:{{ formataValor(programacao.valorTotal, 2) }}  
+          </mat-panel-description>
+          <mat-panel-description *ngIf="!isSmallScreen">
+            {{ usinaFormatter(programacao.usinaEntrega) }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+          <div>Proposta: <b> {{ programacao.usina.codigo+'/'+programacao.propostaNumero+'-'+programacao.propostaAno }}</b></div>
+          <div>Cliente: <b> {{ programacao.proposta.intervenienteCodigo+' - '+programacao.proposta.intervenienteRazao }}</b></div>
+          <div>Obra: <b>{{ programacao.obraNome }}</b></div>
+          <div>Endereço: <b>{{ ederecoToString(programacao.endereco) }}</b></div>
+          <div>Data: <b>{{ formataData(programacao.dataConcretagem) }}</b></div>
+          <div>Horário: <b>{{ formataHora(programacao.horario)}}</b></div>
+          <div *ngIf="programacao.obraTracoSequencia">Traço: <b>{{ tracoString(programacao) }}</b></div>
+          <div>Volume: <b>{{ formataValor(programacao.volumeTotal, 1) }} M3 </b></div>
+          <div>Valor concreto: <b>{{ formataValor(programacao.valorConcreto, 2) }}</b></div>
+          <div>Valor bomba: <b>{{ formataValor(programacao.valorBomba, 2) }}</b></div>
+          <div>Valor demais serviços: <b>{{ formataValor(programacao.valorDemaisServicos, 2) }}</b></div>
+          <div>Valor taxas extras: <b>{{ formataValor(programacao.valorExtras, 2) }}</b></div>
+          <div>Total remessas emitidas: <b>{{ formataValor(programacao.valorTotalRemessasEmitidas, 2) }}</b></div>
+          <div *ngIf="programacao.usinaEntrega">Usina Entrega: <b> {{ usinaFormatter(programacao.usinaEntrega) }}</b></div>
+          <div> Status programação: <b>{{ statusProgramacaoFormatter(programacao.status) }}</b></div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  
+    <div *ngIf="programacoes.recordCount === 0">
+      <mat-card>
+        Nenhuma proposta para o cliente informado
+      </mat-card>
+    </div>
+</div>
+
+<mat-action-row>
+    <button cdkFocusRegionstart mat-button color="basic" class="float-right"
+        (click)="closeDialog()" style="position: fixed;">
+      FECHAR
+    </button>
+</mat-action-row>
+
+  

@@ -1,0 +1,122 @@
+# =========================
+# OS / Editors
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# =========================
+# .NET / Visual Studio
+# =========================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.binlog
+*.pdb
+*.dll
+*.exe
+*.cache
+*.VC.db
+*.VC.VC.opendb
+*.opendb
+*.psess
+*.vsp
+*.vspx
+*.sap
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Publish / ClickOnce
+[Pp]ublish/
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+PublishScripts/
+
+# Code coverage / profiling
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# Roslyn / analyzers cache
+.dotnet/
+.local/
+.nuget/
+
+# =========================
+# SVN (legacy)
+# =========================
+.svn/
+
+# =========================
+# Node / Angular
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.yarn/
+.pnp.*
+
+# Angular build outputs
+**/dist/
+**/tmp/
+**/out-tsc/
+**/.angular/
+**/.sass-cache/
+**/connect.lock/
+**/coverage/
+**/libpeerconnection.log
+**/testem.log
+**/typings/
+
+# =========================
+# Secrets / local config
+# =========================
+*.local
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+secrets.json

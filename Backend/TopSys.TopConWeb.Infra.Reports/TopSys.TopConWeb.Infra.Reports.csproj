@@ -1,0 +1,610 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CBF999EC-5FD2-4CEA-AB1A-EF23E3311CE7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TopSys.TopConWeb.Infra.Reports</RootNamespace>
+    <AssemblyName>TopSys.TopConWeb.Infra.Reports</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AditivoReport\AditivoReportConcrebras.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AditivoReportConcrebras.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AditivoReport\AditivoReportDefault.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AditivoReportDefault.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AditivoReport\AditivoReportHelper.cs" />
+    <Compile Include="ContratoReport\ContratoArgamassaReportConcrebras.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoArgamassaReportConcrebras.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoArgamassaReportMaxMohr.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoArgamassaReportMaxMohr.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoArgamassaReportMaxMohrVersao.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoArgamassaReportMaxMohrVersao.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportBetmix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportBetmix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCampeao.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCampeao.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCapitalMix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCapitalMix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCBTK.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCBTK.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCiplan.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCiplan.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportConcrebras.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportConcrebras.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportConcreserv.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportConcreserv.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportConcretarSC.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportConcretarSC.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportConcretiza.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportConcretiza.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportConcretize.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportConcretize.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCortesia.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCortesia.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCTR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCTR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportCTRFornecimento.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportCTRFornecimento.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportDefault.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportDefault.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportDefaultVersao.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportDefaultVersao.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportDotto.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportDotto.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportFortemix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportFortemix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportGiamix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportGiamix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportGoldmix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportGoldmix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportHelper.cs" />
+    <Compile Include="ContratoReport\ContratoReportImpermix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportImpermix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportMassaFort.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportMassaFort.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportMassamix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportMassamix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportMaxMohr.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportMaxMohr.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportMaxMohrVersao.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportMaxMohrVersao.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportMendonca.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportMendonca.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportNewMix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportNewMix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportRealmix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportRealmix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportSantaEfigenia.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportSantaEfigenia.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportSultepa.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportSultepa.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportSuperbase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportSuperbase.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportSuperConcreto.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportSuperConcreto.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportTracoForte.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportTracoForte.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportTrevisan.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportTrevisan.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportUsimix.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportUsimix.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoReport\ContratoReportVale.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoReportVale.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoResidualReport\ContratoResidualReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoResidualReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoResidualReport\ContratoResidualReportConcrebras.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoResidualReportConcrebras.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoResidualReport\ContratoResidualReportConcretize.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContratoResidualReportConcretize.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ContratoResidualReport\ContratoResidualReportHelper.cs" />
+    <Compile Include="FilterClasses\RelatorioProducaoFilter.cs" />
+    <Compile Include="ProgramacaoReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProgramacaoReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropostaProgramacaoReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PropostaProgramacaoReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PropostaReport\PropostaReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PropostaReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PropostaReport\PropostaReportConcrebras.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PropostaReportConcrebras.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PropostaReport\PropostaReportConcreserv.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PropostaReportConcreserv.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PropostaReport\PropostaReportHelper.cs" />
+    <Compile Include="PropostaReport\PropostaReportMaxMohr.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PropostaReportMaxMohr.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RelatorioProducaoAnaliticoReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RelatorioProducaoAnaliticoReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RelatorioProducaoPorProgramacaoReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RelatorioProducaoPorProgramacaoReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RelatorioProducaoSinteticoReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RelatorioProducaoSinteticoReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RelatorioProducaoVolumeReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RelatorioProducaoVolumeReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TopSys.TopConWeb.Domain\TopSys.TopConWeb.Domain.csproj">
+      <Project>{b94150ac-4f07-44ce-9494-206e3e7def13}</Project>
+      <Name>TopSys.TopConWeb.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TopSys.TopConWeb.Infra.Data\TopSys.TopConWeb.Infra.Data.csproj">
+      <Project>{d9bacf4c-e567-46be-a54c-8eb8562281f2}</Project>
+      <Name>TopSys.TopConWeb.Infra.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Topsys.TopConWeb.SharedKernel\TopSys.TopConWeb.SharedKernel.csproj">
+      <Project>{89EC4D58-647D-47DA-8FA2-CC6E4DB8E818}</Project>
+      <Name>TopSys.TopConWeb.SharedKernel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AditivoReport\AditivoReportConcrebras.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>AditivoReportConcrebras.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AditivoReport\AditivoReportDefault.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>AditivoReportDefault.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoArgamassaReportConcrebras.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoArgamassaReportConcrebras.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoArgamassaReportMaxMohr.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoArgamassaReportMaxMohr.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoArgamassaReportMaxMohrVersao.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoArgamassaReportMaxMohrVersao.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportBetmix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportBetmix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCampeao.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCampeao.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCapitalMix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCapitalMix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCBTK.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCBTK.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCiplan.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCiplan.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportConcrebras.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportConcrebras.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportConcreserv.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportConcreserv.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportConcretarSC.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportConcretarSC.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportConcretiza.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportConcretiza.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportConcretize.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportConcretize.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCortesia.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCortesia.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCTR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCTR.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportCTRFornecimento.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportCTRFornecimento.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportDefault.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportDefault.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportDefaultVersao.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportDefaultVersao.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportDotto.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportDotto.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportFortemix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportFortemix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportGiamix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportGiamix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportGoldmix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportGoldmix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportImpermix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportImpermix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportMassaFort.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportMassaFort.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportMassamix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportMassamix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportMaxMohr.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportMaxMohr.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportMaxMohrVersao.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportMaxMohrVersao.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportMendonca.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportMendonca.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportNewMix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportNewMix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportRealmix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportRealmix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportSantaEfigenia.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportSantaEfigenia.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportSultepa.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportSultepa.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportSuperbase.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportSuperbase.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportSuperConcreto.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportSuperConcreto.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportTracoForte.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportTracoForte.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportTrevisan.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportTrevisan.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportUsimix.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportUsimix.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoReport\ContratoReportVale.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoReportVale.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoResidualReport\ContratoResidualReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoResidualReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoResidualReport\ContratoResidualReportConcrebras.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoResidualReportConcrebras.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContratoResidualReport\ContratoResidualReportConcretize.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContratoResidualReportConcretize.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgramacaoReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ProgramacaoReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropostaProgramacaoReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PropostaProgramacaoReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropostaReport\PropostaReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PropostaReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropostaReport\PropostaReportConcrebras.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PropostaReportConcrebras.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropostaReport\PropostaReportConcreserv.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PropostaReportConcreserv.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropostaReport\PropostaReportMaxMohr.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PropostaReportMaxMohr.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RelatorioProducaoAnaliticoReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RelatorioProducaoAnaliticoReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RelatorioProducaoPorProgramacaoReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RelatorioProducaoPorProgramacaoReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RelatorioProducaoSinteticoReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RelatorioProducaoSinteticoReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RelatorioProducaoVolumeReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RelatorioProducaoVolumeReport.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

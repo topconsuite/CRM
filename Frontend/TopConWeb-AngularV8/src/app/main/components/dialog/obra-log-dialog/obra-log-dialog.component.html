@@ -1,0 +1,17 @@
+<div class="form-container modal" fusePerfectScrollbar>
+  <div *ngFor="let log of data.obraLogs">
+    <mat-card>
+      <h3>{{ log.evento }}</h3>
+      <mat-card-subtitle>{{ formataDataHora(log.dataHora) }} - {{ log.usuario }}</mat-card-subtitle>
+      <mat-card-content>
+        <div style="white-space: pre-wrap;">{{ log.complemento }}</div>
+        <div style="white-space: pre-wrap;">{{ log.observacao }}</div>
+      </mat-card-content>
+    </mat-card><br/>
+  </div>
+</div>
+<mat-action-row>
+    <button cdkFocusRegionstart mat-button color="basic" class="float-right" (click)="closeDialog()" style="position: fixed;">
+      FECHAR
+    </button>
+</mat-action-row>

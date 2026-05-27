@@ -1,0 +1,5 @@
+<simple-input [formGroup]="formGroup" [placeholder]="placeholder" [name]="name"
+  [model]="model" (modelChange)="setModel($event)" [mask]="{mask: maskCNPJ}" [cnpj]="true"
+  [errorMessages]="[{key: 'cnpj', message: 'cnpj inválido!'}]" [validator]="validator"
+  (focus)="onFocus()" (focusout)="onFocusout()" [required]="required" [disabled]="disabled"
+  [noCase]="noCase" [upperCase]="upperCase" [lowerCase]="lowerCase"></simple-input>

@@ -1,0 +1,80 @@
+<h2 cdkFocusRegionstart>AGENDAR COMPROMISSO</h2>
+            
+<form [formGroup]="compromissoForm" class="form-container ! important">
+
+  <div *ngIf="itemCompromisso.idAgrupamento !== '' && temPermissaoParaAlterar()">
+    <mat-card style="text-align: center; margin-bottom: 15px;">
+      <h2 style="color: rgb(119, 0, 0);">Atenção: Este compromisso está vinculado a outros. Modificá-lo afetará os compromissos vinculados.</h2>
+    </mat-card>
+  </div>
+
+  <div *ngIf="itemCompromisso.idAgrupamento !== '' && !temPermissaoParaAlterar()">
+    <p style="color: rgb(119, 0, 0);">Atenção: Este compromisso está vinculado a outros. Você não possui permissão para modificá-lo.</p>
+  </div>
+
+  <simple-input [formGroup]="compromissoForm" placeholder="Descrição Compromisso" name="descricao" [(model)]="itemCompromisso.descricao" maxLength="30" required></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemCompromisso.descricao, 30)}}</div>
+
+  <div *ngIf="(temDireitoGrupoInclui || temDireitoGeralInclui) && itemCompromisso.codigo === 0">
+    <mat-checkbox formControlName="compromissoParaOutrosUsuario" [(ngModel)]="compromissoParaOutrosUsuario">
+      Compromisso para outro(s) usuário(s)/grupo(s)
+    </mat-checkbox>
+    <br>
+  </div>
+
+  <div *ngIf="compromissoParaOutrosUsuario" style="margin-bottom: 15px;">
+    <mat-card>
+      <select-combo [formGroup]="compromissoForm" placeholder="Grupo" [disabled]="!temDireitoGrupoAcesso && !temDireitoGeralAcesso"
+        name="grupoSelecionado" [(model)]="gruposSelecionado" [list]="gruposUsuarios" multiple></select-combo>
+
+      <select-combo [formGroup]="compromissoForm" placeholder="Usuário" [disabled]="grupoSelecionado === ''"
+        name="usuariosSelecionados" [required]="grupoSelecionado !== ''" multiple
+        [(model)]="usuariosSelecionados" [list]="usuariosDoGrupo"></select-combo>
+    </mat-card>
+  </div>
+  
+  <mat-checkbox formControlName="diaInteiro" [(ngModel)]="itemCompromisso.diaInteiro" (change)="diaInteiroChange($event)">
+    Dia Inteiro
+  </mat-checkbox>
+
+  <br/>
+
+  <date-picker [formGroup]="compromissoForm" placeholder="Data" name="dataIncio" required [(model)]="itemCompromisso.dataInicio"></date-picker>
+
+  <div *ngIf="!itemCompromisso.diaInteiro">
+    <simple-input [formGroup]="compromissoForm" placeholder="Hora Inicio" name="horaInicio"  [required]="!itemCompromisso.diaInteiro" [disabled]="itemCompromisso.diaInteiro"
+        [(model)]="itemCompromisso.horaInicioString" (modelChange)="changeHoraInicio($event)" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(itemCompromisso.horaInicioString)"></simple-input>
+  </div>
+
+  <date-picker [formGroup]="compromissoForm" placeholder="Data Fim" name="dataFim" required [(model)]="itemCompromisso.dataFim"></date-picker>
+
+  <div *ngIf="!itemCompromisso.diaInteiro">
+    <simple-input [formGroup]="compromissoForm" placeholder="Hora Fim" name="horaFim"  [required]="!itemCompromisso.diaInteiro" [disabled]="itemCompromisso.diaInteiro"
+      [(model)]="itemCompromisso.horaFimString" (modelChange)="changeHoraFim($event)" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(itemCompromisso.horaFimString)"></simple-input>
+  </div>
+    
+  <simple-input [formGroup]="compromissoForm" placeholder="Local" name="local" [(model)]="itemCompromisso.local" maxLength="30"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemCompromisso.local, 30)}}</div>
+
+  <simple-input [formGroup]="compromissoForm" placeholder="Contato" name="contato" [(model)]="itemCompromisso.contato"></simple-input>
+
+  <phone-input  [formGroup]="compromissoForm" placeholder="Telefone" name="telefone" [(modelDdd)]="itemCompromisso.dddTelefone"  [(modelNumber)]="itemCompromisso.telefone"></phone-input>
+
+  <phone-input  [formGroup]="compromissoForm" placeholder="Celular" name="celular" [(modelDdd)]="itemCompromisso.dddCelular"  [(modelNumber)]="itemCompromisso.celular"></phone-input>
+
+  <simple-input [formGroup]="compromissoForm" placeholder="Email" name="email" email lowerCase [(model)]="itemCompromisso.email"></simple-input>
+
+  <simple-input [formGroup]="compromissoForm" placeholder="Observação" name="observacao" [(model)]="itemCompromisso.observacao" maxLength="100"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemCompromisso.observacao, 100)}}</div>
+
+  <simple-input [formGroup]="compromissoForm" placeholder="Providências" name="providencia" [(model)]="itemCompromisso.providencia" maxLength="100"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemCompromisso.providencia, 100)}}</div>
+
+  <simple-input [formGroup]="compromissoForm" placeholder="Conclusões" name="conclusao" [(model)]="itemCompromisso.conclusao" maxLength="100"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemCompromisso.conclusao, 100)}}</div>
+</form>
+
+<mat-action-row class="action-buttons">
+  <button mat-button color="accent" (click)="confirmModal(itemCompromisso)" [disabled]="compromissoForm.invalid  || !temPermissaoParaAlterar()">Confirma</button>
+  <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+</mat-action-row>

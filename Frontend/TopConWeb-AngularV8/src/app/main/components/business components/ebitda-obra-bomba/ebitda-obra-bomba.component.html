@@ -1,0 +1,51 @@
+<div style="overflow-x:auto;">
+  <table id="traco-ebitda">
+    <thead>
+      <tr style="height: 25px;">
+        <th></th> 
+        <th>Valor por m³</th>
+        <th *ngIf="!isSmallScreen" >Valor total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="font-weight: bold;">
+        <td>+ Valor vigente por M3 Bombeado</td>
+        <td class="value-column">{{formataMoeda(obraBomba.m3PrecoProposto)}}</td>
+        <td *ngIf="!isSmallScreen" class="value-column">{{formataMoeda(obraBomba.m3PrecoProposto * quantidadeBombeada)}}</td>
+      </tr>
+      <tr>
+        <td>
+          (-) Custo projetado serviço bombeamento
+        </td>
+        <td class="value-column">
+          {{formataMoeda(custoServico.custoMedioBombagem)}}
+        </td>
+        <td *ngIf="!isSmallScreen" class="value-column">
+          {{formataMoeda(custoServico.custoMedioBombagem * quantidadeBombeada)}}
+        </td>
+      </tr>
+      <tr style="font-weight: bold;">
+        <td>
+          - Valor dos impostos previstos bombeamento
+        </td>
+        <td class="value-column">
+          {{formataMoeda(obraBomba.totalImpostos)}}
+        </td>
+        <td *ngIf="!isSmallScreen" class="value-column">
+          {{formataMoeda(obraBomba.totalImpostos * quantidadeBombeada)}}
+        </td>
+      </tr>
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td>
+          = Ebitda Bomba
+        </td>
+        <td class="value-column">
+          {{formataMoeda(obraBomba.ebitda)}}
+        </td>
+        <td  *ngIf="!isSmallScreen" class="value-column">
+          {{formataMoeda(obraBomba.ebitda.toFixed(2) * quantidadeBombeada)}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

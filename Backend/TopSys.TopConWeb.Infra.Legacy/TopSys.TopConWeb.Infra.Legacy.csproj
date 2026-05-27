@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{18D118D4-A04D-4D0C-BF61-7A62251B77E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TopSys.TopConWeb.Infra.Legacy</RootNamespace>
+    <AssemblyName>TopSys.TopConWeb.Infra.Legacy</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dapper, Version=1.50.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.4\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Filters\ConsultarObraFilter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryResults\ConsultarObraQueryResult.cs" />
+    <Compile Include="Services\ComercialLegacyService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TopSys.TopConWeb.Application\TopSys.TopConWeb.Application.csproj">
+      <Project>{c6b07b45-9e72-4c80-ad31-df42be8af131}</Project>
+      <Name>TopSys.TopConWeb.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TopSys.TopConWeb.Domain\TopSys.TopConWeb.Domain.csproj">
+      <Project>{B94150AC-4F07-44CE-9494-206E3E7DEF13}</Project>
+      <Name>TopSys.TopConWeb.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TopSys.TopConWeb.Infra.Data\TopSys.TopConWeb.Infra.Data.csproj">
+      <Project>{d9bacf4c-e567-46be-a54c-8eb8562281f2}</Project>
+      <Name>TopSys.TopConWeb.Infra.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Topsys.TopConWeb.SharedKernel\TopSys.TopConWeb.SharedKernel.csproj">
+      <Project>{89EC4D58-647D-47DA-8FA2-CC6E4DB8E818}</Project>
+      <Name>TopSys.TopConWeb.SharedKernel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="MComercialDLL">
+      <Guid>{F801A703-1AA1-48A7-B40B-AD83DD9FD664}</Guid>
+      <VersionMajor>37</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

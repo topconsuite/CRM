@@ -1,0 +1,219 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>OPORTUNIDADE</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg">  
+      
+      <wizard (onComplete)="onComplete()" innerHeightPercent="71"> 
+        
+        <!-- ABA GERAL -->
+        <wizard-step title="Geral" icon="receipt" [stepForm]="geralForm" (onNext)="onGeralNext()">
+          
+          <form [formGroup]="geralForm" class="form-container">
+
+            <simple-input [formGroup]="geralForm" placeholder="Numero Oportunidade" name="numeroOportunidade" 
+              [model]="numeroOportunidade()" disabled></simple-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Nome da Oportunidade" name="oportunidadeNome" required
+              [(model)]="oportunidade.oportunidadeNome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Nome do cliente" name="cliente" required
+              [(model)]="oportunidade.cliente" (modelChange)="changeNomeCliente($event)" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>Buscar cliente</mat-panel-title>
+                  <mat-panel-description>Por código ou nome/razão social</mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div>
+
+                  <select-combo [formGroup]="geralForm" placeholder="Tipo cliente" name="intervenienteTipo"
+                    [formatter]="intervenienteTipoFormatter" [list]="intervenienteTipos" [(model)]="intervenienteTipo"
+                    [disabled]="alteracaoNaoPermitida()"></select-combo>
+
+                  <div *ngIf="intervenienteTipo === 'F'">
+
+                    <cpf-input [formGroup]="geralForm" placeholder="CPF" name="cpf"  [validator]="intervenienteValidator"
+                    [model]="intervenienteCpfCnpj" (modelChange)="setCpfCnpj($event)" [disabled]="alteracaoNaoPermitida()"></cpf-input> 
+
+                  </div>
+
+                  <div *ngIf="intervenienteTipo !== 'F'">
+
+                    <cnpj-input [formGroup]="geralForm" placeholder="CNPJ" name="cnpj" 
+                      [model]="intervenienteCpfCnpj" (modelChange)="setCpfCnpj($event)" [validator]="intervenienteValidator"
+                      [disabled]="alteracaoNaoPermitida(true)"></cnpj-input>
+
+                  </div>
+
+                  <suggest-combo [formGroup]="geralForm" [placeholder]="intervenienteTipo === 'F' ? 'Nome' : 'Razão social'" name="interveniente"
+                    (textChange)="filtrarIntervenientesPorRazao($event)" [list]="intervenientes" [mustBeValid]="false"
+                    [(model)]="intervenienteSelecionado" [formatter]="intervenienteFormatter"  [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+                  <integer-input [formGroup]="geralForm" placeholder="Interveniente" name="==|cliente"
+                    [model]="intervenienteSelecionado.codigo" (modelChange)="SetClienteCodigo($event)" hidden 
+                    *ngIf="intervenienteSelecionado"></integer-input>
+
+                </div>
+
+              </mat-expansion-panel>
+            </mat-accordion>
+
+            <br/>
+
+            <phone-input [formGroup]="geralForm" placeholder="Telefone" name="telefone" required
+              [(modelDdd)]="oportunidade.dddTelefone" (modelDddChange)="changeDddTelefone($event)" [disabled]="alteracaoNaoPermitida()"
+              [(modelNumber)]="oportunidade.telefone" (modelNumberChange)="changeTelefone($event)"></phone-input>
+
+            <phone-input [formGroup]="geralForm" placeholder="Celular" name="celular"
+              [(modelDdd)]="oportunidade.dddCelular" (modelDddChange)="changeDddCelular($event)" [disabled]="alteracaoNaoPermitida()"
+              [(modelNumber)]="oportunidade.celular" (modelNumberChange)="changeCelular($event)"></phone-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Email" name="email" email lowerCase
+              [(model)]="oportunidade.email" (modelChange)="changeEmail($event)" [disabled]="alteracaoNaoPermitida()"></simple-input>
+            
+            <suggest-combo [formGroup]="geralForm" placeholder="Vendedor" name="vendedor" required [disabled]="alteracaoNaoPermitida()"
+              [formatter]="vendedorFormatter" (modelChange)="changeVendedor($event)" [list]="vendedoresPermitidos" [(model)]="oportunidade.vendedor"></suggest-combo>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Segmentação" name="segmentacao" required [disabled]="alteracaoNaoPermitida() || !isInsertMode"
+              [formatter]="segmentacaoFormatter" (modelChange)="changeSegmentacao($event)" [list]="segmentacoes" [(model)]="oportunidade.segmentacao"></suggest-combo>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Oportunidade Tipo" name="oportunidadeTipo" required [disabled]="alteracaoNaoPermitida()"
+              [formatter]="oportunidadeTipoFormatter" (modelChange)="changeOportunidadeTipo($event)" [list]="oportunidadeTipos" [(model)]="oportunidade.oportunidadeTipo"></suggest-combo>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Via de Captação" name="viaCaptacao" required [disabled]="alteracaoNaoPermitida()"
+              [formatter]="cadastroGeralFormatter" (modelChange)="changeViaCaptacao($event)" [list]="viaCaptacoes" [(model)]="oportunidade.viaCaptacao"></suggest-combo>
+
+            <select-combo [formGroup]="geralForm" placeholder="Fase" name="fase" required [disabled]="alteracaoNaoPermitida()" [colorList]="statusOportunidadeColors"
+              [formatter]="faseFormatter" (modelChange)="changeFase($event)" [list]="fases" [(model)]="oportunidade.fase"></select-combo>
+
+            <select-combo [formGroup]="geralForm" placeholder="Classificação" name="classificacao" required [disabled]="alteracaoNaoPermitida()" [colorList]="classificacaoOportunidadeColors"
+              [formatter]="genericFormatter" (modelChange)="changeClassificao($event)" [list]="classificacoes" [(model)]="classificacaoSelecionada"></select-combo>
+
+            <simple-input [formGroup]="geralForm" placeholder="Próxima Etapa" name="proximaEtapa"
+              [(model)]="oportunidade.proximaEtapa" [maxLength]="50" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            <date-picker [formGroup]="geralForm" placeholder="Previsão de Fechamento" name="previsaoFechamento" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="oportunidade.previsaoFechamento"></date-picker>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Motivo de Perda" name="motivoPerda" [disabled]="alteracaoNaoPermitida()" [required]="isMotivoPerdaObrigatorio()"
+              [formatter]="motivoPerdaFormatter" (modelChange)="changeMotivoPerda($event)" [list]="motivoPerdas" [(model)]="oportunidade.motivoPerda"></suggest-combo>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Concorrente" name="concorrente" [disabled]="alteracaoNaoPermitida()"
+              [formatter]="concorrenteFormatter" (modelChange)="changeConcorrente($event)" [list]="concorrentes" [(model)]="oportunidade.concorrente"></suggest-combo>
+
+            <simple-input [formGroup]="geralForm" placeholder="Observação Interna" name="observacaoInterna" multiline
+              [(model)]="oportunidade.observacaoInterna" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+          </form>
+        </wizard-step>
+
+        <!-- ABA OBRA -->
+        <wizard-step title="Obra" icon="business" [stepForm]="obraForm" (onNext)="onObraNext()">
+          
+          <form [formGroup]="obraForm" class="form-container">
+
+            <simple-input [formGroup]="obraForm" placeholder="Nome da Obra" name="obraNome" required
+              [(model)]="oportunidade.obraNome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            <suggest-combo [formGroup]="obraForm" placeholder="Porte Obra" name="obraPorte" 
+              [formatter]="cadastroGeralFormatter" [list]="obraPortes" [(model)]="oportunidade.porteObra"
+              [disabled]="alteracaoNaoPermitida()" (modelChange)="changeObraPorte($event)"></suggest-combo>
+
+            <suggest-combo [formGroup]="obraForm" placeholder="Fase da obra" name="obraFase" [disabled]="alteracaoNaoPermitida()"
+              [formatter]="genericFormatter" (modelChange)="changeObraFase($event)" [list]="obraFases" [(model)]="obraFaseSelecionada"></suggest-combo>
+
+            <decimal-input [formGroup]="obraForm" placeholder="Volume Estimado Obra" name="volumeEstimado" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="oportunidade.volumeEstimadoObra" [maxIntegerChars]="6" [decimalChars]="1"></decimal-input>
+            
+            <decimal-input [formGroup]="obraForm" placeholder="Valor Estimado Obra" name="valorEstimado" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="oportunidade.valorEstimadoObra" [maxIntegerChars]="10"></decimal-input>
+
+            <date-picker [formGroup]="obraForm" placeholder="Previsão Ínicio" name="previsaoInicio" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="oportunidade.previsaoInicio"></date-picker>
+
+            <date-picker [formGroup]="obraForm" placeholder="Previsão Término" name="previsaoTermino" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="oportunidade.previsaoTermino"></date-picker>
+
+            <address-group [formGroup]="obraForm" alias="endereco" [(model)]="oportunidade.endereco" [disabled]="alteracaoNaoPermitida()"
+              obrigaMunicipio  obrigaBairro (onCepRequestSuccess) = "carregaDistanciaUsinaViaGoogleApi()"></address-group>
+
+            <suggest-combo [formGroup]="obraForm" placeholder="Central de Entrega" name="usinaEntrega" [disabled]="alteracaoNaoPermitida()"
+              [model]="oportunidade.usinaEntrega" (modelChange)="changeUsinaEntrega($event)" [list]="usinas" [formatter]="usinaFormatter"></suggest-combo>
+
+            <integer-input [formGroup]="obraForm" placeholder="Distância da Central (Km)" name="obraDistanciaUsina" [disabled]="alteracaoNaoPermitida()"
+              [(model)]="oportunidade.distanciaUsina" [maxIntegerChars]="3"></integer-input>
+
+            <simple-input [formGroup]="obraForm" placeholder="Referência Acesso" name="referenciaAcesso" multiline
+              [(model)]="oportunidade.referenciaAcesso" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+          </form>
+
+        </wizard-step>
+
+        <!-- ABA CONTATO  -->
+        <wizard-step title="Contato" icon="contact_phone" [stepForm]="contatoForm" (onNext)="onContatoNext()" (onPrevious)="onContatoPrevious()">
+          <form [formGroup]="contatoForm" class="form-container">
+            
+            <mat-card>
+              <h4>Contato 1</h4>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Nome Contato" name="contratoPrincipalNome"
+                [(model)]="oportunidade.contatoPrincipal.nome" required [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <suggest-combo [formGroup]="contatoForm" placeholder="Função" name="contatoPrincipalFuncao"
+                [formatter]="cadastroGeralFormatter" (modelChange)="changeFuncao($event, oportunidade.contatoPrincipal)" 
+                [list]="funcoes" [(model)]="oportunidade.contatoPrincipal.funcao" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Telefone" name="contatoPrincipalTelefone"
+                [(modelDdd)]="oportunidade.contatoPrincipal.dddTelefone" required
+                [(modelNumber)]="oportunidade.contatoPrincipal.telefone" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Celular" name="contatoPrincipalCelular"
+                [(modelDdd)]="oportunidade.contatoPrincipal.dddCelular"
+                [(modelNumber)]="oportunidade.contatoPrincipal.celular" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Email" name="contatoPrimarioEmail" email lowerCase
+                [(model)]="oportunidade.contatoPrincipal.email" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            </mat-card><br/>
+
+            <mat-card>
+              <h4>Contato 2</h4>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Nome Contato" name="contatoSecundarioNome"
+                [(model)]="oportunidade.contatoSecundario.nome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <suggest-combo [formGroup]="contatoForm" placeholder="Função" name="contatoSecundarioFuncao"
+                [formatter]="cadastroGeralFormatter" (modelChange)="changeFuncao($event, oportunidade.contatoSecundario)" 
+                [list]="funcoes" [(model)]="oportunidade.contatoSecundario.funcao" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Telefone" name="contatoSecundarioTelefone"
+                [(modelDdd)]="oportunidade.contatoSecundario.dddTelefone" [disabled]="alteracaoNaoPermitida()"
+                [(modelNumber)]="oportunidade.contatoSecundario.telefone"></phone-input>
+
+              <phone-input [formGroup]="contatoForm" placeholder="Celular" name="contatoSecundarioCelular"
+                [(modelDdd)]="oportunidade.contatoSecundario.dddCelular" [disabled]="alteracaoNaoPermitida()"
+                [(modelNumber)]="oportunidade.contatoSecundario.celular"></phone-input>
+
+              <simple-input [formGroup]="contatoForm" placeholder="Email" name="contatoSecundarioEmail" email lowerCase
+                [(model)]="oportunidade.contatoSecundario.email" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+            </mat-card>
+
+          </form>
+        </wizard-step>
+        <!-- / ABA CONTATO  -->
+      </wizard>
+
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

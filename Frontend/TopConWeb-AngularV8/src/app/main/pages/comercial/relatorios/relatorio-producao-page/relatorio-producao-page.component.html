@@ -1,0 +1,85 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>RELATÓRIO DE PRODUÇÃO</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <mat-card>
+      <h2>FILTROS:</h2>
+      <form [formGroup]="relatorioForm" class="form-container">
+
+          <select-combo [formGroup]="relatorioForm" placeholder="Modelo" name="modelo"
+                [(model)]="modelo" [list]="modelos" [formatter]="cadastroGeralFormatter"></select-combo>
+
+          <mat-checkbox [formGroup]="relatorioForm" style="margin-right: 10px;" formControlName="detalharAdicionais" [(ngModel)]="detalharAdicionais" *ngIf="modelo.descricao==='Analítico NF'">
+                Detalhar Adicionais
+          </mat-checkbox>
+
+          <mat-checkbox [formGroup]="relatorioForm" style="margin-bottom: 5px;" formControlName="detalharViaCaptacaoIndicadores" [(ngModel)]="detalharViaCaptacaoIndicadores" 
+            *ngIf="modelo.descricao==='Analítico NF' || modelo.descricao==='Analítico por Programação'">
+            Detalhar vias de captação e indicadores 
+          </mat-checkbox>
+
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Usina" name="usina"
+                [(model)]="filtro.usina" [list]="usinas" [formatter]="usinaFormatter"></suggest-combo>
+
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Via de Captação" name="viaCaptacao"
+                [formatter]="cadastroGeralFormatter" [list]="viasCaptacao" [(model)]="filtro.viaCaptacao"></suggest-combo>
+
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Vendedor" name="vendedor" [list]="vendedoresPermitidos"
+                [(model)]="filtro.vendedor" [formatter]="vendedorFormatter"></suggest-combo>
+          
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Vendedor Padrinho" name="vendedorPadrinho" [list]="vendedoresPermitidos"
+                [(model)]="filtro.vendedorPadrinho" [formatter]="vendedorFormatter"></suggest-combo>
+          
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Grupo Econômico" name="grupoEconomico"
+              (textChange)="filtrarGrupoEconomicoPorDescricao($event)" [list]="gruposEconomicos" [mustBeValid]="false"
+              [(model)]="filtro.grupoEconomico" [formatter]="grupoEconomicoFormatter"></suggest-combo>
+          <integer-input [formGroup]="relatorioForm" placeholder="Grupo Econômico" name="==|grupoEconomico"
+              [(model)]="filtro.grupoEconomico.codigo" hidden *ngIf="filtro.grupoEconomico"></integer-input> 
+
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Cliente" name="cliente"
+                (textChange)="filtrarIntervenientesPorRazao($event)" [list]="clientes"
+                [(model)]="filtro.cliente" [formatter]="intervenienteFormatter"></suggest-combo>
+
+          <suggest-combo [formGroup]="relatorioForm" placeholder="Segmentação" name="segmentacao"  [list]="segmentacao"
+                  [(model)]="filtro.segmentacao" [formatter]="segmentacaoFormatter"></suggest-combo> 
+              <simple-input [formGroup]="relatorioForm" placeholder="Segmentação" name="==|segmentacao"
+                  [model]="filtro.segmentacao.id" *ngIf="filtro.segmentacao" hidden></simple-input>  
+
+            <suggest-combo [formGroup]="relatorioForm" placeholder="Finalidade do Contrato" name="contratoFinalidade"  [list]="finalidades"
+                  [(model)]="filtro.contratoFinalidade"  [formatter]="finalidadeFormatter"></suggest-combo> 
+            <simple-input [formGroup]="relatorioForm" placeholder="Finalidade do Contrato" name="==|contratoFinalidade"
+                  [model]="filtro.contratoFinalidade.codigo" *ngIf="filtro.contratoFinalidade" hidden></simple-input>    
+                  
+          <integer-input [formGroup]="relatorioForm" placeholder="Número contrato" name="numContrato"
+                  [(model)]="filtro.numContrato"></integer-input>
+
+          <integer-input [formGroup]="relatorioForm" placeholder="Ano contrato" name="anoContrato"
+                [(model)]="filtro.anoContrato" [maxIntegerChars]="2"></integer-input>
+
+          <date-picker [formGroup]="relatorioForm" placeholder="Período de" name="dataDe" [(model)]="filtro.dataDe" required></date-picker>
+          
+          <date-picker [formGroup]="relatorioForm" placeholder="Período até" name="dataAte" [(model)]="filtro.dataAte"></date-picker>
+
+          <mat-action-row>
+            <button class="float-right" mat-button color="accent" [disabled]="relatorioForm.invalid" (click)="imprimir()">
+              <mat-icon>print</mat-icon>Imprimir
+            </button>
+          </mat-action-row>
+
+          <br/>
+
+      </form>
+      
+    </mat-card>
+
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

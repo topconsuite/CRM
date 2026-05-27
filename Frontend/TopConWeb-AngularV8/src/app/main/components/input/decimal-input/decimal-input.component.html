@@ -1,0 +1,4 @@
+<simple-input [formGroup]="formGroup" [placeholder]="placeholder" [name]="name" [required]="required"
+  (focus)="onFocus()" (focusout)="onFocusout()" [disabled]="disabled" [validator]="validator" numeric
+  [model]="clearModel(model)" (modelChange)="setModel($event)" [mask]="{mask: mask(), placeholderChar: ' '}"
+  [noCase]="noCase" [upperCase]="upperCase" [lowerCase]="lowerCase"></simple-input>

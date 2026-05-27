@@ -1,0 +1,98 @@
+
+<!-- CONTENT HEADER -->
+<div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+    <h2>INTERAÇÕES LEADS</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+  <div class="form-container modal" fusePerfectScrollbar>
+    <div class="page-header">
+      <div>
+        <select-combo [formGroup]="filtroForm" placeholder="Tipo Interação" name="filtroTipo" [list]="historicosTipos"
+        [(model)]="historicosTipoSelect"  [formatter]="historicoTipoFormatter" (modelChange)="setFiltroTipoHistorico()" required></select-combo>
+      </div>
+      <div>
+        <paginator [pagedList]="historicos" (pageChange)="getPage($event)"
+        [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+        </paginator> 
+      </div> 
+    </div>
+  
+    <div *ngFor="let historico of historicos.records">
+      <mat-card>
+        <mat-card-content>
+          <div style="margin-bottom: 3px;"><b>{{getTextoTipo(historico.tipo)}}</b></div>
+          <div><b>Data:</b> {{formataData(historico.data)}} {{historico.hora}}</div>
+          <div><b>{{getTextoDescricao(historico.tipo)}}:</b> {{ historico.descricao }}</div>
+  
+          <div *ngIf="exibirRetorno(historico.tipo)">
+            <div><b>Data de Retorno:</b> {{formataDataNullavel(historico.dataRetorno)}} {{historico.horaRetorno}}</div>
+          </div>
+  
+          <div><b>Id de Cadastro:</b> {{historico.idCadastro}}</div>
+          
+        </mat-card-content>
+      </mat-card><br/>
+    </div>
+  
+    <div *ngIf="historicos.recordCount === 0">
+      <mat-card>
+        Nenhuma interação cadastrada para este lead!
+      </mat-card>
+    </div>
+  </div>
+  
+  <mat-action-row class="float-right">
+    <button cdkFocusRegionstart mat-button color="basic"
+        (click)="showModal(historicoModal, historicoModalRef, addHistorico)" [disabled]="insercaoNaoPermitida()">
+      ADICIONAR
+    </button>
+    <button cdkFocusRegionstart mat-button color="basic" 
+        (click)="closeDialog()" >
+      FECHAR
+    </button>
+  </mat-action-row>
+  
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+  
+    <div #historicoModalVCR></div>
+    <ng-template #historicoModal>
+        
+        <h2 cdkFocusRegionstart>ADICIONAR NOVA INTERAÇÃO</h2>
+        <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+          
+          <form [formGroup]="novoHistoricoForm" class="form-container">
+  
+            <select-combo [formGroup]="novoHistoricoForm" placeholder="Tipo Interação" name="filtroTipo" [list]="historicosTipoParaCadastro"
+              [(model)]="historicoTipoCadastro"  [formatter]="historicoTipoFormatter" required></select-combo>
+  
+            <date-picker [formGroup]="novoHistoricoForm" placeholder="Data" name="data"
+              [(model)]="historico.data" disabled></date-picker>
+  
+            <simple-input [formGroup]="novoHistoricoForm" placeholder="Hora" name="hora" (modelChange)="changeHora($event)"
+              [(model)]="historico.horaString" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(historico.horaString)" required></simple-input>
+  
+            <date-picker [formGroup]="novoHistoricoForm" placeholder="Data Retorno" name="dataRetorno" *ngIf="exibirRetorno(this.historicoTipoCadastro.sigla)"
+              [(model)]="historico.dataRetorno" [disabled]="!exibirRetorno(this.historicoTipoCadastro.sigla)"></date-picker>
+  
+            <simple-input [formGroup]="novoHistoricoForm" placeholder="Hora Retorno" name="horaRetorno"  [disabled]="!exibirRetorno(this.historicoTipoCadastro.sigla)"
+              [(model)]="historico.horaRetornoString" [mask]="{mask: maskHora}" minLength="4" (modelChange)="changeHoraRetorno($event)"
+              [validator]="horaValidator(historico.horaRetornoString)" *ngIf="exibirRetorno(this.historicoTipoCadastro.sigla)"></simple-input>
+  
+            <simple-input [formGroup]="novoHistoricoForm" [placeholder]="getTextoDescricao(this.historicoTipoCadastro.sigla)" name="descricao"
+              [(model)]="historico.descricao" multiline required [validator]="lenghtValidator(historico.descricao)"></simple-input>
+              <div style="margin-bottom: 5px;">{{remainingCharacters(historico.descricao)}}</div>
+  
+          </form> 
+        </div> 
+  
+        <mat-action-row>
+          <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="novoHistoricoForm.invalid">Confirma</button>
+          <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+        </mat-action-row>
+        
+    </ng-template>
+  
+  
+  </div>
+  
+  

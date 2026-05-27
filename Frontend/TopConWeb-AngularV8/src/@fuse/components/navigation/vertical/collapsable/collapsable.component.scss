@@ -1,0 +1,56 @@
+:host {
+
+    .folded:not(.unfolded) & {
+
+        .nav-link {
+
+            > span {
+                opacity: 0;
+                transition: opacity 200ms ease;
+            }
+        }
+
+        &.open {
+
+            .children {
+                display: none !important;
+            }
+        }
+    }
+
+    .nav-link {
+
+        .collapsable-arrow {
+            transition: transform .3s ease-in-out, opacity .25s ease-in-out .1s;
+            transform: rotate(0);
+        }
+    }
+
+    // max-height transition: funciona em todas as versões do iOS Safari.
+    // O valor 1200px é suficiente para qualquer submenu. O ease-in-out minimiza
+    // o delay visual que ocorre quando o conteúdo real é menor que o max-height.
+    > .children {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 400ms ease-in-out;
+
+        > .children-inner {
+            // Garante que o inner não quebre o overflow do pai
+            overflow: hidden;
+        }
+
+        &.children-open {
+            max-height: 1200px;
+        }
+    }
+
+    &.open {
+
+        > .nav-link {
+
+            .collapsable-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    }
+}

@@ -1,0 +1,116 @@
+<div style="overflow-x:auto;">
+  <table id="traco-ebitda">
+    <thead>
+      <tr style="height: 25px;">
+        <th></th> 
+        <th>Valor por m³</th>
+        <th *ngIf="!isSmallScreen">Valor total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align: left">Valor de tabela na data da contratação</td>
+        <td >{{formataMoeda(obraTraco.m3PrecoTabela)}}</td>
+        <td  *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.m3PrecoTabela * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" *ngIf="obraTraco.precoReajustadoAtual === 0 || isDateGreaterOrEqual(obraTraco.dataUltimoReajuste, dataAtual, false)">
+        <td style="text-align: left">+ Valor de venda vigente</td>
+        <td >{{formataMoeda(obraTraco.m3PrecoProposto)}}</td>
+        <td  *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.m3PrecoProposto * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;"  *ngIf="obraTraco.precoReajustadoAtual !== 0 && isDateGreaterOrEqual(dataAtual, obraTraco.dataUltimoReajuste, true)" >
+        <td style="text-align: left">+ Valor de venda vigente</td>
+        <td >{{formataMoeda(obraTraco.precoReajustadoAtual)}}</td>
+        <td  *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.precoReajustadoAtual * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr *ngIf="obraTraco.precoReajustadoAtual === 0 || isDateGreaterOrEqual(obraTraco.dataUltimoReajuste, dataAtual, false)">
+        <td style="text-align: left">(-) Valor MCC (Valor de Material) </td>
+        <td>{{formataMoeda(obraTraco.m3PrecoProposto - obraTraco.valorServico)}} </td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda((obraTraco.m3PrecoProposto - obraTraco.valorServico) * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr *ngIf="obraTraco.precoReajustadoAtual !== 0 && isDateGreaterOrEqual(dataAtual, obraTraco.dataUltimoReajuste, true)">
+        <td style="text-align: left">(-) Valor MCC (Valor de Material) </td>
+        <td>{{formataMoeda(obraTraco.precoReajustadoAtual - obraTraco.custoServicoReajustado)}} </td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda((obraTraco.precoReajustadoAtual - obraTraco.custoServicoReajustado) * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" *ngIf="obraTraco.precoReajustadoAtual === 0 || isDateGreaterOrEqual(obraTraco.dataUltimoReajuste, dataAtual, false)">
+        <td style="text-align: left"> = Valor do serviço bruto </td>
+        <td> {{formataMoeda(obraTraco.valorServico)}} </td>
+        <td  *ngIf="!isSmallScreen"> {{formataMoeda(obraTraco.valorServico * obraTraco.m3Quantidade)}} </td>
+      </tr>
+      <tr style="font-weight: bold;" *ngIf="obraTraco.precoReajustadoAtual !== 0 && isDateGreaterOrEqual(dataAtual, obraTraco.dataUltimoReajuste, true)">
+        <td style="text-align: left"> = Valor do serviço bruto </td>
+        <td> {{formataMoeda(obraTraco.custoServicoReajustado)}} </td>
+        <td  *ngIf="!isSmallScreen"> {{formataMoeda(obraTraco.custoServicoReajustado * obraTraco.m3Quantidade)}} </td>
+      </tr>
+      <tr>
+        <td style="text-align: left"> (-) Valor dos impostos previstos concreto </td>
+        <td>{{formataMoeda(obraTraco.totalImpostos)}}</td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.totalImpostos * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td style="text-align: left"> = Margem pós MCC e impostos</td>
+        <td>{{formataMoeda(calculaMargemPosMCC(obraTraco))}}</td>
+        <td *ngIf="!isSmallScreen"> {{formataMoeda(calculaMargemPosMCC(obraTraco) * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td style="text-align: left"> = % Margem pós MCC e impostos</td>
+        <td>{{ formataValor(calculaPorcentagemMargemPosMCC(obraTraco),2,true) }}%</td>
+        <td></td>
+      </tr>
+      <br>
+      <tr>
+        <td style="text-align: left">Valor custo médio hora transporte</td>
+        <td>{{formataMoeda(custoServico.custoMedioHoraTransporte)}}</td>
+        <td></td>
+      </tr>                        
+      <tr>
+        <td style="text-align: left"> Volume por carga </td>
+        <td> {{getVolumePorCarga}} M3 </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td style="text-align: left">Tempo deslocamento e dosagem</td>
+        <td> {{convertMinutosParaHora(tempoDescolocamentoEDosagem)}} </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td style="text-align: left">Tempo na obra</td>
+        <td> {{convertMinutosParaHora(getTempoBtNaObra)}} </td>
+        <td></td>
+      </tr> 
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td style="text-align: left">Tempo de ciclo previsto por carga</td>
+        <td> {{convertMinutosParaHora(getTempoCicloPrevisto)}} </td>
+        <td></td>
+      </tr>
+      <br>                 
+      <tr>
+        <td style="text-align: left">(-) Custo projetado transporte concreto</td>
+        <td>{{formataMoeda(obraTraco.custoProjetadoTransporte)}}</td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.custoProjetadoTransporte * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td style="text-align: left">= Margem pós transporte</td>
+        <td>{{formataMoeda(obraTraco.margemPosTransporte)}}</td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.margemPosTransporte * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td style="text-align: left">= % Margem pós transporte</td>
+        <td>{{formataValor((obraTraco.margemPosTransporte* 100)/obraTraco.m3PrecoProposto,2,true)}}%</td>
+        <td></td>
+      </tr>
+      <br>
+      <tr>
+        <td style="text-align: left">(-) Demais custos previstos</td>
+        <td>{{formataMoeda(getDemaisCustosPrevistosObraTracoEbitda)}}</td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda(getDemaisCustosPrevistosObraTracoEbitda * obraTraco.m3Quantidade)}}</td>
+      </tr>
+      <tr style="font-weight: bold;" class="traco-linha-total">
+        <td style="text-align: left">Ebitda Concreto</td>
+        <td>{{formataMoeda(obraTraco.ebitda)}}</td>
+        <td *ngIf="!isSmallScreen">{{formataMoeda(obraTraco.ebitda * obraTraco.m3Quantidade)}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

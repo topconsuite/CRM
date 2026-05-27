@@ -1,0 +1,23 @@
+<div [formGroup]="formGroup" class="form-container">
+    <mat-form-field class="input-full-width">
+        <input #input matInput placeholder="{{placeholder}}" formControlName="{{name}}" [matAutocomplete]="auto" #input
+                [ngModel]="formatter(model)" (ngModelChange)="inputChange($event)" [required]="required"
+                (focus)="onFocus(input)" (focusout)="onFocusout()" [style.text-transform]="caseStyle">
+        <mat-error *ngIf="formControl.hasError('required')">
+            {{ requiredErrorMessage }}
+        </mat-error>
+        <mat-error *ngIf="formControl.hasError('mustBeValid')">
+            {{ formControl.errors.mustBeValid }}
+        </mat-error>
+        <mat-error *ngFor="let item of errorMessagesFiltered()">
+            {{ item.message }}
+        </mat-error>
+        <mat-autocomplete #auto="matAutocomplete" #matAutocompleteTrigger>
+            <mat-option *ngFor="let item of listFiltered | async" [value]="formatter(item)"
+                    (onSelectionChange)="setModel($event, item)">
+                {{ formatter(item) }}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>
+    

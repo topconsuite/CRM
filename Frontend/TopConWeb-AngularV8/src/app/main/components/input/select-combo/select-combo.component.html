@@ -1,0 +1,20 @@
+<div [formGroup]="formGroup" class="form-container">
+    <mat-form-field class="input-full-width">
+        <mat-select placeholder="{{placeholder}}" formControlName="{{name}}" *ngIf="!multiple"
+              [ngModel]="formatter(model)" [required]="required" [style.background-color]="getColor(model)">
+            <mat-option *ngFor="let item of list" [value]="formatter(item)"
+                  (onSelectionChange)="setModel($event, item)" [style.background-color]="getColor(item)">
+                {{ formatter(item) }}
+            </mat-option>
+        </mat-select>
+        <mat-select placeholder="{{placeholder}}" formControlName="{{name}}" *ngIf="multiple" multiple
+                [ngModel]="listValue()" [required]="required" [style.background-color]="getColor(model)">
+            <mat-option (onSelectionChange)="selectAll($event)">TODOS</mat-option>
+            <mat-option *ngFor="let item of list" [value]="formatter(item)"
+                  (onSelectionChange)="setModelMultiple($event, item)" [style.background-color]="getColor(item)">
+                {{ formatter(item) }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+    

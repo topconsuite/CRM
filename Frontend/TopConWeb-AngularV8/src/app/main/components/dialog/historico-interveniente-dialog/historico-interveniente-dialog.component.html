@@ -1,0 +1,91 @@
+
+<!-- CONTENT HEADER -->
+<div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+  <h2>HISTÓRICO DO INTERVENIENTE</h2>
+</div>
+<!-- / CONTENT HEADER -->
+<div class="form-container modal" fusePerfectScrollbar>
+  <div class="page-header">
+    <select-combo [formGroup]="filtroForm" placeholder="Tipo Historico" name="filtroTipo" [list]="historicosTipos"
+    [(model)]="historicosTipoSelect"  [formatter]="historicoTipoFormatter" (modelChange)="setFiltroTipoHistorico()" required></select-combo>
+    <paginator [pagedList]="historicos" (pageChange)="getPage($event)"
+    [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+    </paginator>  
+  </div>
+
+  <div *ngFor="let historico of historicos.records">
+    <mat-card>
+      <mat-card-content>
+        <div><b>Data:</b> {{formataData(historico.data)}} {{historico.hora}}</div>
+        <div><b>Descrição:</b> {{ historico.descricao }}</div>
+        <div><b>Data Prevista de Retorno:</b> {{formataDataNullavel(historico.dataPrevistaDeRetorno)}} {{historico.horaPrevistaDeRetorno}}</div>
+        <div><b>Data de Retorno:</b> {{formataDataNullavel(historico.dataDeRetorno)}} {{historico.horaDeRetorno}}</div>
+        <div><b>Id de Cadastro:</b> {{historico.idCadastro}}</div>
+        <div *ngIf="historico.vinculo !== ''">
+          <div><b>Tipo do Vinculo:</b> {{historico.vinculo}}</div>
+          <div><b>Empresa:</b> {{historico.empresaCodigo}}</div>
+          <div><b>Tipo Documento:</b> {{historico.documentoTipo}}</div>
+          <div><b>Documento Numero:</b> {{historico.documentoNumero}}</div>
+          <div><b>Documento Série:</b> {{historico.documentoSerie}}</div>
+          <div><b>Documemto Sequência:</b> {{historico.documentoSequencia}}</div>
+        </div>
+      </mat-card-content>
+    </mat-card><br/>
+  </div>
+
+  <div *ngIf="historicos.recordCount === 0">
+    <mat-card>
+      Nenhum historico Cadastrado para este Cliente!
+    </mat-card>
+  </div>
+</div>
+
+<mat-action-row class="float-right">
+  <button cdkFocusRegionstart mat-button color="basic"
+      (click)="showModal(historicoModal,historicoModalRef,addHistorico)">
+    ADICIONAR
+  </button>
+  <button cdkFocusRegionstart mat-button color="basic" 
+      (click)="closeDialog()" >
+    FECHAR
+  </button>
+</mat-action-row>
+
+<div class="content mat-white-bg" fusePerfectScrollbar>
+
+  <div #historicoModalVCR></div>
+  <ng-template #historicoModal>
+      
+      <h2 cdkFocusRegionstart>ADICIONAR NOVO HISTÓRICO</h2>
+      <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+        
+        <form [formGroup]="novoHistoricoForm" class="form-container">
+          
+          <simple-input [formGroup]="novoHistoricoForm" placeholder="Interveniente" name="interveniente" disabled
+          [model]="IntervenienteString"></simple-input>
+
+          <date-picker [formGroup]="novoHistoricoForm" placeholder="Data" name="data"
+          [(model)]="historico.data" disabled></date-picker>
+
+          <simple-input [formGroup]="novoHistoricoForm" placeholder="Observação" name="descricao"
+          [(model)]="historico.descricao" multiline required [validator]="lenghtValidator(historico.descricao)"></simple-input>
+          <div>{{remainingCharacters(historico.descricao)}}</div>
+
+          <date-picker [formGroup]="novoHistoricoForm" placeholder="Data Prevista de Retorno" name="dataPrevistaRetorno"
+          [(model)]="historico.dataPrevistaDeRetorno"></date-picker>
+
+          <simple-input [formGroup]="novoHistoricoForm" placeholder="Hora" name="horaPrevistaRetorno" 
+            [(model)]="historico.horaPrevistaDeRetornoString" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(historico.horaPrevistaDeRetornoString)"></simple-input>
+        </form> 
+      </div> 
+
+      <mat-action-row>
+        <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="novoHistoricoForm.invalid">Confirma</button>
+        <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+      </mat-action-row>
+      
+  </ng-template>
+
+
+</div>
+

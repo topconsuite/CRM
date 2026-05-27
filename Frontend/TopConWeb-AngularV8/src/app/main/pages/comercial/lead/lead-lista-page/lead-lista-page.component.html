@@ -1,0 +1,265 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>LEADS</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+  
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg" fusePerfectScrollbar>
+  
+      <paginator [pagedList]="leads" (pageChange)="getPage($event)" [currentPage]="paginaAtual"
+        [pageSize]="registrosPorPagina">
+  
+        <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro">
+
+          <integer-input [formGroup]="filter.form" placeholder="Número lead" name="==|numero"
+            [(model)]="filtro.leadNumero"></integer-input>
+  
+          <integer-input [formGroup]="filter.form" placeholder="Ano lead" name="==|ano"
+            [(model)]="filtro.leadAno" [maxIntegerChars]="2"></integer-input>
+
+          <suggest-combo [formGroup]="filter.form" placeholder="Fase lead" name="fase"
+            [list]="fasesLead" [formatter]="faseLeadFormatter" [(model)]="filtro.fase">
+          </suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Fase Lead" name="==|faseCodigo"
+            [model]="filtro.fase.codigo" *ngIf="filtro.fase" hidden></simple-input>
+
+          <suggest-combo [formGroup]="filter.form" placeholder="Classificação lead" name="classificacao"
+            [list]="classificacaoLead" [formatter]="classificacaoLeadFormatter" [(model)]="filtro.classificacao">
+          </suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Classificação lead" name="==|classificacao"
+            [model]="filtro.classificacao" *ngIf="filtro.classificacao" hidden></simple-input>
+
+          <date-picker [formGroup]="filter.form" placeholder="Data de" name="dataDe" [(model)]="filtro.dataDe"
+            *ngIf="filter.isOpen"></date-picker>
+          <simple-input [formGroup]="filter.form" placeholder="Data de" name=">=|data"
+            [model]="filtro.dataDe.toISOString().substr(0, 10)" *ngIf="filtro.dataDe" hidden></simple-input>
+  
+          <date-picker [formGroup]="filter.form" placeholder="Data até" name="dataAte" [(model)]="filtro.dataAte"
+            *ngIf="filter.isOpen"></date-picker>
+          <simple-input [formGroup]="filter.form" placeholder="Data até" name="<=|data"
+            [model]="filtro.dataAte.toISOString().substr(0, 10)" *ngIf="filtro.dataAte" hidden></simple-input>
+
+          <simple-input [formGroup]="filter.form" placeholder="Cliente"
+            name="%=|cliente" [(model)]="filtro.cliente"></simple-input>
+  
+          <suggest-combo [formGroup]="filter.form" placeholder="Vendedor" name="vendedor" [list]="vendedoresPermitidos"
+            [(model)]="filtro.vendedor" (modelChange)="filtroVendedorChange($event)" [formatter]="vendedorFormatter">
+          </suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Vendedor" name="==|vendedorCodigo"
+            [model]="filtro.vendedor.codigo" *ngIf="filtro.vendedor" hidden></simple-input>
+  
+          <simple-input [formGroup]="filter.form" placeholder="Endereço da obra"
+            name="%=|enderecoLogradouro" [(model)]="filtro.enderecoObra"></simple-input>
+
+        </filter>
+  
+      </paginator>
+  
+      <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+        <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+        <mat-expansion-panel (opened)="lead = item;" *ngFor="let item of leads.records">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon matTooltip="Fase: {{ item.fase.descricao }}"
+                    [style.color]="getFase(item.fase.codigo).color">layers</mat-icon>
+                <mat-icon matTooltip="Classificação: {{getClassificacao(item.classificacao).descricao}}"
+                    [style.color]="getClassificacao(item.classificacao).color"><span class="material-symbols-outlined">
+                      device_thermostat
+                      </span></mat-icon>
+                {{ ' '+labelLeadNumero(item) }}
+              </mat-panel-title>
+            <mat-panel-title>
+              <mat-panel-description>
+                {{ labelClienteObra(item) }}
+              </mat-panel-description>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div *ngIf="item.oportunidadeNumero > 0">Oportunidade: <b>{{ item.usina.codigo + '/' + item.oportunidadeNumero + '-' + item.oportunidadeAno }}</b></div>
+          <div *ngIf="item.visitaNumero > 0">Visita: <b>{{ item.usina.codigo + '/' + item.visitaNumero + '-' + item.visitaAno }}</b></div>
+          <div>Data: <b>{{ formataData(item.data) }}</b></div>
+          <div>Cliente: <b>{{ item.cliente }}</b></div>
+          <div>Fase: <b>{{ item.fase.descricao }}</b></div>
+          <div *ngIf="item.proximaEtapa">Próxima Etapa: <b>{{ item.proximaEtapa }}</b></div>
+          <div *ngIf="item.obraNome">Obra: <b>{{ item.obraNome }}</b></div>
+          <div>Vendedor: <b>{{ item.vendedor.codigo + ' - ' + item.vendedor.nome }}</b></div>
+          <div>Telefone: <b>{{ formataTelefone(item.dddTelefone, item.telefone) }}</b></div>
+          <div *ngIf="item.celular > 0">Celular: <b>{{ formataTelefone(item.dddCelular, item.celular) }}</b></div>
+          <div *ngIf="item.motivoPerda">Motivo da Perda: <b>{{ item.motivoPerda.descricao }}</b></div>
+
+          <mat-divider></mat-divider>
+            <div class="float-right">
+              <button mat-button color="accent" [routerLink]="['../usina/'+item.usina.codigo+'/ano/'+item.ano+'/numero/'+item.numero]">
+                <mat-icon matTooltip="Abrir">edit</mat-icon>Abrir
+              </button>
+              <button mat-button color="accent" (click)="showModal(leadLogModal, leadLogModalRef, item)">
+                <mat-icon matTooltip="Logs">history</mat-icon>Logs
+              </button>
+              <button mat-button color="accent" (click)="showModal(anexosModal, anexosModalRef, item)">
+                  <mat-icon matTooltip="Anexos">attach_file</mat-icon>Anexos
+              </button>
+              <button mat-button color="accent" (click)="openInteracaoLead(item)" *ngIf="interacaoPermitida()">
+                <mat-icon matTooltip="Interações leads"> record_voice_over</mat-icon>Interações leads
+              </button>
+              <button mat-button color="accent" *ngIf="item.oportunidadeNumero === 0 && oportunidadePermitida()" [routerLink]="['../usina/' + item.usinaCodigo + '/ano/' + item.ano + '/numero/' + item.numero + '/gerar-oportunidade']">
+                <mat-icon matTooltip="Gerar oportunidade">groups</mat-icon>Gerar oportunidade
+              </button>
+              <button mat-button color="accent" *ngIf="agendaPermitida()" (click)="showModal(tarefaModal, tarefaModalRef, item, undefined, undefined)">
+                <mat-icon matTooltip="Agendar Tarefa">calendar_today</mat-icon>Agendar Tarefa
+              </button>
+
+              <button mat-button color="accent" *ngIf="agendaPermitida()" (click)="showModal(compromissoModal, compromissoModalRef, item, undefined, undefined)">
+                <mat-icon matTooltip="Agendar Compromisso">calendar_today</mat-icon>Agendar Compromisso
+              </button>
+            </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <!-- / CONTENT CARD -->
+    
+    <div #leadLogModalVCR></div>
+    <ng-template #leadLogModal>
+
+      <div class="form-container modal" [hidden]="!modalIsOpen">
+        <h2 cdkFocusRegionstart>LOGS</h2>
+
+        <div *ngFor="let log of logs">
+          <mat-card>
+            <h3>{{ log.evento }}</h3>
+              <mat-card-subtitle>{{ formataDataHora(log.dataHoraEvento) }} - {{ log.usuario }}</mat-card-subtitle>
+            <mat-card-content>
+              <div>{{ log.complemento }}</div>
+              <div>{{ log.observacao }}</div>
+            </mat-card-content>
+          </mat-card><br/>
+        </div>
+
+        <mat-action-row>
+          <button cdkFocusRegionstart mat-button color="basic" class="float-right" (click)="closeModal()" style="position: fixed;">
+          FECHAR
+          </button>
+        </mat-action-row>
+
+      </div>
+
+    </ng-template>
+    
+    <div #anexosModalVCR></div>
+    <ng-template #anexosModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <h2 cdkFocusRegionstart>Anexos</h2>
+  
+          <button mat-raised-button color="accent" (click)="abrirSeletorDeArquivos(inputFile)" [disabled]=" disableConfirmButton">
+            <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar Documento
+          </button>
+          <input #inputFile type="file" (change)="arquivoSelecionado($event)" style="display: none;" />
+          
+              <div *ngFor="let element of anexos">
+                <br/>
+                <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+                  <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                    <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <div class="anexo-panel-content">
+                          <mat-panel-title class="title-text">Descrição</mat-panel-title>
+                          <mat-panel-description class="descricao-text">{{element.descricao}}</mat-panel-description>
+                        </div>
+                      </mat-expansion-panel-header>
+  
+                      <form [formGroup]="anexoForm" class="form-container">
+  
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td class="th-anexo">Arquivo :</td>
+                              <td class="td-anexo">{{element.nome}}</td>
+                            </tr>
+                            <tr>
+                              <td class="th-anexo">Usuario :</td>
+                              <td class="td-anexo">{{element.usuario}}</td>
+                            </tr>
+                            <tr>
+                              <td class="th-anexo">Data/Hora :</td>
+                              <td class="td-anexo">{{ formataDataHora(element.dataHora) }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+  
+                        <br/>
+
+                        <div style="float: left;">
+
+                          <button mat-button color="accent" (click)="abrirAnexo(element)">
+                            <mat-icon matTooltip="Abrir Anexo">folder_open</mat-icon> Abrir
+                          </button>
+
+                        </div> 
+
+                        <div style="float: right;">
+
+                          <button mat-button color="accent" (click)="showModalDescricaoAnexo(descricaoAnexoModal, descricaoAnexoModalRef, element)">
+                            <mat-icon matTooltip="Editar Descrição">edit</mat-icon> Editar Descrição
+                          </button>
+
+                          <button mat-button color="warn" (click)="removerAnexo(element)">
+                            <mat-icon matTooltip="Excluir Anexo">delete</mat-icon> Excluir
+                          </button>
+
+                        </div>
+                      
+                      </form>
+  
+                    </mat-expansion-panel>
+                </mat-accordion>
+              </div>
+
+            <div><p>Tamanho máximo de upload de arquivo: 10 MB.</p></div>
+  
+            <mat-action-row>
+              <button mat-button color="accent" (click)="closeModal()">Fechar</button>
+            </mat-action-row>
+        
+        </div>
+        
+    </ng-template>
+
+    <div #descricaoAnexoModalVCR></div>
+    <ng-template #descricaoAnexoModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+        <h2 cdkFocusRegionstart>DESCRIÇÃO ANEXO</h2>
+            
+        <form [formGroup]="anexoDescricaoForm" class="form-container">
+
+          <simple-input [formGroup]="anexoDescricaoForm" placeholder="Descrição" name="descricao" noCase
+          [(model)]="anexo.descricao" required [maxLength]="70"></simple-input>
+    
+          <mat-action-row>
+              <button mat-button color="accent" (click)="atualizarDescricaoAnexo(anexo)" [disabled]="anexo.descricao == '' || !anexoDescricaoForm.valid">Confirmar</button>
+              <button mat-button color="warn" (click)="cancelSubModal()">Cancelar</button>
+          </mat-action-row>
+
+        </form>
+        
+        </div>
+        
+    </ng-template>
+
+    <div #tarefaModalVCR></div>
+    <ng-template #tarefaModal>
+      <div class="form-container modal" [hidden]="!modalIsOpen">
+        <app-tarefa-form [lead]="item" (cancel)="closeModal($event)" (confirm)="closeModal($event)"></app-tarefa-form>
+      </div>
+    </ng-template>
+
+    <div #compromissoModalVCR></div>
+    <ng-template #compromissoModal>
+      <div class="form-container modal" [hidden]="!modalIsOpen">
+        <app-compromisso-form [lead]="item" (cancel)="closeModal($event)" (confirm)="closeModal($event)"></app-compromisso-form>
+      </div>
+    </ng-template>
+
+
+  </div>

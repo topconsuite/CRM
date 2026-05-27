@@ -1,0 +1,15 @@
+<div [formGroup]="formGroup" class="form-container">
+  <mat-form-field class="input-full-width">
+    <input #input matInput [matDatepicker]="dp" placeholder="{{placeholder}}" formControlName="{{name}}"
+        (blur)="convertedModel=convertDate(model)" (dateInput)="setModel($event.value)"
+        [(ngModel)]="convertedModel" [required]="required" (focus)="onFocus(input)" (focusout)="onFocusout()">
+    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker #dp></mat-datepicker>
+    <mat-error *ngIf="formControl.hasError('required')">
+        {{ requiredErrorMessage }}
+    </mat-error>
+    <mat-error *ngFor="let item of errorMessagesFiltered()">
+        {{ item.message }}
+    </mat-error>
+  </mat-form-field>
+</div>

@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TopSys.TopConWeb.Application.DTOS.Response.TransacaoCartao
+{
+    public class TransacaoCartaoDTO
+    {
+        public string TransacaoId { get; set; }
+    }
+}

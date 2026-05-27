@@ -1,0 +1,29 @@
+<div [formGroup]="formGroup" class="form-container">
+    <mat-form-field [ngClass]="bold ? 'bold' : ''" class="input-full-width">
+        <input #input1 matInput placeholder="{{placeholder}}" formControlName="{{name}}" [required]="required"
+          *ngIf="!mask && !multiline" [ngModel]="model" (ngModelChange)="setModel($event)"
+          (focus)="onFocus(input1)" (focusout)="onFocusout()" [style.text-transform]="caseStyle">
+        <input #input2 matInput placeholder="{{placeholder}}" formControlName="{{name}}" [required]="required"
+          *ngIf="mask && !multiline" [textMask]="mask" [ngModel]="model" (ngModelChange)="setModel($event)"
+          (focus)="onFocus(input2)" (focusout)="onFocusout()" [style.text-transform]="caseStyle">
+        <textarea #input3 matInput placeholder="{{placeholder}}" matTextareaAutosize [matAutosizeMinRows]="2" [matAutosizeMaxRows]="5"
+          formControlName="{{name}}" [required]="required" *ngIf="multiline" [style.text-transform]="caseStyle"
+          [ngModel]="model" (ngModelChange)="setModel($event)" (focus)="onFocus(input3)" (focusout)="onFocusout()"></textarea>
+        <mat-error *ngIf="formControl.hasError('required')">
+            {{ requiredErrorMessage }}
+        </mat-error>
+        <mat-error *ngIf="formControl.hasError('emptystring') && !formControl.hasError('required')">
+            {{ (formControl.errors || {}).emptystring }}
+        </mat-error>
+        <div *ngIf="!formControl.hasError('emptystring') && !formControl.hasError('required')">
+            <mat-error *ngFor="let item of errorMessagesFiltered()">
+                {{ item.message }}
+            </mat-error>
+            <mat-error *ngFor="let item of defaultErrorMessages()">
+                {{ item.message }}
+            </mat-error>
+        </div>
+        
+    </mat-form-field>
+</div>
+    

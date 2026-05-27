@@ -1,0 +1,91 @@
+<div id="login" fxLayout="column" fusePerfectScrollbar>
+
+    <div id="login-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="login-form" *fuseIfOnDom [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}">
+
+            <div class="float-right" style="font-size: 8pt; color: lightgray;">Versão: {{ version }}</div>
+
+            <div class="logo">
+                <img src="assets/icons/topcon-icon.png">
+            </div>
+
+            <!--<div class="title">LOGIN - TOPCON</div>-->
+
+            <form name="loginForm" [formGroup]="selectedForm" *ngIf='showForm' novalidate>
+
+                <mat-form-field>
+                    <input matInput placeholder="Usuário" formControlName="user" style="text-transform:uppercase">
+                    <mat-error *ngIf="selectedFormErrors.user.required">
+                        Informe o usuário
+                    </mat-error>
+                    <mat-error *ngIf="!selectedFormErrors.user.required">
+                        Informe um usuário válido
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <input matInput type="password" placeholder="Senha" formControlName="password">
+                    <mat-error *ngIf="selectedFormErrors.password.required">
+                        Informe a senha
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="modePasswordRegistration">
+                    <input matInput type="password" placeholder="Confirme a Senha" formControlName="confirmPassword">
+                    <mat-error *ngIf="selectedFormErrors.password.required"> 
+                        Confirme sua senha
+                    </mat-error>
+                </mat-form-field>
+
+                <div class="remember-forgot-password" fxLayout="row" fxLayout.xs="column"
+                     fxLayoutAlign="space-between center" *ngIf="!modePasswordRegistration">
+                    <mat-checkbox class="remember-me" aria-label="Remember Me">
+                        Lembrar
+                    </mat-checkbox>
+
+                    <!--
+                    <a class="forgot-password" [routerLink]="'/pages/auth/forgot-password'">
+                        Forgot Password?
+                    </a>
+                    -->
+                </div>
+
+                <button mat-raised-button color="accent" class="submit-button" aria-label="LOG IN"
+                [disabled]="selectedForm.invalid" (click)="submit()" *ngIf="!modePasswordRegistration">
+                    LOGIN
+                </button>
+
+                <button mat-raised-button color="accent" class="submit-button" aria-label="CADASTRAR SENHA"
+                *ngIf="!modePasswordRegistration" (click)="setModePasswordRegistration(true)">
+                    CADASTRAR SENHA
+                </button>
+
+                <button mat-raised-button color="accent" class="submit-button" aria-label="CONFIRMAR SENHA"
+                [disabled]="selectedForm.invalid" *ngIf="modePasswordRegistration" (click)= "submitPasswordRegistration()">
+                    CONFIRMAR
+                </button>
+
+                <button mat-raised-button color="accent" class="submit-button" aria-label="VOLTAR"
+                *ngIf="modePasswordRegistration" (click)="setModePasswordRegistration(false)">
+                    VOLTAR
+                </button>
+
+            </form>
+
+            <ng-container *ngIf="!isMsalInitializing && isSsoConfigured">
+                <div class="separator" *ngIf="!modePasswordRegistration">
+                    <span class="text">OU</span>
+                </div>
+
+                <button mat-raised-button color="primary" class="submit-button" 
+                        aria-label="ENTRAR COM MICROSOFT"
+                        *ngIf="!modePasswordRegistration" 
+                        (click)="loginSso()">
+                    ENTRAR COM MICROSOFT
+                </button>
+            </ng-container>
+            
+        </div>
+    </div>
+</div>

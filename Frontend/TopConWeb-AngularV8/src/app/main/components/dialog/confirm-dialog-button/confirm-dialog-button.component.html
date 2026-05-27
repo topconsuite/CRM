@@ -1,0 +1,18 @@
+<button *ngIf="!onlyIcon" mat-button [color]="buttonColor" [disabled]="disabled" (click)="openDialog()">
+  <mat-icon [matTooltip]="toolTip">{{icon}}</mat-icon> {{buttonText}}
+</button>
+
+<button *ngIf="onlyIcon" mat-icon-button [color]="buttonColor" [disabled]="disabled" (click)="openDialog()">
+    <mat-icon [matTooltip]="toolTip">{{icon}}</mat-icon>
+  </button>
+
+<ng-template #confirmTemplate>
+
+  <h3 cdkFocusRegionstart>{{dialogMessage}}</h3>
+
+  <mat-action-row>
+    <button mat-button color="accent" (click)="confirmDialog()">Confirma</button>
+    <button mat-button color="warn" (click)="cancelDialog()">Cancela</button>
+  </mat-action-row>
+
+</ng-template>

@@ -1,0 +1,52 @@
+<div class="form-container modal">
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>CONFIGURAR VERSIONAMENTO DE CONTRATO</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <div>
+    
+    <div>
+      <form [formGroup]="versionamentoContratoForm" style="margin-left: 25px" fusePerfectScrollbar>
+          
+          <div class="div-check">
+            <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoTraco" formControlName="versionamentoTraco">              
+              Traço
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoBomba" formControlName="versionamentoBomba">
+              Bomba
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoTaxaExtra" formControlName="versionamentoTaxaExtra">
+              Taxa Extra
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoCondicaoPagamento" formControlName="versionamentoCondicaoPagamento">
+              Condição de Pagamento
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoEnderecoObra" formControlName="versionamentoEnderecoObra">
+              Endereço da Obra
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoDemaisServicos" formControlName="versionamentoDemaisServicos">
+              Demais Serviços
+            </mat-checkbox>
+
+           <mat-checkbox [formGroup]="versionamentoContratoForm" [(ngModel)]="versionamentoContratoParametro.versionamentoReajusteContrato" formControlName="versionamentoReajusteContrato">
+              Reajuste do Contrato
+            </mat-checkbox>
+
+          </div>
+          
+          <mat-divider></mat-divider>
+          <div class="float-right">
+              <button mat-button color="accent" (click)="salvarConfiguracao()">Salvar Alterações</button>
+          </div>
+
+      </form>
+  </div> 
+
+</div>

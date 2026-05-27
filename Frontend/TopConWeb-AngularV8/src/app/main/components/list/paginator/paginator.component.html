@@ -1,0 +1,39 @@
+<div>
+
+  <div style="text-align: right; padding: 15px;">
+
+    <ng-content></ng-content>
+
+    <div style="display: inline;">
+      <button mat-button [ngClass]="navigationButtonClass" [disabled]="disablePrevious" (click)="first()">
+        <mat-icon [ngClass]="disabledIconClass(disablePrevious)">skip_previous</mat-icon>
+      </button>
+  
+      <button mat-button [ngClass]="navigationButtonClass" [disabled]="disablePrevious" (click)="previous()">
+        <mat-icon [ngClass]="disabledIconClass(disablePrevious)">navigate_before</mat-icon>
+      </button>
+  
+      <button mat-button disabled>
+        {{ pageInfoLabel }}
+      </button>
+  
+      <button mat-button [ngClass]="navigationButtonClass" [disabled]="disableNext" (click)="next()">
+        <mat-icon [ngClass]="disabledIconClass(disableNext)">navigate_next</mat-icon>
+      </button>
+  
+      <button mat-button [ngClass]="navigationButtonClass" [disabled]="disableNext" (click)="last()">
+        <mat-icon [ngClass]="disabledIconClass(disableNext)">skip_next</mat-icon>
+      </button>
+  
+      <mat-form-field *ngIf="!isSmallScreen && showPageSizeSelection">
+          <mat-select placeholder="Por página:" [(value)]="pageSize" (selectionChange)="pageSizeChange($event.value)">
+              <mat-option *ngFor="let item of pageSizeOptions" [value]="item">
+                  {{ item }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+    </div>
+
+  </div>
+
+</div>

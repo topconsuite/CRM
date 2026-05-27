@@ -1,0 +1,15 @@
+<div>
+  <p>
+    <b>{{ data.title }}</b>
+  </p>
+
+  <div *ngFor="let linha of data.message.split('\n')">{{ linha }}</div> 
+
+  <hr />
+
+  <div class="float-right">
+    <button mat-button color="accent" (click)="confirm()">{{ data.confirmText ? data.confirmText : "Confirma" }}</button>
+    <button mat-button cdkFocusRegionstart color="warn" (click)="cancel()">{{ data.cancelText ? data.cancelText : "Cancela" }}</button>
+  </div>
+
+</div>

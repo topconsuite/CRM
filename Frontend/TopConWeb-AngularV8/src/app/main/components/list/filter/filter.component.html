@@ -1,0 +1,15 @@
+<ng-template #filterTemplate>
+  <div class="form-container modal">
+    <h2 cdkFocusRegionstart>FILTROS</h2>
+    <form >
+      <ng-content></ng-content>
+    </form>
+    <mat-action-row>
+      <button mat-button color="accent" (click)="aplyFilter()" [disabled]="form.invalid">Aplicar<mat-icon>check</mat-icon></button>
+      <button mat-button color="warn" (click)="clearFilter()">Limpar<mat-icon>clear</mat-icon></button>
+    </mat-action-row>
+  </div>
+</ng-template>
+<button matTooltip="Filtro" mat-button (click)="openFilter(filterTemplate)" style="height: 100%;">
+  <mat-icon [style.color]="filterButtonColor">search</mat-icon>
+</button>

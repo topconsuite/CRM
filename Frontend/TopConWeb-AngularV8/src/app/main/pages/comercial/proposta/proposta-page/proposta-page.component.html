@@ -1,0 +1,1729 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>PROPOSTA</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg">
+        
+        <wizard (onComplete)="onComplete()" innerHeightPercent="71"> 
+          
+          <!-- ABA GERAL -->
+          <wizard-step title="Geral" icon="receipt" [stepForm]="geralForm" (onNext)="onGeralNext()">
+            
+            <form [formGroup]="geralForm" class="form-container">
+
+              <simple-input [formGroup]="geralForm" placeholder="Numero proposta" name="numeroProposta"
+                [model]="numeroPropostaString()" disabled></simple-input>
+
+              <date-picker [formGroup]="geralForm" placeholder="Data Proposta" name="dataProposta" required
+                [(model)]="proposta.data" disabled></date-picker>
+
+              <date-picker [formGroup]="geralForm" placeholder="Última Versão Criada de Proposta" name="dataUltimaVersaoGerada" required
+                [(model)]="proposta.dataUltimaVersaoGerada" disabled></date-picker>
+
+              <date-picker [formGroup]="geralForm" placeholder="Validade da Proposta" name="validadeProposta"
+                [(model)]="proposta.validadeProposta" [disabled]="alteracaoNaoPermitida(true)"></date-picker>
+
+              <select-combo [formGroup]="geralForm" placeholder="Status proposta" name="statusProposta" [list]="statusProposta"
+                [formatter]="statusPropostaFormatter" [(model)]="proposta.statusProposta" [colorList]="statusPropostaColors"
+                [disabled]="alteracaoNaoPermitida(true) || obraTracosPossuiStatusCustoVirtual" required></select-combo>
+
+              <div *ngIf="obraTracosPossuiStatusCustoVirtual" style="margin-bottom: 5px; text-align: center;">
+                <b style="color: #f44336;">PROPOSTAS COM TRAÇOS COM STATUS DE CUSTO VIRTUAL NÃO PODEM SER APROVADA ATÉ QUE OS MESMOS SEJAM ATIVADOS</b>
+              </div>
+
+              <select-combo [formGroup]="geralForm" placeholder="Status comercial" name="statusComercial" [list]="statusComercial" required disabled
+                [formatter]="statusComercialFormatter" [(model)]="proposta.statusComercial" [colorList]="statusComercialColors"></select-combo>
+
+              <suggest-combo [formGroup]="geralForm" placeholder="Segmentação" name="segmentacao" [disabled]="alteracaoNaoPermitida(true) || !isInsertMode || travarSegmentacao" required
+                [model]="proposta.segmento" (modelChange)="changeSegmento($event)" [list]="segmentos" [formatter]="segmentacaoFormatter"></suggest-combo>
+
+              <suggest-combo [formGroup]="geralForm" placeholder="Finalidade Contrato" name="contratoFinalidade" [disabled]="alteracaoNaoPermitida(true) || !isInsertMode "
+                [formatter]="finalidadeFormatter" [list]="finalidades" [(model)]="finalidadeSelecionada"
+                required (modelChange)="SetFinalidadeContrato()"></suggest-combo>
+
+              <suggest-combo [formGroup]="geralForm" placeholder="Vendedor" name="vendedor" [disabled]="alteracaoNaoPermitida(true)" required
+                [formatter]="vendedorFormatter" [list]="vendedoresPermitidos" [(model)]="proposta.vendedor" (click)="validaCliqueVendedor()"></suggest-combo>
+
+              <suggest-combo [formGroup]="geralForm" placeholder="Vendedor Padrinho" name="vendedorPadrinho"
+                [formatter]="vendedorFormatter" [list]="vendedores" [(model)]="proposta.vendedorPadrinho"
+                [disabled]="alteracaoNaoPermitida(true)"></suggest-combo>
+
+              <suggest-combo [formGroup]="geralForm" placeholder="Via de Captação" name="viaCaptacao"
+                [formatter]="cadastroGeralFormatter" [list]="viasCaptacao" [(model)]="proposta.obra.viaCaptacao"
+                [disabled]="alteracaoNaoPermitida(true)" required></suggest-combo>
+
+              <div *ngIf="isViaCaptacaoVendedor()">
+              
+                <suggest-combo [formGroup]="geralForm" placeholder="Vendedor Indicador" name="vendedorIndicador" [disabled]="alteracaoNaoPermitida(true)"
+                  [formatter]="vendedorFormatter" [list]="vendedoresPermitidos" [(model)]="proposta.obra.indicador.vendedor"
+                  [required]="isViaCaptacaoVendedor()"  (modelChange)="SetVendedorIndicadorCodigo()"></suggest-combo>
+
+              </div>
+
+              <mat-card *ngIf="isViaCaptacaoCliente()">
+
+                <mat-card-title style="margin-bottom: 20px;">Cliente Indicador</mat-card-title>
+
+                <select-combo [formGroup]="geralForm" placeholder="Tipo cliente" name="intervenienteIndicadorTipo"
+                [formatter]="intervenienteTipoFormatter" [list]="intervenienteTipos" [(model)]="intervenienteIndicadorTipo"
+                [disabled]="alteracaoNaoPermitida(true)" [required]="isViaCaptacaoCliente()"></select-combo>
+
+                <div *ngIf="intervenienteIndicadorTipo === 'F'">
+
+                  <cpf-input [formGroup]="geralForm" placeholder="CPF" name="cpf" [required]="isViaCaptacaoCliente()" [validator]="intervenienteValidator"
+                  [model]="intervenienteIndicadorCpfCnpj" (modelChange)="setCpfCnpjIndicador($event)" [disabled]="alteracaoNaoPermitida(true)"></cpf-input> 
+
+                </div>
+
+                <div *ngIf="intervenienteIndicadorTipo !== 'F'">
+
+                  <cnpj-input [formGroup]="geralForm" placeholder="CNPJ" name="cnpj" [required]="isViaCaptacaoCliente()"
+                    [model]="intervenienteIndicadorCpfCnpj" (modelChange)="setCpfCnpjIndicador($event)" [validator]="intervenienteValidator"
+                    [disabled]="alteracaoNaoPermitida(true)"></cnpj-input>
+
+                </div>
+
+                <suggest-combo [formGroup]="geralForm" [placeholder]="intervenienteIndicadorTipo === 'F' ? 'Buscar Cliente por Nome' : 'Buscar Cliente por Razão social'" name="intervenienteIndicador"
+                  (textChange)="filtrarIntervenientesPorRazao($event)" [list]="intervenientes" [mustBeValid]="false"
+                  [(model)]="proposta.obra.indicador.interveniente" [formatter]="intervenienteFormatter"  [disabled]="alteracaoNaoPermitida(true)"></suggest-combo>
+                <integer-input [formGroup]="geralForm" placeholder="Interveniente" name="==|cliente"
+                  [model]="proposta.obra.indicador.interveniente.codigo" (modelChange)="SetClienteIndicadorCodigo($event)" hidden 
+                  *ngIf="proposta.obra.indicador.interveniente" 
+                  [required]="isViaCaptacaoCliente()"></integer-input>
+
+              </mat-card>
+              
+              <suggest-combo [formGroup]="geralForm" placeholder="Medição de Contrato" name="medicaoContrato" [list]="medicaoContratos"
+                [formatter]="medicaoContratoFormatter" [(model)]="proposta.aprovacaoMedicao" [disabled]="alteracaoNaoPermitida(true) || temDireitoAlteracaoMedicaoContrato === false"></suggest-combo>
+              
+              <suggest-combo [formGroup]="geralForm" placeholder="Tempo (horas) para aprovação medição" name="tempoAprovacao" [list]="temposAprovacao"
+                [formatter]="cadastroGeralFormatter" [(model)]="proposta.tempoAprovacaoMedicaoCadastro" *ngIf="proposta.aprovacaoMedicao === 'S'" [disabled]="alteracaoNaoPermitida(true) || temDireitoAlteracaoMedicaoContrato === false"></suggest-combo>
+
+                <form>
+                  <mat-form-field class="form-container">
+                    <mat-label >Condições Gerais</mat-label>
+                    <textarea name="condicoesGerais" [disabled]="alteracaoNaoPermitida(true)"
+                    [(ngModel)]="proposta.condicoesGerais" matInput ></textarea>
+                  </mat-form-field>
+                </form>
+
+            </form>
+          </wizard-step>
+
+          <!-- ABA CLIENTE  -->
+          <wizard-step title="Cliente" icon="person" [stepForm]="clienteForm" (onNext)="onClienteNext()" (onPrevious)="onClientePrevious()">
+            <form [formGroup]="clienteForm" class="form-container">
+
+              <select-combo [formGroup]="clienteForm" placeholder="Tipo cliente" name="intervenienteTipo"
+                [formatter]="intervenienteTipoFormatter" [list]="intervenienteTipos" [(model)]="proposta.intervenienteTipo"
+                [disabled]="alteracaoNaoPermitida(true) || utilizaIdentificadorClienteAoInvesDeCpfCnpj()" required></select-combo>
+
+              <div *ngIf="proposta.intervenienteTipo==='F'">
+                
+                <div *ngIf="!utilizaIdentificadorClienteAoInvesDeCpfCnpj()">
+                  <cpf-input [formGroup]="clienteForm" placeholder="CPF" name="cpf" [required]="isStatusPropostaAprovado() || !inclusaoDadosClienteNaoPermitida" [validator]="intervenienteValidator"
+                    [model]="proposta.cpfCnpj" (modelChange)="setCpfCnpj($event)" [disabled]="alteracaoNaoPermitida(true)"></cpf-input>
+                </div>
+                
+                <div *ngIf="utilizaIdentificadorClienteAoInvesDeCpfCnpj()">
+                  <integer-input [formGroup]="clienteForm" placeholder="Identificador" name="identificador" id="identificador" [required]="isStatusPropostaAprovado() || !inclusaoDadosClienteNaoPermitida" [validator]="intervenienteValidator"
+                    [(model)]="proposta.cpfCnpj" (modelChange)="setIdentificador($event)" [disabled]="alteracaoNaoPermitida(true)" [maxIntegerChars]="14"></integer-input>
+                </div>
+                
+                <suggest-combo [formGroup]="clienteForm" [placeholder]="proposta.intervenienteTipo==='F' ? 'Buscar Cliente por Nome' : 'Buscar Cliente por Razão social'" name="interveniente"
+                (textChange)="filtrarIntervenientesPorRazao($event)" [list]="intervenientes" [mustBeValid]="false"
+                [(model)]="proposta.interveniente" [formatter]="intervenienteFormatter"  [disabled]="alteracaoNaoPermitida(true)" [required]="!inclusaoDadosClienteNaoPermitida"></suggest-combo>
+                <integer-input [formGroup]="clienteForm" placeholder="Interveniente" name="==|cliente"
+                  [model]="proposta.interveniente.codigo" (modelChange)="SetClienteCodigo($event)" hidden *ngIf="proposta.interveniente" [required]="!inclusaoDadosClienteNaoPermitida"></integer-input>
+                
+                <simple-input [formGroup]="clienteForm" placeholder="ID Externo" name="intervenienteIdExterno"
+                  (modelChange)="idExternoChange($event)"
+                  [(model)]="proposta.intervenienteIdExterno" [disabled]="alteracaoNaoPermitida(true) || temDireitoAlteracaoExternalId === false"></simple-input>
+
+                <button mat-button color="accent" (click)="openImportacaoPropostaModal()"
+                    *ngIf="exibeBotaoImportacaoProposta" class="float-right">
+                  <mat-icon>file_download</mat-icon>Importar dados proposta
+                </button>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Grupo Econômico" name="grupoEconomico" *ngIf="proposta.interveniente && proposta.interveniente.grupoEconomico"
+                  [model]="formatarGrupoEconomico" disabled></simple-input>
+
+                <phone-input *ngIf="validaCampo('telefone')" [formGroup]="clienteForm" placeholder="Telefone" name="telefone" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida" required
+                  [(modelDdd)]="proposta.telefoneDdd" [(modelNumber)]="proposta.telefoneNumero"></phone-input>
+
+                <phone-input *ngIf="!validaCampo('telefone')" [formGroup]="clienteForm" placeholder="Telefone" name="telefone" [disabled]="alteracaoNaoPermitida()" required
+                  [(modelDdd)]="proposta.telefoneDdd" [(modelNumber)]="proposta.telefoneNumero"></phone-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="RG" name="rg"
+                  [(model)]="proposta.rg" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Orgão expedidor" name="orgaoExpedidor"
+                  [(model)]="proposta.orgaoExpedidor" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+              </div>
+
+              <div *ngIf="proposta.intervenienteTipo!=='F'">
+                
+                <div *ngIf="!utilizaIdentificadorClienteAoInvesDeCpfCnpj()">
+                  <cnpj-input [formGroup]="clienteForm" placeholder="CNPJ" name="cnpj" [required]="isStatusPropostaAprovado()"
+                    [model]="proposta.cpfCnpj" (modelChange)="setCpfCnpj($event)" [validator]="intervenienteValidator"
+                    [disabled]="alteracaoNaoPermitida(true)"></cnpj-input>
+                </div>
+
+                <div *ngIf="utilizaIdentificadorClienteAoInvesDeCpfCnpj()">
+                  <integer-input [formGroup]="clienteForm" placeholder="Identificador" name="identificador" id="identificador" [required]="isStatusPropostaAprovado()" [validator]="intervenienteValidator"
+                    [(model)]="proposta.cpfCnpj" (modelChange)="setIdentificador($event)" [disabled]="alteracaoNaoPermitida(true)" [maxIntegerChars]="14"></integer-input>
+                </div>
+
+                <suggest-combo [formGroup]="clienteForm" [placeholder]="proposta.intervenienteTipo==='F' ? 'Buscar Cliente por Nome' : 'Buscar Cliente por Razão social'" name="interveniente"
+                (textChange)="filtrarIntervenientesPorRazao($event)" [list]="intervenientes" [mustBeValid]="false"
+                [(model)]="proposta.interveniente" [formatter]="intervenienteFormatter"  [disabled]="alteracaoNaoPermitida(true)" [required]="!inclusaoDadosClienteNaoPermitida"></suggest-combo>
+                <integer-input [formGroup]="clienteForm" placeholder="Interveniente" name="==|cliente"
+                  [model]="proposta.interveniente.codigo" (modelChange)="SetClienteCodigo($event)" hidden *ngIf="proposta.interveniente" [required]="!inclusaoDadosClienteNaoPermitida"></integer-input>
+  
+                <integer-input [formGroup]="clienteForm" placeholder="Cod. cliente" name="intervenienteCodigo"
+                  [model]="proposta.intervenienteCodigo" *ngIf="proposta.intervenienteCodigo" disabled></integer-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="ID Externo" name="intervenienteIdExterno"
+                  (modelChange)="idExternoChange($event)"
+                  [(model)]="proposta.intervenienteIdExterno" [disabled]="alteracaoNaoPermitida(true) || temDireitoAlteracaoExternalId === false"></simple-input>
+                
+                <button mat-button color="accent" (click)="openImportacaoPropostaModal()"
+                    *ngIf="exibeBotaoImportacaoProposta" class="float-right">
+                  <mat-icon>file_download</mat-icon>Importar dados proposta
+                </button>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Grupo Econômico" name="grupoEconomico" *ngIf="proposta.interveniente && proposta.interveniente.grupoEconomico"
+                  [model]="formatarGrupoEconomico" disabled></simple-input>
+                
+                <phone-input *ngIf="validaCampo('telefone')" [formGroup]="clienteForm" placeholder="Telefone" name="telefone" required [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"
+                [(modelDdd)]="proposta.telefoneDdd" [(modelNumber)]="proposta.telefoneNumero"></phone-input>
+
+                <phone-input *ngIf="!validaCampo('telefone')" [formGroup]="clienteForm" placeholder="Telefone" name="telefone" required [disabled]="alteracaoNaoPermitida()"
+                [(modelDdd)]="proposta.telefoneDdd" [(modelNumber)]="proposta.telefoneNumero"></phone-input>
+
+                <inscricao-estadual-input *ngIf="validaCampo('inscricaoEstadual')" [formGroup]="clienteForm" placeholder="Inscrição estadual" name="inscricaoEstadual" [required]="isStatusPropostaAprovado()"
+                  [(model)]="proposta.inscricaoEstadual" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></inscricao-estadual-input>
+
+                <inscricao-estadual-input *ngIf="!validaCampo('inscricaoEstadual')" [formGroup]="clienteForm" placeholder="Inscrição estadual" name="inscricaoEstadual" [required]="isStatusPropostaAprovado()"
+                  [(model)]="proposta.inscricaoEstadual" [disabled]="alteracaoNaoPermitida(true)"></inscricao-estadual-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Inscrição municipal" name="inscricaoMunicipal"
+                  [(model)]="proposta.inscricaoMunicipal" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+              </div>
+
+              <simple-input *ngIf="validaCampo('razao')" [formGroup]="clienteForm" [placeholder]="proposta.intervenienteTipo==='F' ? 'Nome' : 'Razão social'" [maxLength]="100"
+                  name="razao" [(model)]="proposta.intervenienteRazao" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida" required></simple-input>
+
+              <simple-input *ngIf="!validaCampo('razao')" [formGroup]="clienteForm" [placeholder]="proposta.intervenienteTipo==='F' ? 'Nome' : 'Razão social'" [maxLength]="100"
+                  name="razao" [(model)]="proposta.intervenienteRazao" [disabled]="alteracaoNaoPermitida(true)" required></simple-input>
+
+              <simple-input *ngIf="validaCampo('nome')" [formGroup]="clienteForm" placeholder="Nome reduzido" name="nome" required [maxLength]="20"
+                [(model)]="proposta.intervenienteNome" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+              <simple-input *ngIf="!validaCampo('nome')" [formGroup]="clienteForm" placeholder="Nome reduzido" name="nome" required [maxLength]="20"
+                [(model)]="proposta.intervenienteNome" [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+              <address-group *ngIf="validaCampo('endereco')" [formGroup]="clienteForm" alias="cliente" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"
+                [(model)]="proposta.endereco" [required]="isStatusPropostaAprovado()"></address-group>
+
+              <address-group *ngIf="!validaCampo('endereco')" [formGroup]="clienteForm" alias="cliente" [disabled]="alteracaoNaoPermitida(true)"
+                [(model)]="proposta.endereco" [required]="isStatusPropostaAprovado()"></address-group>
+
+              <div *ngIf="proposta.intervenienteTipo==='F'">
+                
+                <simple-input *ngIf="validaCampo('profissao')" [formGroup]="clienteForm" placeholder="Profissão" name="profissao"
+                  [required]="isStatusPropostaAprovado() && parametroProposta.obrigaProfissao"
+                  [(model)]="proposta.profissao" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"></simple-input>
+                
+                <simple-input *ngIf="!validaCampo('profissao')" [formGroup]="clienteForm" placeholder="Profissão" name="profissao"
+                  [required]="isStatusPropostaAprovado() && parametroProposta.obrigaProfissao"
+                  [(model)]="proposta.profissao" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Empresa trabalho" name="empresaTrabalho"
+                  [(model)]="proposta.empresaTrabalho" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+                <phone-input [formGroup]="clienteForm" placeholder="Telefone trabalho" name="telefoneTrabalho"
+                  [(modelDdd)]="proposta.telefoneComercialDdd" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"
+                  [(modelNumber)]="proposta.telefoneComercialNumero"></phone-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Nome da mãe" name="nomeMae"
+                  [(model)]="proposta.nomeMae" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+                <simple-input [formGroup]="clienteForm" placeholder="Nome do conjuge" name="nomeConjuge"
+                  [(model)]="proposta.nomeConjuge" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+              </div>
+
+              <simple-input *ngIf="validaCampo('contato')" [formGroup]="clienteForm" placeholder="Nome contato" name="contato" required
+                [(model)]="proposta.contato" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"></simple-input>
+              
+              <simple-input *ngIf="!validaCampo('contato')" [formGroup]="clienteForm" placeholder="Nome contato" name="contato" required
+                [(model)]="proposta.contato" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <integer-input [formGroup]="clienteForm" placeholder="Ramal" name="ramal"
+                [(model)]="proposta.ramal" [maxIntegerChars]="4" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"></integer-input>
+
+              <phone-input [formGroup]="clienteForm" placeholder="Celular" name="celular" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"
+                [(modelDdd)]="proposta.celularDdd" [(modelNumber)]="proposta.celularNumero"></phone-input>
+
+              <simple-input *ngIf="validaCampo('email')" [formGroup]="clienteForm" placeholder="Email" name="email" email multiline lowerCase
+                [(model)]="proposta.email" [required]="isStatusPropostaAprovado() && (proposta.intervenienteTipo!=='F' || parametroProposta.obrigaEmailPessoaFisica)"
+                [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+              <simple-input *ngIf="!validaCampo('email')" [formGroup]="clienteForm" placeholder="Email" name="email" email multiline lowerCase
+                [(model)]="proposta.email" [required]="isStatusPropostaAprovado() && (proposta.intervenienteTipo!=='F' || parametroProposta.obrigaEmailPessoaFisica)"
+                [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+              <simple-input [formGroup]="clienteForm" placeholder="Email de cobrança" name="emailCobranca"
+                [(model)]="proposta.emailCobranca" [disabled]="alteracaoNaoPermitida(true) || !alteracaoDadosClienteNaoPermitida" email multiline lowerCase></simple-input>
+
+              <simple-input [formGroup]="clienteForm" placeholder="Observação interna" name="observacao"
+                [(model)]="proposta.observacao" [disabled]="alteracaoNaoPermitida() || !alteracaoDadosClienteNaoPermitida"></simple-input>
+
+            </form>
+          </wizard-step>
+          <!-- / ABA CLIENTE  -->
+
+          <!-- ABA RESPONSÁVEL SOLIDÁRIO  -->
+          <wizard-step title="Responsável Solidário" icon="supervisor_account" [stepForm]="responsavelSolidarioForm" (onNext)="onClienteNext()" (onPrevious)="onClientePrevious()">
+            <form [formGroup]="responsavelSolidarioForm" class="form-container">
+
+              <mat-checkbox formControlName="utilizaResponsavelSolidario" [(ngModel)]="utilizaResponsavelSolidario" [disabled]="alteracaoNaoPermitida(true)">
+                Possui Responsável Solidário
+              </mat-checkbox>
+              <br/>
+
+              <!-- Dados do CPF/CNPJ de Responsável Solidário -->
+              <mat-card *ngIf="proposta.utilizaResponsavelSolidario">
+                <h2>Dados do CPF/CNPJ de responsável solidário</h2>
+                
+                <select-combo [formGroup]="responsavelSolidarioForm" placeholder="Tipo cliente" name="responsavelSolidarioIntervenienteTipo" [disabled]="alteracaoNaoPermitida(true)" required
+                  [(model)]="proposta.responsavelSolidario.intervenienteTipo" [list]="intervenienteTipos" [formatter]="intervenienteTipoFormatter"></select-combo>
+
+                <div *ngIf="proposta.responsavelSolidario.intervenienteTipo==='F'">
+                  
+                  <cpf-input [formGroup]="responsavelSolidarioForm" placeholder="CPF" name="responsavelSolidarioCPF" required
+                    [(model)]="proposta.responsavelSolidario.cpfCnpj" [disabled]="alteracaoNaoPermitida(true)"></cpf-input>
+
+                  <simple-input [formGroup]="responsavelSolidarioForm" placeholder="RG" name="responsavelSolidarioRG"
+                    [(model)]="proposta.responsavelSolidario.rg" [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+                  <simple-input [formGroup]="responsavelSolidarioForm" placeholder="Orgão expedidor" name="responsavelSolidarioOrgaoExpedidor"
+                    [(model)]="proposta.responsavelSolidario.orgaoExpedidor" [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+                </div>
+
+                <div *ngIf="proposta.responsavelSolidario.intervenienteTipo!=='F'">
+
+                  <cnpj-input [formGroup]="responsavelSolidarioForm" placeholder="CNPJ" name="responsavelSolidarioCNPJ" required
+                    [(model)]="proposta.responsavelSolidario.cpfCnpj" [disabled]="alteracaoNaoPermitida(true)"></cnpj-input>
+
+                  <inscricao-estadual-input [formGroup]="responsavelSolidarioForm" placeholder="Inscrição estadual" name="responsavelSolidarioInscricaoEstadual"
+                    [(model)]="proposta.responsavelSolidario.inscricaoEstadual" [disabled]="alteracaoNaoPermitida(true)" required></inscricao-estadual-input>
+
+                  <simple-input [formGroup]="responsavelSolidarioForm" placeholder="Inscrição municipal" name="responsavelSolidarioInscricaoMunicipal"
+                    [(model)]="proposta.responsavelSolidario.inscricaoMunicipal" [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+                </div>
+
+                <simple-input [formGroup]="responsavelSolidarioForm" [placeholder]="proposta.responsavelSolidario.intervenienteTipo==='F' ? 'Nome' : 'Razão social'" [maxLength]="100"
+                  name="responsavelSolidarioRazao" [(model)]="proposta.responsavelSolidario.razao" [disabled]="alteracaoNaoPermitida(true)" required></simple-input>
+
+                <simple-input [formGroup]="responsavelSolidarioForm" placeholder="Nome reduzido" name="responsavelSolidarioNome" required [maxLength]="20"
+                  [(model)]="proposta.responsavelSolidario.nome" [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+                <simple-input [formGroup]="responsavelSolidarioForm" placeholder="Email" name="responsavelSolidarioEmail"
+                [(model)]="proposta.responsavelSolidario.email" [disabled]="alteracaoNaoPermitida(true)" email multiline lowerCase></simple-input>
+
+                <phone-input [formGroup]="responsavelSolidarioForm" placeholder="Celular" name="responsavelSolidarioCelular" [disabled]="alteracaoNaoPermitida(true)"
+                  [(modelDdd)]="proposta.responsavelSolidario.telefoneDdd" [(modelNumber)]="proposta.responsavelSolidario.telefoneNumero"></phone-input>
+
+              </mat-card>
+              <br />
+
+              <!-- Dados do endereço de responsável solidário -->
+              <mat-card *ngIf="proposta.utilizaResponsavelSolidario">
+                  <h2>Dados do endereço do responsável solidário</h2>
+
+                  <address-group [formGroup]="responsavelSolidarioForm" alias="responsavelSolidario" required
+                    [(model)]="proposta.responsavelSolidario.endereco" [disabled]="alteracaoNaoPermitida(true)"></address-group>
+              </mat-card>
+              <br />
+
+            </form>
+          </wizard-step>
+          <!-- / ABA RESPONSÁVEL SOLIDÁRIO -->
+
+          <!-- ABA OBRA  -->
+          <wizard-step #stepObra title="Obra" icon="business" [stepForm]="obraForm" (onNext)="onObraNext(stepObra)" (onPrevious)="onObraPrevious()">
+            <form [formGroup]="obraForm" class="form-container">
+
+              <simple-input [formGroup]="obraForm" placeholder="Nome Obra" name="obraNome" required
+                [(model)]="proposta.obra.nome" [disabled]="alteracaoNaoPermitida(true)" [maxLength]="30"></simple-input>
+
+              <suggest-combo [formGroup]="obraForm" placeholder="Central de Entrega" name="usinaEntrega" [disabled]="alteracaoNaoPermitida(true) || possuiPagamentoAntecipadoAprovado" required
+                [model]="proposta.obra.usinaEntrega" (modelChange)="changeUsinaEntrega($event)" [list]="usinas" [formatter]="usinaFormatter"></suggest-combo>
+              
+                <div *ngIf="possuiPagamentoAntecipadoAprovado">
+                  <mat-error>*Pagamento antecipado aprovado, não será possível alteração da usina!</mat-error>
+                  <br>
+                </div>
+
+              <decimal-input [formGroup]="obraForm" placeholder="Volume Estimado Obra" name="volumeEstimado" [disabled]="alteracaoNaoPermitida(true)"
+                [required]="isStatusPropostaAprovado() && parametroProposta.obrigaVolumeEstimadoEPrevisaoInicioTermino"
+                [(model)]="proposta.obra.volumeEstimado" (focusout)="AtualizaPrecoTracos()" [maxIntegerChars]="6" [decimalChars]="1"></decimal-input>
+
+              <decimal-input [formGroup]="obraForm" placeholder="Volume por Carga" name="volumePorCarga" [disabled]="alteracaoNaoPermitida(true)"
+                [(model)]="proposta.obra.volumePorCarga" (focusout)="AtualizaPrecoTracos()" [maxIntegerChars]="2" [decimalChars]="1"></decimal-input>
+
+              <mat-card>
+                <div *ngIf="propostaImportada">
+                  <mat-error>*Proposta Importada, não será possível alteração do endereço!</mat-error>
+                  <br>
+                </div>
+
+                <mat-checkbox formControlName="utilizaEnderecoClienteComoEnderecoObra" [(ngModel)]="utilizaEnderecoClienteComoEnderecoObra" [disabled]="alteracaoNaoPermitida(true) || propostaImportada">
+                  Utiliza endereço do cliente <br/>como endereço da obra
+                </mat-checkbox>
+
+                <address-group [formGroup]="obraForm" alias="obra" [required]="isStatusPropostaAprovado()" [disabled]="alteracaoNaoPermitida(true) || propostaImportada"
+                  [model]="proposta.obra.endereco" (modelChange)="changeEnderecoObra($event)" [hidden]="utilizaEnderecoClienteComoEnderecoObra"
+                  (logradouroFocus)="logradouroFocusIn()" (logradouroFocusOut)="logradouroFocusOut()"
+                  (numeroFocus)="numeroFocusIn()" (numeroFocusOut)="numeroFocusOut()" (onCepRequestSuccess) = "carregaDistanciaUsinaViaGoogleApi()"
+                  [cepErrorMessages]="errorMessages.obraCep" obrigaMunicipio  obrigaBairro></address-group>
+
+                <mat-error *ngIf="utilizaEnderecoClienteComoEnderecoObra && !proposta.obra.endereco.bairro">
+                  *Bairro obrigatório
+                </mat-error>
+                <mat-error *ngIf="utilizaEnderecoClienteComoEnderecoObra && !proposta.obra.endereco.municipio">
+                  *Município obrigatório
+                </mat-error>
+
+              </mat-card>
+              <br />
+
+              <hr style="margin-top: 20px; margin-bottom: 20px;"/>
+                
+              <mat-card-title>Frentes de Obra</mat-card-title>
+              <mat-card-subtitle>Endereços das etapas de entrega</mat-card-subtitle>
+
+              <button mat-raised-button color="accent" (click)="showModalObraFrente(obraFrenteCadastroModal, undefined)" style="margin-bottom: 15px;" [disabled]="alteracaoNaoPermitida(true)">
+                <mat-icon matTooltip="Adicionar">add</mat-icon> Novo Endereço
+              </button>
+
+              <table mat-table [dataSource]="proposta.obra.obraFrentes" class="mat-elevation-z8 obra-frente-table">
+              
+                <ng-container matColumnDef="frente-nome">
+                  <th mat-header-cell style="width: 25%;" *matHeaderCellDef>Nome</th>
+                  <td mat-cell *matCellDef="let element">{{element.enderecoNome}}</td>
+                </ng-container>
+              
+                <ng-container matColumnDef="frente-endereco">
+                  <th mat-header-cell style="width: 55%;" *matHeaderCellDef>Endereço</th>
+                  <td mat-cell *matCellDef="let element">{{obraEnderecoFormatter(element)}}</td>
+                </ng-container>
+              
+                <ng-container matColumnDef="frente-edicao">
+                  <th mat-header-cell style="width: 24px;" *matHeaderCellDef>  </th>
+                  <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="accent" (click)="showModalObraFrente(obraFrenteCadastroModal, element)">
+                      <mat-icon matTooltip="Editar">edit</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="frente-deletar">
+                  <th mat-header-cell style="width: 24px;" *matHeaderCellDef>  </th>
+                  <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="warn" (click)="obraFrenteExcluirConfirmacao(element)">
+                      <mat-icon matTooltip="Excluir">delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="frente-footer">
+                  <td mat-footer-cell *matFooterCellDef colspan="4" style="text-align: center;">
+                    <h5>Nenhuma frente de obra cadastrada, clique em 'Novo Endereço' para cadastrar</h5>
+                  </td>
+                </ng-container>
+              
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsObraFrente"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsObraFrente;"></tr>
+                
+                <ng-container >
+                  <tr mat-footer-row [hidden]="proposta ? (proposta.obra ? (proposta.obra.obraFrentes.length === 0 ? false : true) : true) : true" *matFooterRowDef="['frente-footer']"></tr>
+                </ng-container>
+
+              </table>
+
+              <hr style="margin-top: 20px; margin-bottom: 20px;"/>
+
+              <select-combo [formGroup]="obraForm" placeholder="ZMRC" name="ZMRC" required [list]="opcoesAdicionalZMRC"
+                [(model)]="proposta.obra.usaAdicionalZMRC" title="Zona de Máxima Restrição de Circulação"
+                [formatter]="OpcoesAdicionalZMRCFormatter" (modelChange)="usaAdicionalZmrcChange()" [disabled]="alteracaoNaoPermitida(true)"></select-combo>
+
+              <simple-input *ngIf="utilizaGoogleMatrixAPI" [formGroup]="obraForm" placeholder="Distância Aproximada da Usina (Km) Sugerida pelo Google" name="obraDistanciaUsinaViaGoogleApi" disabled
+                [(model)]="proposta.obra.distanciaUsinaGoogleApi" ></simple-input>
+
+              <integer-input [formGroup]="obraForm" placeholder="Distância da Central (Km)" name="obraDistanciaUsina" [disabled]="disableObraDistanciaUsina || alteracaoNaoPermitida(true)"
+                [(model)]="proposta.obra.distanciaUsina" [maxIntegerChars]="3" [errorMessages]="errorMessages.obraDistanciaUsina"
+                [required]="isStatusPropostaAprovado() && parametroProposta.obrigaAprovacaoDistanciaUsinaEntrega"></integer-input>
+
+              <integer-input matTooltip="Parâmetro específico da obra atual. Caso seja 0, será considerado o parâmetro definido para a central." [formGroup]="obraForm" placeholder="Tempo de deslocamento até a obra (Minutos)" name="tempoAteAObra" [disabled]="alteracaoNaoPermitida(true)"
+              [(model)]="proposta.obra.tempoAteAObra" (focusout)="AtualizaPrecoTracos()" [required]="utilizaCalculoPrecoTabelaPorUsina" [maxIntegerChars]="4"></integer-input>
+
+              <integer-input matTooltip="Parâmetro específico da obra atual. Caso seja 0, será considerado o parâmetro definido para a central." [formGroup]="obraForm" placeholder="Tempo de permanência na obra (Minutos)" name="tempoBtNaObra" [disabled]="alteracaoNaoPermitida(true)"
+              [(model)]="proposta.obra.tempoBtNaObra" [required]="utilizaCalculoPrecoTabelaPorUsina" [maxIntegerChars]="4"></integer-input>
+
+              <integer-input matTooltip="Parâmetro específico da obra atual. Caso seja 0, será considerado o parâmetro definido para o ponto de carga." [formGroup]="obraForm" placeholder="Tempo de descarga (Minutos)" name="tempoDescarga" [disabled]="alteracaoNaoPermitida(true)"
+              [(model)]="proposta.obra.tempoDescarga" [required]="utilizaCalculoPrecoTabelaPorUsina" [maxIntegerChars]="4"></integer-input>
+
+              <suggest-combo [formGroup]="obraForm" placeholder="Tipo Obra" name="tipoObra"
+                [formatter]="cadastroGeralFormatter" [list]="tipoObra" [(model)]="proposta.obra.tipoObra"
+                [disabled]="alteracaoNaoPermitida(true)" [required]="parametroProposta.obrigaTipoObra"></suggest-combo>
+
+              <suggest-combo [formGroup]="obraForm" placeholder="Porte Obra" name="porteObra" 
+                [formatter]="cadastroGeralFormatter" [list]="porteObra" [(model)]="proposta.obra.porteObra"
+                [disabled]="alteracaoNaoPermitida(true)" [required]="parametroProposta.obrigaPorteObra"></suggest-combo>
+
+              <simple-input [formGroup]="obraForm" placeholder="Referência Acesso" name="obraReferenciaAcesso"
+                [(model)]="proposta.obra.referenciaAcesso" [disabled]="alteracaoNaoPermitida()" multiline></simple-input>
+
+              <simple-input [formGroup]="obraForm" placeholder="Observação Interna" name="observacaoInterna"
+              [(model)]="proposta.obra.observacaoInterna" [disabled]="alteracaoNaoPermitida(true)"></simple-input>
+
+              <simple-input [formGroup]="obraForm" placeholder="Email Obra" name="obraEmail"
+                [(model)]="proposta.obra.email" [disabled]="alteracaoNaoPermitida()" email multiline lowerCase></simple-input>
+
+              <simple-input [formGroup]="obraForm" placeholder="Email Responsável Técnico" name="obraEmailRespTecnico"
+                [(model)]="proposta.obra.emailResponsavelTecnico" [disabled]="alteracaoNaoPermitida()" email multiline lowerCase></simple-input>
+
+              <date-picker [formGroup]="obraForm" placeholder="Prev. Inicio" name="obraPrevisaoInicio"
+                [required]="isStatusPropostaAprovado() && parametroProposta.obrigaVolumeEstimadoEPrevisaoInicioTermino"
+                [(model)]="proposta.obra.previsaoInicio" [disabled]="alteracaoNaoPermitida(true)"></date-picker>
+
+              <date-picker [formGroup]="obraForm" placeholder="Prev. Término" name="obraPrevisaoTermino"
+                [required]="isStatusPropostaAprovado() && parametroProposta.obrigaVolumeEstimadoEPrevisaoInicioTermino"
+                [(model)]="proposta.obra.previsaoTermino" [disabled]="alteracaoNaoPermitida(true)"></date-picker>
+
+              <simple-input [formGroup]="obraForm" placeholder="Rádio/Nextel" name="obraRadioNextel"
+                [(model)]="proposta.obra.radioNextel" [disabled]="alteracaoNaoPermitida()"></simple-input>
+              
+              <mat-card>
+                <h4>Contato 1</h4>
+
+                <simple-input [formGroup]="obraForm" placeholder="Nome Contato" name="obraContatoPrincipalNome"
+                  [(model)]="proposta.obra.contatoPrincipalNome" [disabled]="alteracaoNaoPermitida()" required></simple-input>
+
+                <suggest-combo [formGroup]="obraForm" placeholder="Função" name="obraContatoPrincipalFuncao" [disabled]="alteracaoNaoPermitida()"
+                  [formatter]="cadastroGeralFormatter" [list]="funcoes" [(model)]="proposta.obra.contatoPrincipalFuncao"></suggest-combo>
+
+                <phone-input [formGroup]="obraForm" placeholder="Telefone" name="obraContatoPrincipalTelefone"
+                  [(modelDdd)]="proposta.obra.contatoPrincipalTelefoneDdd" required [disabled]="alteracaoNaoPermitida()"
+                  [(modelNumber)]="proposta.obra.contatoPrincipalTelefoneNumero"></phone-input>
+
+                <phone-input [formGroup]="obraForm" placeholder="Celular" name="obraContatoPrincipalCelular"
+                  [(modelDdd)]="proposta.obra.contatoPrincipalCelularDdd" [disabled]="alteracaoNaoPermitida()"
+                  [(modelNumber)]="proposta.obra.contatoPrincipalCelularNumero"></phone-input>
+
+              </mat-card><br/>
+
+              <mat-card>
+                <h4>Contato 2</h4>
+
+                <simple-input [formGroup]="obraForm" placeholder="Nome Contato" name="obraContatoSecundarioNome"
+                  [(model)]="proposta.obra.contatoSecundarioNome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+                <suggest-combo [formGroup]="obraForm" placeholder="Função" name="obraContatoSecundarioFuncao" [disabled]="alteracaoNaoPermitida()"
+                  [formatter]="cadastroGeralFormatter" [list]="funcoes" [(model)]="proposta.obra.contatoSecundarioFuncao"></suggest-combo>
+
+                <phone-input [formGroup]="obraForm" placeholder="Telefone" name="obraContatoSecundarioTelefone"
+                  [(modelDdd)]="proposta.obra.contatoSecundarioTelefoneDdd" [disabled]="alteracaoNaoPermitida()"
+                  [(modelNumber)]="proposta.obra.contatoSecundarioTelefoneNumero"></phone-input>
+
+                <phone-input [formGroup]="obraForm" placeholder="Celular" name="obraContatoSecundarioCelular"
+                  [(modelDdd)]="proposta.obra.contatoSecundarioCelularDdd" [disabled]="alteracaoNaoPermitida()"
+                  [(modelNumber)]="proposta.obra.contatoSecundarioCelularNumero"></phone-input>
+
+              </mat-card>
+              
+              
+              
+            </form>
+          </wizard-step>
+          <!-- / ABA OBRA  -->
+
+          <!-- ABA CONCRETO  -->
+          <wizard-step title="Concreto" icon="colorize" [stepForm]="concretoForm"
+                (onNext)="onConcretoNext()" (onPrevious)="onConcretoPrevious()" (onStepSelected)="onTracoStepSelected()">
+            <form [formGroup]="concretoForm" class="form-container">
+
+              <suggest-combo [formGroup]="concretoForm" [placeholder]="placeholderCondicaoPagamento" name="condicaoPagamento" required
+                (modelChange)="carregaTiposCobranca($event, proposta.obra.tipoCobranca)" [list]="condicoesPagamento" [disabled]="alteracaoNaoPermitida()"
+                [(model)]="proposta.obra.condicaoPagamento" [formatter]="condicaoPagamentoFormatter"></suggest-combo>
+
+              <suggest-combo [formGroup]="concretoForm" [placeholder]="placeholderTipoCobranca" name="tipoCobranca" required
+                (focus)="carregaTiposCobranca(proposta.obra.condicaoPagamento, proposta.obra.tipoCobranca)" [disabled]="alteracaoNaoPermitida()"
+                [(model)]="proposta.obra.tipoCobranca" [formatter]="tipoCobrancaFormatter" [list]="tiposCobranca"></suggest-combo>
+
+              <integer-input [formGroup]="concretoForm" placeholder="Qtd.Traços" name="qtdTracos" hidden
+                [model]="proposta.obra.obraTracos.length" [required]="false"></integer-input>
+              
+            </form>
+
+            <div class="form-container" *ngIf="tracoShowContent">
+              <h4>TRAÇOS</h4>
+              <mat-accordion class="expansion-panel-headers-align">
+                <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                <mat-expansion-panel (opened)="traco = item;" *ngFor="let item of proposta.obra.obraTracos">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <b style="color: #1A73E8 ;">{{getTracoStatusString(item)}}</b>
+                      {{formataValor(item.m3Quantidade, 1)}} M3 / {{formataValor(item.m3Consumido, 1)}} M3 / {{formataValor(item.m3Quantidade - item.m3Consumido, 1)}} M3 / {{formataMoeda(item.m3PrecoProposto*item.m3Quantidade)}}
+                    </mat-panel-title>
+                    <mat-panel-description>{{tracoString(item)}}</mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <div *ngIf="item.status === 7105" style="color: #1A73E8 ;"><b>TRAÇO COM STATUS DE CUSTO VIRTUAL</b></div>
+                  <div>Traço: <b>{{tracoString(item)}}</b></div>
+                  <div>Volume: <b>{{formataValor(item.m3Quantidade, 1)}} M3</b></div>
+                  <div>Volume Consumido: <b>{{formataValor(item.m3Consumido, 1)}} M3</b></div>
+                  <div>Saldo de volume: <b>{{formataValor(item.m3Quantidade - item.m3Consumido, 1)}} M3</b></div>
+                  <div>Preço unitário proposto: <b>{{formataMoeda(item.m3PrecoProposto)}}</b></div>
+                  <div *ngIf="item.precoReajustadoAtual">Preço reajustado: <b>{{formataMoeda(item.precoReajustadoAtual)}}</b></div>
+                  <div>Preço unitário tabela: <b>{{formataMoeda(item.m3PrecoTabela)}}</b></div>
+                  <div>Preço unitário tabela + Ajustes: <b>{{formataMoeda(item.m3PrecoAjustado)}}</b></div>
+                  <div>{{labelDescontoAcrescimoTraco(item)}}: <b>{{percentualDescontoAcrescimoFormatadoTraco(item)}}%</b></div>
+                  <div *ngIf="item.pecaConcretar">Peça a concretar: <b>{{item.pecaConcretar}}</b></div>
+                  <div *ngIf="item.justificativa">Justificativa desconto: <b>{{item.justificativa}}</b></div>
+                  <div *ngIf="item.precoConcorrencia!==0">Proço Concorrente: <b>{{formataMoeda(item.precoConcorrencia)}}</b></div>
+                  <div *ngIf="item.observacao">Observação: <b>{{item.observacao}}</b></div>
+                  
+                  <mat-action-row>
+                    <button mat-button color="accent" (click)="openEbitdaTracoModal(ebitdaTracoModal, item)" *ngIf="temDireitoAcessoMargemPosTransporte">
+                      <mat-icon matTooltip="Ebitda" >insert_chart_outlined</mat-icon>Análise de Margens
+                    </button>
+                    <confirm-dialog-button buttonText="Excluir" buttonColor="warn" icon="delete" [disabled]="alteracaoNaoPermitida()"
+                      dialogMessage="Confirma exclusão do traço?" (confirm)="removeTraco(item)"></confirm-dialog-button>
+                    <button mat-button color="accent" [disabled]="!proposta.obra.condicaoPagamento || item.inativo"
+                      (click)="openTracoModal(tracoModal, updateTraco, closeModal, item)">
+                      <mat-icon>edit</mat-icon>Editar
+                    </button>
+                  </mat-action-row>
+
+                </mat-expansion-panel>
+              </mat-accordion>
+
+              <!--
+              <mat-error *ngIf="proposta.obra.obraTracos.length===0 && isStatusPropostaAprovado()">
+                  Obrigatório incluir pelo menos um traço!
+              </mat-error>
+              -->
+
+              <!--<mat-action-row>
+                <button mat-button disabled>
+                  Total: {{ formataValor(volumeTotalTracos(), 1) }} M3 / {{ formataMoeda(valorTotalTracos()) }}
+                </button>
+              </mat-action-row>-->
+
+              <mat-action-row>
+                <button mat-button disabled>
+                  Total Contratado: {{ formataValor(volumeTotalTracos(), 1) }} M3 / {{ formataMoeda(valorTotalTracos()) }}
+                </button>
+                <button mat-button disabled>
+                   Consumido: {{ formataValor(volumeTotalTracosConsumido(), 1) }} M3 
+                </button>
+                  <button mat-button disabled>
+                   Saldo total: {{ formataValor(volumeTotalTracos() - volumeTotalTracosConsumido(), 1) }} M3 
+                  </button>
+              </mat-action-row>
+
+              <mat-action-row>
+                <button mat-button color="accent" [disabled]="obraForm.invalid || alteracaoNaoPermitida() || !proposta.obra.condicaoPagamento"
+                  (click)="openTracoModal(tracoModal, addTraco)"><mat-icon>add_circle</mat-icon>ADICIONAR NOVO TRAÇO</button>
+              </mat-action-row>
+
+              <div #tracoModalVCR></div>
+              <ng-template #tracoModal>
+                
+                <div class="form-container modal" [hidden]="!modalIsOpen">
+                  <h2 cdkFocusRegionstart>TRAÇO</h2>
+                    
+                  <form [formGroup]="concretoItemForm" class="form-container">
+                    <div *ngIf="tracoAtualTemProgramacao">
+                      <mat-error>*Já existe programação para este traço</mat-error>
+                      <br>
+                    </div>
+                    <div *ngIf="isTracoCustoVirtual() && !isTracoArquivado()">
+                      <b style="color: #1A73E8 ;">TRAÇO COM STATUS DE CUSTO VIRTUAL</b>
+                      <mat-error *ngIf="bloquearTracoCustoVirtual()">*{{motivoTracoCustoVirtualBloqueado()}}</mat-error>
+                      <br>
+                    </div>
+                    <div *ngIf="isTracoArquivado() && !isTracoCustoVirtual()">
+                      <mat-error *ngIf="!tracoAtualTemAprovacaoTabelaVenda">*Traço arquivado: não é permitido alteração</mat-error>
+                      <mat-error *ngIf="tracoAtualTemAprovacaoTabelaVenda">*Traço pendente de aprovação de tabela de venda</mat-error>
+                      <br>
+                    </div>
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderNumeracaoProduto" name="tracoNumeracaoProduto"  [formatter]="numeracaoProdutoFormatter"
+                      [model]="tracoModalNumeracaoProdutoSelecionado" (modelChange)="tracoNumeracaoProdutoChange($event)" [list]="numeracoesProduto"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaNumeracaoProduto"></suggest-combo>
+
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderUso" name="tracoUso" (focusout)="carregaTracoPedras()"
+                      [model]="traco.uso" (modelChange)="tracoUsoChange($event)" [formatter]="usoFormatter" [list]="usos"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaCamposTraco" required></suggest-combo>
+
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderPedra" name="tracoPedra" (focusout)="carregaTracoSlumpsNominais()"
+                      [model]="traco.pedra" (modelChange)="tracoPedraChange($event)" [formatter]="pedraFormatter" [list]="pedras" [hidden]="!showPedra"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaCamposTraco" required></suggest-combo>
+
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderSlumpNominal" name="tracoSlumpNominal" (focusout)="carregaTracoResistenciaTipos()"
+                      [model]="traco.slumpNominal" (modelChange)="tracoSlumpNominalChange($event)" [formatter]="slumpFormatter" [list]="slumpsNominais"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaCamposTraco" required></suggest-combo>
+
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderResistenciaTipo" name="tracoResistenciaTipo" (focusout)="carregaTracoMpasConsumos()"
+                      [model]="traco.resistenciaTipo" (modelChange)="tracoResistenciaTipoChange($event)" [formatter]="resistenciaTipoFormatter" [list]="resistenciaTipos"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaCamposTraco" required></suggest-combo>
+
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderMpa" name="tracoMpa"
+                      [model]="traco.mpa" (modelChange)="tracoMpaChange($event)"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaCamposTraco" required
+                      *ngIf="isVinculoMpa(traco.resistenciaTipo)" [formatter]="mpaFormatter" [list]="mpas"></suggest-combo>
+
+                    <suggest-combo [formGroup]="concretoItemForm" [placeholder]="placeholderConsumo" name="tracoConsumo"
+                      [model]="traco.consumo" (modelChange)="tracoConsumoChange($event)"
+                      [disabled]="traco.aprovacaoObservacao !== '' || alteracaoNaoPermitida() || tracoAtualTemProgramacao || isTracoArquivado() || desabilitaCamposTraco" required
+                      *ngIf="isVinculoConsumo(traco.resistenciaTipo)" [formatter]="consumoFormatter" [list]="consumos"></suggest-combo>
+                      
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Slump Inicial" name="slumpInicial"
+                    [(model)]="tracoParticularidades.slumpInicial" disabled *ngIf="tracoParticularidades.slumpInicial && tracoParticularidades.slumpInicial !== 0"></simple-input>
+                    
+                    <simple-input [formGroup]="concretoItemForm" placeholder="ECI" name="eci"
+                    [(model)]="tracoParticularidades.eci" disabled *ngIf="tracoParticularidades.eci && tracoParticularidades.eci !== 0"></simple-input>
+
+                    <simple-input [formGroup]="concretoItemForm" placeholder="ECS" name="ecs"
+                    [(model)]="tracoParticularidades.ecs" disabled *ngIf="tracoParticularidades.ecs && tracoParticularidades.ecs !== 0"></simple-input>
+
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Especificação" name="especificacao"
+                    [(model)]="tracoParticularidades.tracoEspecificacao" disabled *ngIf="tracoParticularidades.tracoEspecificacao && tracoParticularidades.tracoEspecificacao !== ''"></simple-input>
+
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Traço" name="tracoDescricao" disabled
+                      [model]="tracoDescricao"></simple-input>
+                    
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Obs.Traço" name="obsTraco" [maxLength]="40"
+                      [(model)]="traco.observacao" [disabled]="alteracaoNaoPermitida(true) || isTracoArquivado() || temDireitoAlteracaoObservacaoTraco == false"></simple-input>
+
+                    <suggest-combo [formGroup]="concretoItemForm" placeholder="Peça a concretar" name="tracoPecaConcretar" [disabled]="alteracaoNaoPermitida() || isTracoArquivado()"
+                      [(model)]="traco.pecaConcretar" [formatter]="pecaConcretarFormatter" [list]="pecasConcretar"></suggest-combo>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Quantidade M3" name="tracoQtdeM3" required
+                      [(model)]="traco.m3Quantidade" (focus)="tracoM3QuantidadeFocus()" (focusout)="tracoM3QuantidadeFocusout()"
+                      [maxIntegerChars]="5" [decimalChars]="1" [disabled]="alteracaoNaoPermitida() || isTracoArquivado()"></decimal-input>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Quantidade M3 Bombeada" name="tracoQtdeM3Bombeada"
+                    [(model)]="traco.m3QuantidadeBombeada"  (focusout)="tracoM3BombeadoQuantidadeFocusOut()"
+                    [maxIntegerChars]="5" [decimalChars]="1" [disabled]="alteracaoNaoPermitida() || isTracoArquivado() || !isTracoBombeavel()"></decimal-input>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Preço unitário tabela" name="tracoPrecoUnitarioTabela"
+                      [model]="traco.m3PrecoTabela" [maxIntegerChars]="4" showThousandSeparator disabled></decimal-input>
+                    
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Preço unitário tabela + Ajustes" name="tracoPrecoAjustado"
+                      [model]="traco.m3PrecoAjustado" [maxIntegerChars]="4" showThousandSeparator disabled></decimal-input>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Preço unitário proposto" name="tracoPrecoUnitarioProposto"
+                      [(model)]="traco.m3PrecoProposto" [disabled]="alteracaoNaoPermitida() || isTracoArquivado()" [maxIntegerChars]="4" showThousandSeparator required></decimal-input>
+
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Valor serviço" name="valorServicoTabela"
+                    [model]="valorServicoTracoFormatado" disabled *ngIf="temDireitoAprovacaoComercial"></simple-input>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Preço ultimo reajuste" name="precoUltimoContratoReajuste"
+                    [model]="precoUltimoContratoReajuste(traco)" [maxIntegerChars]="4" showThousandSeparator disabled *ngIf="possuiContratoReajuste(traco)"></decimal-input>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Preço reajustado" name="tracoPrecoReajustado"
+                    *ngIf="possuiContratoReajuste(traco)" [(model)]="traco.precoReajustadoAtual" disabled showThousandSeparator ></decimal-input>
+
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Valor serviço reajustado" name="valorServicoReajustado"
+                    [model]="valorServicoReajustadoTracoFormatado" disabled *ngIf="possuiContratoReajuste(traco)"></simple-input>
+
+                    <simple-input [formGroup]="concretoItemForm" [placeholder]="'% ' + labelDescontoAcrescimoTraco(traco)" name="tracoDescontoPercentual"
+                      [model]="percentualDescontoAcrescimoFormatadoTraco(traco)" disabled *ngIf="!possuiContratoReajuste(traco)"></simple-input>
+
+                    <simple-input [formGroup]="concretoItemForm" [placeholder]="'% ' + labelDescontoAcrescimoTracoReajuste(traco) + ' Preço Reajustado'" name="tracoDescontoReajustadoPercentual"
+                    [model]="percentualDescontoAcrescimoFormatadoTracoReajustado(traco)" disabled *ngIf="possuiContratoReajuste(traco)"></simple-input>
+
+                    <simple-input [formGroup]="concretoItemForm" placeholder="Justificativa desconto" name="tracoDescontoJustificativa"
+                      [(model)]="traco.justificativa" [disabled]="alteracaoNaoPermitida() || isTracoArquivado()"></simple-input>
+
+                    <decimal-input [formGroup]="concretoItemForm" placeholder="Preço Concorrencia" name="tracoPrecoConcorrencia"
+                      [(model)]="traco.precoConcorrencia" [disabled]="alteracaoNaoPermitida() || isTracoArquivado()" [maxIntegerChars]="4" showThousandSeparator></decimal-input>
+
+                    <mat-action-row>
+                      <button mat-button color="accent" (click)="confirmTraco(traco)" [disabled]="alteracaoNaoPermitida() || bloquearTracoCustoVirtual() || isTracoArquivado() || concretoItemForm.invalid || tracoJaIncluso">Confirma</button>
+                      <button mat-button color="warn" (click)="cancelTraco()">Cancela</button>
+                    </mat-action-row>
+
+                  </form>
+                  
+                </div>
+                  
+              </ng-template>
+            </div>
+
+          </wizard-step>
+          <!-- / ABA CONCRETO  -->
+
+          <!-- ABA BOMBA  -->
+          <wizard-step #stepBomba title="Bomba" icon="build" [stepForm]="bombaForm"
+                (onNext)="onBombaNext(stepBomba)" (onPrevious)="onBombaPrevious()" (onStepSelected)="onBombaStepSelected()">
+            <form [formGroup]="bombaForm" class="form-container">
+
+              <integer-input [formGroup]="bombaForm" placeholder="Qtd.Bombas" name="qtdBombas" hidden
+                [model]="proposta.obra.obraBombas.length" [required]="proposta.obra.obraTracos.length === 0"></integer-input>
+              
+            </form>
+
+            <div class="form-container" *ngIf="bombaShowContent">
+              <h4>BOMBAS</h4>
+              <mat-accordion class="expansion-panel-headers-align">
+                <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                <mat-expansion-panel (opened)="bomba = item;" *ngFor="let item of proposta.obra.obraBombas">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>{{ formataMoeda(valorTotalBomba(item)) }}</mat-panel-title>
+                    <mat-panel-description>{{ bombaString(item) }}</mat-panel-description>
+                  </mat-expansion-panel-header>
+                  
+                  <div>Bomba própria: <b>{{ item.bombaPropria ? 'SIM' : 'NÃO' }}</b></div>
+                  <div *ngIf="item.bombaTipo">Tipo bomba: <b>{{item.bombaTipo.descricao}}</b></div>
+                  <div *ngIf="!item.bombaPropria">Terceiro: <b>{{ intervenienteFormatter(item.terceiro) }}</b></div>
+                  <div *ngIf="(item.bombaPropria || !item.faturamentoDireto) && utilizaCobrancaPorM3(item)">
+                    <mat-card>
+                      <div><b>Preço proposto por M3 bombeado:</b></div>
+                      <div>Proposto - Taxa mínima: <b>{{ formataMoeda(item.taxaMinimaPrecoProposto) }}</b></div>
+                      <div>Proposto - M3 até: <b>{{ item.m3PropostoAte }}</b></div>
+                      <div>Proposto - Valor M3 excedente: <b>{{ formataMoeda(item.m3PrecoProposto) }}</b></div>
+                      <div *ngIf="item.taxaMinimaReajustadaAtual">Preço reajustado: <b>{{formataMoeda(item.taxaMinimaReajustadaAtual)}}</b></div>
+                      <div *ngIf="item.m3ReajustadoAteAtual">M3 até reajustado: <b>{{formataMoeda(item.m3ReajustadoAteAtual)}}</b></div>
+                      <div *ngIf="item.m3PrecoReajustadoAtual">Valor M3 excedente reajustado: <b>{{formataMoeda(item.m3PrecoReajustadoAtual)}}</b></div>
+                      <div *ngIf="hasContratoBombaReajuste()">
+                          <div *ngFor="let bombaReajuste of contratoBombaReajusteUltimasVigencias(item)"> 
+                            <div>Data vigência: <b>{{ formataData(bombaReajuste.dataVigencia) }}</b> </div>
+                            <div>Preço último reajuste: <b>{{ formataMoeda(bombaReajuste.valorReajustado) }}</b> </div>
+                            <div>M3 até último reajuste: <b>{{ formataMoeda(bombaReajuste.reajustadoAteM3) }}</b> </div>
+                            <div>Valor M3 excedente último reajuste: <b>{{ formataMoeda(bombaReajuste.m3ExcedenteReajustado) }}</b> </div>
+                          </div>
+                      </div>
+                    </mat-card>
+                    <br/>
+                  </div>
+                  <div *ngIf="item.bombaPropria && utilizaCobrancaPorHora(item)">
+                    <mat-card>
+                      <div><b>Preço proposto por hora bombeada:</b></div>
+                      <div>Proposto - Taxa mínima: <b>{{ formataMoeda(item.horaTaxaMinimaPrecoProposto) }}</b></div>
+                      <div>Proposto - Horas até: <b>{{ formataValor(item.horaPropostoAte, 2) }}</b></div>
+                      <div>Proposto - Valor hora excedente: <b>{{ formataMoeda(item.horaPrecoProposto) }}</b></div>
+                    </mat-card>
+                    <br/>
+                  </div>
+                  <div *ngIf="item.justificativa">Justificativa desconto: <b>{{item.justificativa}}</b></div>
+                  <div *ngIf="item.distanciaTubulacao">Distancia tubulação: <b>{{ item.distanciaTubulacao }}</b></div>
+                  <div *ngIf="item.valorAdicionalTubulacao > 0">Valor adicional tubulação: <b>{{ formataMoeda(item.valorAdicionalTubulacao) }}</b></div>
+                  
+                  <mat-action-row>
+                    <button mat-button color="accent" (click)="openEbitdaBombaModal(ebitdaBombaModal, item)" *ngIf="temDireitoAcessoMargemPosTransporte"> 
+                      <mat-icon matTooltip="Ebitda" >insert_chart_outlined</mat-icon>Análise de Margens
+                    </button>
+                    <confirm-dialog-button buttonText="Excluir" buttonColor="warn" icon="delete" [disabled]="alteracaoNaoPermitida()"
+                      dialogMessage="Confirma exclusão da bomba?" (confirm)="removeBomba(item)"></confirm-dialog-button>
+                    <button mat-button color="accent" (click)="openBombaModal(bombaModal, updateBomba, closeModal, item)">
+                      <mat-icon>edit</mat-icon>Editar
+                    </button>
+                  </mat-action-row>
+
+                </mat-expansion-panel>
+              </mat-accordion>
+
+              <mat-error *ngIf="proposta.obra.obraTracos.length===0 && proposta.obra.obraBombas.length===0 && isStatusPropostaAprovado()">
+                Obrigatório incluir pelo menos um traço ou uma bomba!
+              </mat-error>
+
+              <mat-action-row>
+                <button mat-button disabled>Valor total: {{ formataMoeda(valorTotalBombas()) }}</button>
+              </mat-action-row>
+
+              <mat-action-row>
+                <button mat-button color="accent" (click)="openBombaModal(bombaModal, addBomba)"
+                  [disabled]="concretoForm.invalid || alteracaoNaoPermitida()"><mat-icon>add_circle</mat-icon>ADICIONAR NOVA BOMBA</button>
+              </mat-action-row>
+
+              <div #bombaModalVCR></div>
+              <ng-template #bombaModal>
+                
+                <div class="form-container modal" [hidden]="!modalIsOpen">
+                  <h2 cdkFocusRegionstart>BOMBA</h2>
+                    
+                  <form [formGroup]="bombaItemForm" class="form-container">
+                    <div *ngIf="bombaAtualTemProgramacao">
+                      <mat-error>*Já existe programação para esta bomba</mat-error>
+                      <br>
+                    </div>
+                    <div *ngIf="bombaAtualTemNovaTabelaPreco">
+                      <mat-error>*Valores de tabela novos</mat-error>
+                      <br>
+                    </div>
+
+                    <mat-checkbox formControlName="bombaPropria" [ngModel]="bomba.bombaPropria" (ngModelChange)="bombaPropriaChange($event)" [disabled]="alteracaoNaoPermitida() || !parametroProposta.informarBombaTerceiros">
+                      Bomba própria
+                    </mat-checkbox><br /><br />
+                    
+                    <suggest-combo [formGroup]="bombaItemForm" [placeholder]="placeholderBombaTipo" name="bombaTipo" [required]="bomba.bombaPropria || !bomba.faturamentoDireto" (focusout)="carregaTerceiros()"
+                      [model]="bomba.bombaTipo" (modelChange)="bombaTipoChange($event)" [formatter]="bombaTipoFormatter" [list]="bombaTipos" [disabled]="alteracaoNaoPermitida() || bombaAtualTemProgramacao"
+                      [orderBy]="{ field: 'descricao', desc: false }"></suggest-combo>
+
+                    <div *ngIf="!bomba.bombaPropria">
+                      <mat-checkbox formControlName="faturamentoDireto" [ngModel]="bomba.faturamentoDireto" (ngModelChange)="bombaFaturamentoDiretoChange($event)" [disabled]="alteracaoNaoPermitida()">
+                        Faturamento direto
+                      </mat-checkbox><br /><br />
+
+                      <suggest-combo [formGroup]="bombaItemForm" [placeholder]="placeholderTerceiro" name="bombaTerceiro" [required]="!bomba.faturamentoDireto" [disabled]="alteracaoNaoPermitida()"
+                        [model]="bomba.terceiro" (modelChange)="terceiroChange($event)" [formatter]="intervenienteFormatter" [list]="bombistasTerceiros"></suggest-combo>
+
+                      <mat-checkbox formControlName="alugadaPeloCliente" [(ngModel)]="bomba.alugadaPeloCliente" [disabled]="alteracaoNaoPermitida()">
+                        Alugada pelo cliente
+                      </mat-checkbox><br /><br />
+                    </div>
+
+                    <div *ngIf="bomba.bombaPropria || !bomba.faturamentoDireto">
+                      <div *ngIf="utilizaCobrancaPorM3(bomba)">
+                        <mat-card>
+                          <h4>Cobrança por M3 bombeado</h4>
+                          
+                          <div class="concrete-pump-price-container">
+                            <div class="concrete-pump-price-column-1">
+                              <decimal-input [formGroup]="bombaItemForm" placeholder="Preço tabela - Taxa mínima" [maxIntegerChars]="5"
+                                name="bombaPrecoTabelaTaxaMinima" [model]="bomba.taxaMinimaPrecoTabela" disabled></decimal-input>
+        
+                              <integer-input [formGroup]="bombaItemForm" placeholder="Preço tabela - M3 até" [maxIntegerChars]="3"
+                                name="bombaPrecoTabelaM3ate" [model]="bomba.m3TabelaAte" disabled></integer-input>
+        
+                              <decimal-input [formGroup]="bombaItemForm" placeholder="Preço tabela - Preço por M3" [maxIntegerChars]="4"
+                                name="bombaPrecoTabelaPorM3" [model]="bomba.m3PrecoTabela" disabled></decimal-input>
+                            </div>
+
+                            <div class="concrete-pump-price-column-2">
+                              <decimal-input [formGroup]="bombaItemForm" placeholder="Preço proposto - Taxa mínima" [maxIntegerChars]="5"
+                                name="bombaPrecoPropostoTaxaMinima" [(model)]="bomba.taxaMinimaPrecoProposto" [disabled]="alteracaoNaoPermitida() || bloqueiaCampoTaxaMinimaNoPrecoDeBomba || possuiReajusteBomba(bomba)" required></decimal-input>
+        
+                              <integer-input [formGroup]="bombaItemForm" placeholder="Preço proposto - M3 até" [maxIntegerChars]="3"
+                                name="bombaPrecoPropostoM3ate" [(model)]="bomba.m3PropostoAte" (modelChange)="taxaMinimaPrecoPropostoPorM3(bomba)" [validator]="m3AtePrecoPropostoValorMinimoValidator(bomba)" [disabled]="alteracaoNaoPermitida() || possuiReajusteBomba(bomba)" required></integer-input>
+        
+                              <decimal-input [formGroup]="bombaItemForm" placeholder="Preço proposto - Preço por M3" [maxIntegerChars]="4"
+                                name="bombaPrecoPropostoPorM3" [(model)]="bomba.m3PrecoProposto" (modelChange)="taxaMinimaPrecoPropostoPorM3(bomba)" [disabled]="alteracaoNaoPermitida() || possuiReajusteBomba(bomba)" required></decimal-input>
+                            </div>
+
+                            <div class="concrete-pump-price-column-3" *ngIf="possuiReajusteBomba(bomba)">
+                              <decimal-input [formGroup]="bombaItemForm" placeholder="Preço reajustado - Taxa mínima" [maxIntegerChars]="5" *ngIf="possuiReajusteBomba(bomba)"
+                                name="bombaPrecoReajustadoTaxaMinima" [(model)]="bomba.taxaMinimaReajustadaAtual" [disabled]="alteracaoNaoPermitida() || bloqueiaCampoTaxaMinimaNoPrecoDeBomba || !possuiReajusteBomba(bomba)" required></decimal-input>
+        
+                              <integer-input [formGroup]="bombaItemForm" placeholder="Preço reajustado - M3 até" [maxIntegerChars]="3" *ngIf="possuiReajusteBomba(bomba)"
+                                name="bombaPrecoReajustadoM3ate" [(model)]="bomba.m3ReajustadoAteAtual" (modelChange)="taxaMinimaPrecoReajustadoPorM3(bomba)" [validator]="m3AtePrecoPropostoValorMinimoValidator(bomba)" [disabled]="alteracaoNaoPermitida() || !possuiReajusteBomba(bomba)" required></integer-input>
+        
+                              <decimal-input [formGroup]="bombaItemForm" placeholder="Preço reajustado - Preço por M3" [maxIntegerChars]="4" *ngIf="possuiReajusteBomba(bomba)"
+                                name="bombaPrecoReajustadoPorM3" [(model)]="bomba.m3PrecoReajustadoAtual" (modelChange)="taxaMinimaPrecoReajustadoPorM3(bomba)" [disabled]="alteracaoNaoPermitida() || !possuiReajusteBomba(bomba)" required></decimal-input>
+                            </div>
+                          </div>
+
+                          <simple-input [formGroup]="bombaItemForm" [placeholder]="'% ' + labelDescontoAcrescimoBomba(bomba) + ' taxa mínima' + labelDescontoAcrescimoBombaReajuste(bomba)" name="bombaDescontoPercentual"
+                            [model]="percentualDescontoAcrescimoFormatadoBomba(bomba)" disabled></simple-input>
+                          
+                          <simple-input [formGroup]="bombaItemForm" [placeholder]="'% ' + labelDescontoAcrescimoBomba(bomba) + ' M3' + labelDescontoAcrescimoBombaReajuste(bomba)" name="bombaDescontoM3Percentual"
+                            [model]="percentualDescontoAcrescimoFormatadoBombaM3(bomba)" disabled></simple-input>
+                          
+                        </mat-card>
+
+                        <br/>
+                      </div>
+
+                      <div *ngIf="bomba.bombaPropria && utilizaCobrancaPorHora(bomba)">
+                        <mat-card>
+                          <h4>Cobrança por Hora</h4>
+                          
+                          <div style="max-width: 50%; display: inline-grid;">
+                            <decimal-input [formGroup]="bombaItemForm" placeholder="Preço tabela - Taxa mínima" [maxIntegerChars]="5"
+                              name="bombaPrecoTabelaHoraTaxaMinima" [model]="bomba.horaTaxaMinimaPrecoTabela" disabled></decimal-input>
+      
+                            <decimal-input [formGroup]="bombaItemForm" placeholder="Preço tabela - Horas até" [maxIntegerChars]="3"
+                              name="bombaPrecoTabelaHoraAte" [model]="bomba.horaTabelaAte" disabled></decimal-input>
+      
+                            <decimal-input [formGroup]="bombaItemForm" placeholder="Preço tabela - Preço por hora" [maxIntegerChars]="4"
+                              name="bombaPrecoTabelaPorHora" [model]="bomba.horaPrecoTabela" disabled></decimal-input>
+                          </div>
+
+                          <div style="max-width: 50%; display: inline-grid;">
+                            <decimal-input [formGroup]="bombaItemForm" placeholder="Preço proposto - Taxa mínima" [maxIntegerChars]="5"
+                              name="bombaPrecoPropostoHoraTaxaMinima" [(model)]="bomba.horaTaxaMinimaPrecoProposto" [disabled]="alteracaoNaoPermitida() || bloqueiaCampoTaxaMinimaNoPrecoDeBomba" required></decimal-input>
+      
+                            <decimal-input [formGroup]="bombaItemForm" placeholder="Preço proposto - Horas até" [maxIntegerChars]="3"
+                              name="bombaPrecoPropostoHoraAte" [(model)]="bomba.horaPropostoAte" (modelChange)="taxaMinimaPrecoPropostoPorHora(bomba)" [validator]="horasAtePrecoPropostoValorMinimoValidator(bomba)" [disabled]="alteracaoNaoPermitida()" required></decimal-input>
+      
+                            <decimal-input [formGroup]="bombaItemForm" placeholder="Preço proposto - Preço por hora" [maxIntegerChars]="4"
+                              name="bombaPrecoPropostoPorHora" [(model)]="bomba.horaPrecoProposto" (modelChange)="taxaMinimaPrecoPropostoPorHora(bomba)" [disabled]="alteracaoNaoPermitida()" required></decimal-input>
+                          </div>
+
+                          <simple-input [formGroup]="bombaItemForm" [placeholder]="'% ' + labelDescontoAcrescimoBombaHora(bomba)" name="bombaHoraDescontoPercentual"
+                            [model]="percentualDescontoAcrescimoFormatadoBombaHora(bomba)" disabled></simple-input>
+                        </mat-card>
+
+                        <br/>
+                      </div>
+                      
+                      <simple-input [formGroup]="bombaItemForm" placeholder="Justificativa desconto" name="bombaDescontoJustificativa"
+                        [(model)]="bomba.justificativa" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+                      <integer-input [formGroup]="bombaItemForm" placeholder="Distância tubulação" [maxIntegerChars]="3" [disabled]="alteracaoNaoPermitida()"
+                        name="bombaDistanciaTubulacao" [(model)]="bomba.distanciaTubulacao" [required]="bomba.bombaPropria"></integer-input>
+                    </div>
+
+                    <mat-action-row>
+                      <button mat-button color="accent" (click)="confirmBomba(bomba)" [disabled]="bombaItemForm.invalid || alteracaoNaoPermitida()">Confirma</button>
+                      <button mat-button color="warn" (click)="cancelBomba()">Cancela</button>
+                    </mat-action-row>
+
+                  </form>
+                  
+                </div>
+                  
+              </ng-template>
+            </div>
+          </wizard-step>
+          <!-- / ABA BOMBA  -->
+
+          <!-- ABA DEMAIS SERVIÇOS  -->
+          <wizard-step title="Demais serviços" icon="more" [stepForm]="demaisServicosForm" (onStepSelected)="onDemaisServicosStepSelected()"
+            (onNext)="onDemaisServicosNext()" (onPrevious)="onDemaisServicosPrevious()">
+            
+            <form [formGroup]="demaisServicosForm" class="form-container">
+
+              <mat-card>
+                  <h2>VIBRADOR</h2>
+
+                  <integer-input [formGroup]="demaisServicosForm" placeholder="Quantidade" [maxIntegerChars]="3"
+                    name="vibradorQuantidade" [(model)]="proposta.obra.vibradorQuantidade" [disabled]="alteracaoNaoPermitida()"></integer-input>
+      
+                  <decimal-input [formGroup]="demaisServicosForm" placeholder="Valor unitário" [maxIntegerChars]="4"
+                    name="vibradorValorUnitario" [(model)]="proposta.obra.vibradorValorUnitario" [decimalChars]="2" [disabled]="alteracaoNaoPermitida()"></decimal-input>
+      
+                  <decimal-input [formGroup]="demaisServicosForm" placeholder="Valor total" [maxIntegerChars]="6" disabled
+                    name="vibradorValorTotal" [model]="vibradorValorTotal" [decimalChars]="2"></decimal-input>
+
+              </mat-card>
+              <br />
+              
+            </form>
+            <!---->
+            <div class="form-container" *ngIf="demaisServicosShowContent">
+              <h4>DEMAIS SERVIÇOS</h4>
+              <mat-accordion class="expansion-panel-headers-align">
+                <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                <mat-expansion-panel (opened)="itemDemaisServicos = item;" *ngFor="let item of proposta.obra.obraDemaisServicos">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>{{ formataValor(item.quantidade, item.numeroDeCasasDecimais, false)  + ' ' + item.unidade.sigla + ' - ' + formataMoeda(valorItemDemaisServicos(item)) }}</mat-panel-title>
+                    <mat-panel-description>{{ item.mercadoria.descricao }}</mat-panel-description>
+                  </mat-expansion-panel-header>
+                  
+                  <div>Frequencia Cobrança: <b>{{ frequenciaCobrancaFormatter(item.frequenciaDeCobranca) }}</b></div>
+                  <div>Forma Cobrança: <b>{{ formaDeCobrancaFormatter(item.formaDeCobranca) }}</b></div>
+                  <div>Valor Unitário: <b>{{ formataMoeda(item.precoProposto) }}</b></div>
+                  
+                  <mat-action-row>
+                    <confirm-dialog-button buttonText="Excluir" buttonColor="warn" icon="delete" [disabled]="alteracaoNaoPermitida()"
+                      dialogMessage="Confirma exclusão deste item?" (confirm)="removeDemaisServicos(item)"></confirm-dialog-button>
+                    <button mat-button color="accent" (click)="openDemaisServicosModal(demaisServicosModal, updateDemaisServicos, closeModal, item)">
+                      <mat-icon>edit</mat-icon>Editar
+                    </button>
+                  </mat-action-row>
+
+                </mat-expansion-panel>
+              </mat-accordion>
+
+              <mat-action-row>
+                <button mat-button disabled>Valor total: {{ formataMoeda(valorTotalDemaisServicos()) }}</button>
+              </mat-action-row>
+
+              <mat-action-row>
+                <button mat-button color="accent" (click)="openDemaisServicosModal(demaisServicosModal, addDemaisServicos)"
+                  [disabled]="bombaForm.invalid || alteracaoNaoPermitida()"><mat-icon>add_circle</mat-icon>ADICIONAR NOVO</button>
+              </mat-action-row>
+
+              <div #demaisServicosModalVCR></div>
+              <ng-template #demaisServicosModal>
+                
+                <div class="form-container modal" [hidden]="!modalIsOpen">
+                  <h2 cdkFocusRegionstart>DEMAIS SERVIÇOS</h2>
+                    
+                  <form [formGroup]="demaisServicosItemForm" class="form-container">
+                    <div *ngIf="demaisServicoAtualTemProgramacao">
+                      <mat-error>*Já existe programação para este item</mat-error>
+                      <br>
+                    </div>
+
+                    <simple-input [formGroup]="demaisServicosItemForm" placeholder="Código" name="codigo" disabled
+                        [model]="itemDemaisServicos.codigo"></simple-input>
+
+                    <suggest-combo [formGroup]="demaisServicosItemForm" placeholder="Usina" name="usina" [list]="usinas"
+                        [(model)]="itemDemaisServicos.usinaEntrega" [formatter]="usinaFormatter" disabled></suggest-combo>
+
+                    <suggest-combo [formGroup]="demaisServicosItemForm" placeholder="Produto/Serviço" name="mercadoria" [list]="mercadorias" required [disabled]="alteracaoNaoPermitida() || demaisServicoAtualTemProgramacao"
+                        [(model)]="itemDemaisServicos.mercadoria" (modelChange)="carregaItemDemaisServicos($event)" [formatter]="mercadoriaFormatter"></suggest-combo>
+
+                    <suggest-combo [formGroup]="demaisServicosItemForm" placeholder="Unidade" name="unidade" [list]="unidades"
+                        [(model)]="itemDemaisServicos.unidade" [formatter]="unidadeFormatter" disabled></suggest-combo>
+
+                    <suggest-combo [formGroup]="demaisServicosItemForm" placeholder="Frequência Cobrança" name="frequenciaDeCobranca" [list]="frequenciaCobrancaLista"
+                        [(model)]="itemDemaisServicos.frequenciaDeCobranca" [formatter]="frequenciaCobrancaFormatter" disabled></suggest-combo>
+
+                    <suggest-combo [formGroup]="demaisServicosItemForm" placeholder="Forma Cobrança" name="formaDeCobranca" [list]="formaDeCobrancaLista"
+                        [(model)]="itemDemaisServicos.formaDeCobranca" [formatter]="formaDeCobrancaFormatter" disabled></suggest-combo>
+
+                    <decimal-input [formGroup]="demaisServicosItemForm" placeholder="Preço unitário sugerido" name="precoSugerido"
+                        [(model)]="itemDemaisServicos.precoSugerido" [maxIntegerChars]="8" [decimalChars]="2" disabled></decimal-input>
+
+                    <decimal-input [formGroup]="demaisServicosItemForm" placeholder="Preço unitário proposto" name="precoProposto" required [disabled]="alteracaoNaoPermitida()"
+                        [(model)]="itemDemaisServicos.precoProposto" [maxIntegerChars]="8" [decimalChars]="2" [validator]="demaisServicosValorMinimoValidator"></decimal-input>
+
+                    <decimal-input [formGroup]="demaisServicosItemForm" placeholder="Quantidade" name="quantidade" required [disabled]="alteracaoNaoPermitida()"
+                        [(model)]="itemDemaisServicos.quantidade" [maxIntegerChars]="8" [decimalChars]="itemDemaisServicos.numeroDeCasasDecimais"></decimal-input>
+
+                    <mat-checkbox formControlName="atualizaEstoque" [(ngModel)]="itemDemaisServicos.atualizaEstoque" disabled>
+                      Atualiza estoque
+                    </mat-checkbox>
+
+                    <mat-action-row>
+                      <button mat-button color="accent" (click)="confirmDemaisServicos(itemDemaisServicos)" [disabled]="demaisServicosItemForm.invalid || alteracaoNaoPermitida()">Confirma</button>
+                      <button mat-button color="warn" (click)="cancelDemaisServicos()">Cancela</button>
+                    </mat-action-row>
+
+                  </form>
+                  
+                </div>
+                  
+              </ng-template>
+            </div>
+          </wizard-step>
+          <!-- / ABA DEMAIS SERVIÇOS  -->
+
+          <!-- ABA TAXAS EXTRAS  -->
+          <wizard-step title="Taxas extras" icon="note_add" [stepForm]="taxasExtrasForm" (onStepSelected)="onTaxaExtraStepSelected()"
+              (onNext)="onTaxasExtrasNext()" (onPrevious)="onTaxasExtrasPrevious()">
+            <form [formGroup]="taxasExtrasForm" class="form-container">
+              <simple-input [formGroup]="taxasExtrasForm" name="obrigaResolverReprovados"
+                [model]="''" required hidden *ngIf="temObraTaxaReprovada || abaObrigatoriaRevisarTaxaExtra"></simple-input>
+            </form>
+
+            <mat-error *ngIf="temObraTaxaReprovada">
+              Obrigatório editar a(s) taxa(s) reprovada(s) comercialmente!
+            </mat-error>
+
+            <mat-card>
+              <div *ngFor="let item of proposta.obra.obraTaxas">
+                
+                <mat-checkbox [ngModel]="isTaxaSelecionada(item)" (ngModelChange)="setTaxaSelecionada(item, $event)"
+                    [disabled]="alteracaoNaoPermitida() || taxaAtualZmrc(item)" color="primary"></mat-checkbox>
+                
+                <button mat-icon-button color="primary" [disabled]="alteracaoNaoPermitida() || !item.selecionada || taxaAtualZmrcENaoUsaZMRC(item)"
+                    (click)="openTaxaModal(taxaModal, updateTaxa, closeModal, item)">
+                  <mat-icon matTooltip="Editar">edit</mat-icon>
+                </button>
+                <button mat-icon-button [disabled]="alteracaoNaoPermitida() || !item.selecionada || taxaAtualZmrcENaoUsaZMRC(item)">
+                  <mat-icon matTooltip="Status aprovação comercial: {{taxaStatusAprovacao(item).descricao}}"
+                    [style.color]="taxaStatusAprovacao(item).color">monetization_on</mat-icon>
+                </button>
+
+                <span [ngClass]="classTaxaExtra(item)" style="padding-left: 5px;">{{ item.sequencia + ' - ' + item.descricao }}</span>
+                <br/>
+
+              </div>
+            </mat-card>
+
+            <br/>
+            <div class="obra-taxa-personalizada" *ngIf="temObraTaxaPersonalizada">*Taxa personalizada</div>
+            <!--<div class="obra-taxa-reprovada" *ngIf="temObraTaxaReprovada">*Taxa reprovada comercialmente</div>-->
+            <br/>
+
+            <div #taxaModalVCR></div>
+              <ng-template #taxaModal>
+                
+                <div class="form-container modal" [hidden]="!modalIsOpen">
+                  <h2 cdkFocusRegionstart>{{ taxa.tipo }}</h2>
+                    
+                  <form [formGroup]="taxaItemForm" class="form-container">
+
+                    <simple-input [formGroup]="taxaItemForm" placeholder="Usina" name="usina"
+                      [model]="taxa.usinaCodigo" disabled></simple-input>
+                    
+                    <!--
+                    <div *ngIf="!taxaValidadeEhPorPeriodo(taxa)">
+                      <date-picker [formGroup]="taxaItemForm" placeholder="Data início vigencia"
+                        [(model)]="taxa.dataInicioVigencia" name="dataInicioVigencia" required></date-picker>
+                    </div>
+                    <div *ngIf="taxaValidadeEhPorPeriodo(taxa)">
+                      <date-picker [formGroup]="taxaItemForm" placeholder="Período de"
+                        [(model)]="taxa.periodoDe" name="periodoDe" required></date-picker>
+                      <date-picker [formGroup]="taxaItemForm" placeholder="Período até"
+                        [(model)]="taxa.periodoAte" name="periodoAte" required></date-picker>
+                    </div>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Tipo pessoa" name="tipoPessoa" [(model)]="taxa.tipoPessoa"
+                      [formatter]="taxaTipoPessoaFormatter" [list]="taxaOpcoesTipoPessoaCodigos"></select-combo>
+                    -->
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Quando" name="quandoDe" required [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#2')"
+                      [(model)]="taxa.quandoDe" [list]="taxaOpcoesQuandoDe" *ngIf="exibirCamposHorario(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Quando Operação" name="quandoOperacao" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#3')"
+                      [(model)]="taxa.quandoOperacao" [list]="taxaOpcoesQuandoOperacao" *ngIf="exibirCamposHorario(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Quando" name="quandoAte" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#4')"
+                      [(model)]="taxa.quandoAte" [list]="taxaOpcoesQuandoAte" *ngIf="exibirCamposHorario(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Antes das" name="horarioAntesdas" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#17')"
+                      [(model)]="taxa.horarioAntesdas" [list]="taxaOpcoesHorario" *ngIf="exibirCamposHorario(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Após as" name="horarioAposAs" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#5')"
+                      [(model)]="taxa.horarioAposAs" [list]="taxaOpcoesHorario" *ngIf="exibirCamposHorario(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Cobrar por" name="cobrarVolume" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#6')"
+                      [(model)]="taxa.cobrarVolume" [list]="taxaOpcoesCobrarVolume" *ngIf="exibirCamposVolume(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="{{ taxa.cobrarVolume }} a (M3)" name="volume" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#7')"
+                      [(model)]="taxa.volume" [list]="taxaOpcoesVolume" *ngIf="exibirCamposVolume(taxa)"></select-combo>
+
+                    <integer-input [formGroup]="taxaItemForm" [placeholder]="labelAcimaDe(taxa)" name="acimaDe" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#18')"
+                      [(model)]="taxa.acimaDe" required *ngIf="exibirCampoAcimaDe(taxa)"></integer-input>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Tipo do valor" name="valorTipo" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#8')"
+                      [(model)]="taxa.valorTipo" [list]="taxaOpcoesTipoValor"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Antecedência" name="antecedencia" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#19')"
+                      [(model)]="taxa.antecedencia" *ngIf="exibirCampoAntecedencia(taxa)" [list]="taxaOpcoesAntecedencia"></select-combo>
+
+                    <integer-input [formGroup]="taxaItemForm" placeholder="Quantidade" name="quantidade"
+                      [(model)]="taxa.quantidade" *ngIf="exibirCampoQuantidade(taxa)" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#20')"></integer-input>
+
+                    <decimal-input [formGroup]="taxaItemForm" placeholder="Valor" name="valor"
+                      [(model)]="taxa.valor" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#9')"></decimal-input>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Valor por" name="valorPor"
+                      [(model)]="taxa.valorPor" [list]="taxaOpcoesValorPor" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#10')"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Do slump" name="slumpDe" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#15')"
+                      [(model)]="taxa.slumpDe" [list]="taxaOpcoesSlump" *ngIf="exibirCamposSlump(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Para slump" name="slumpPara" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#16')"
+                      [(model)]="taxa.slumpPara" [list]="taxaOpcoesSlump" *ngIf="exibirCamposSlump(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Da pedra" name="pedraDe" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#11')"
+                      [(model)]="taxa.pedraDe" [list]="taxaOpcoesPedra" *ngIf="exibirCamposPedra(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Para pedra" name="pedraPara" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#12')"
+                      [(model)]="taxa.pedraPara" [list]="taxaOpcoesPedra" *ngIf="exibirCamposPedra(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Da resistência" name="resistenciaDe" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#13')"
+                      [(model)]="taxa.resistenciaDe" [list]="taxaOpcoesResistenciaDe" *ngIf="exibirCamposResistencia(taxa)"></select-combo>
+
+                    <select-combo [formGroup]="taxaItemForm" placeholder="Para resistência" name="resistenciaPara" [disabled]="alteracaoNaoPermitida() || disableCampoTaxaExtra(taxa, '#14')"
+                      [(model)]="taxa.resistenciaPara" [list]="taxaOpcoesResistenciaPara" *ngIf="exibirCamposResistencia(taxa)"></select-combo>
+
+                    <simple-input [formGroup]="taxaItemForm" placeholder="Texto final" name="descricao"
+                      [model]="montaDescricaoTaxaExtra(taxa)" multiline disabled bold></simple-input>
+
+                    <br/>
+
+                    <mat-action-row>
+                      <button mat-button color="accent" (click)="confirmTaxa(taxa)" [disabled]="taxaItemForm.invalid || alteracaoNaoPermitida()">Confirma</button>
+                      <button mat-button color="warn" (click)="cancelTaxa()">Cancela</button>
+                    </mat-action-row>
+
+                  </form>
+                  
+                </div>
+                  
+              </ng-template>
+
+          </wizard-step>
+          <!-- / ABA TAXAS EXTRAS  -->
+
+          <!-- ABA PAGAMENTO  -->
+          <wizard-step title="Pagamento" icon="monetization_on" [stepForm]="pagamentoForm"
+              (onPrevious)="onPagamentoPrevious()" (onStepSelected)="onPagamentoStepSelected()">
+            <form [formGroup]="pagamentoForm" class="form-container">
+
+              <integer-input [formGroup]="pagamentoForm" placeholder="Qtd.Pagamentos" name="qtdPagamentos" hidden
+                [model]="proposta.obra.obraPagamentos.length" [required]="isStatusPropostaAprovado()"></integer-input>
+
+              <integer-input [formGroup]="pagamentoForm" placeholder="alteracaoNaoPermitida" name="alteracaoNaoPermitida" hidden
+                [model]="0" [required]="alteracaoNaoPermitida()"></integer-input>
+
+            </form>
+
+            <div class="form-container" *ngIf="pagamentoShowContent">
+              <h4>PAGAMENTOS</h4>
+
+              <mat-accordion class="expansion-panel-headers-align">
+                <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                <mat-expansion-panel (opened)="pagamento = item;" *ngFor="let item of proposta.obra.obraPagamentos">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>{{ formataMoeda(item.valor) }}</mat-panel-title>
+                    <mat-panel-description>{{ pagamentoString(item) }}</mat-panel-description>
+                  </mat-expansion-panel-header>
+                  
+                  <div>Condição de pagamento: <b>{{item.condicaoPagamento.descricao}}</b></div>
+                  <div>Tipo de cobrança: <b>{{item.tipoCobranca.descricao}}</b></div>
+                  <div>Valor: <b>{{ formataMoeda(item.valor) }}</b></div>
+                  <div *ngIf="isPagamentoAprovado(item)">Id. aprovação: <b>{{ item.idAprovacao }}</b></div>
+                  <div *ngIf="isBoletoImpresso(item)">Data impressão boleto: <b>{{ dataHoraImpressaoBoleto(item) }}</b></div>
+                  <div *ngIf="isPagamentoInativo(item)"> <mat-error>Pagamento Inativo!</mat-error></div>
+
+                  <mat-divider></mat-divider>
+                  <div class="float-right">
+                    <button mat-button color="accent" (click)="openSolicitaPagamentoCartaoModal()" *ngIf="possuiIntegracaoCartao && ['CC','CD'].includes(item.tipoCobranca.forma)">
+                      <mat-icon>send</mat-icon>Solicitar Pagamento
+                    </button>
+                    <confirm-dialog-button buttonText="Excluir" buttonColor="warn" icon="delete" [disabled]="isPagamentoAprovado(item) || isBoletoImpresso(item) || alteracaoNaoPermitida() || isPagamentoInativo(item)"
+                      dialogMessage="Confirma exclusão do pagamento?" (confirm)="removePagamento(item)"></confirm-dialog-button>
+                    <button mat-button color="accent" *ngIf="temDetalhamento(item)"
+                        (click)="openPagamentoDetalheModal(pagamentoDetalheModal, updatePagamento, closeModal, item)">
+                      <mat-icon>format_list_bulleted</mat-icon>Detalhamento
+                    </button>
+                    <button mat-button color="accent" [disabled]="isPagamentoAprovado(item) || isBoletoImpresso(item) || alteracaoNaoPermitida() || isPagamentoInativo(item)"
+                        (click)="openPagamentoModal(pagamentoModal, updatePagamento, closeModal, item)">
+                      <mat-icon>edit</mat-icon>Editar
+                    </button>   
+                  </div>
+
+                </mat-expansion-panel>
+              </mat-accordion>
+
+              <mat-error *ngIf="proposta.obra.obraPagamentos.length===0 && isStatusPropostaAprovado()">
+                  Obrigatório incluir pelo menos um pagamento!
+              </mat-error>
+
+              <mat-action-row>
+                <button mat-button disabled *ngIf="valorTotalPagamentosInativos() === 0">Valor total: {{ formataMoeda(valorTotalPagamentos()) }} </button>
+                <button mat-button disabled *ngIf="valorTotalPagamentosInativos() > 0">Valor total ativos: {{ formataMoeda(valorTotalPagamentos()) }} </button>
+                <button mat-button disabled *ngIf="valorTotalPagamentosInativos() > 0">Valor total pagamentos inativos: {{ formataMoeda(valorTotalPagamentosInativos()) }} </button>
+              </mat-action-row>
+
+              <mat-action-row>
+                <button mat-button color="accent" (click)="openPagamentoModal(pagamentoModal, addPagamento)"
+                  [disabled]="bombaForm.invalid || alteracaoNaoPermitida()"><mat-icon>add_circle</mat-icon>ADICIONAR NOVO PAGAMENTO</button>
+              </mat-action-row>
+
+              <div>
+                <button mat-button disabled>Valor concreto: {{ formataMoeda(valorTotalTracos()) }}</button>
+                <button mat-button disabled>Valor bomba: {{ formataMoeda(valorTotalBombas()) }}</button>
+                <button mat-button disabled>Valor demais serviços: {{ formataMoeda(valorTotalDemaisServicos()) }}</button>
+                <button mat-button disabled>Valor extras: {{ formataMoeda(valorExtras()) }}</button>
+                <button mat-button disabled>Valor total: {{ formataMoeda(valorTotalProposta()) }}</button>
+              </div>
+              
+              <div #pagamentoItemModalVCR></div>
+              <ng-template #pagamentoModal>
+                
+                <div class="form-container modal" [hidden]="!modalIsOpen">
+                  <h2 cdkFocusRegionstart>PAGAMENTO</h2>
+                    
+                  <form [formGroup]="pagamentoItemForm" class="form-container">
+                    
+                    <suggest-combo [formGroup]="pagamentoItemForm" [placeholder]="placeholderCondicaoPagamento" name="pagamentoCondicao" required
+                      [model]="pagamento.condicaoPagamento" (modelChange)="condicaoPagamentoChange($event)" (focusout)="carregaTiposCobranca()"
+                      [formatter]="condicaoPagamentoFormatter" [list]="condicoesPagamento" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+                    <suggest-combo [formGroup]="pagamentoItemForm" [placeholder]="placeholderTipoCobranca" name="pagamentoTipoCobranca" required
+                      [(model)]="pagamento.tipoCobranca" [formatter]="tipoCobrancaFormatter" [list]="tiposCobranca" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+                    <decimal-input [formGroup]="pagamentoItemForm" placeholder="Valor" [maxIntegerChars]="9" required
+                      name="pagamentoValor" [(model)]="pagamento.valor" [disabled]="alteracaoNaoPermitida()"></decimal-input>
+
+                    <mat-action-row>
+                      <button mat-button color="accent" (click)="confirmPagamento(pagamento)" [disabled]="pagamentoItemForm.invalid || alteracaoNaoPermitida()">Confirma</button>
+                      <button mat-button color="warn" (click)="cancelPagamento()">Cancela</button>
+                    </mat-action-row>
+
+                  </form>
+                  
+                </div>
+                  
+              </ng-template>
+
+              <div #pagamentoItemDetalheModalVCR></div>
+              <ng-template #pagamentoDetalheModal>
+                
+                <div class="form-container modal" [hidden]="!modalIsOpen">
+                  <h2 cdkFocusRegionstart>PAGAMENTO / DETALHAMENTO</h2>
+                    
+                  <form [formGroup]="pagamentoItemDetalheForm" class="form-container">
+                    
+                    <mat-accordion class="expansion-panel-headers-align">
+                      <mat-expansion-panel class="remove-out-padding-left-right"><!-- NÃO REMOVER --></mat-expansion-panel>
+                      <mat-expansion-panel class="remove-out-padding-left-right" *ngFor="let detalhe of pagamento.detalhes">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>{{ formataMoeda((detalhe.valor || 0)) }}</mat-panel-title>
+                          <mat-panel-description>{{ pagamento.tipoCobranca.descricao }}</mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <div *ngIf="['CC','CD'].includes(pagamento.tipoCobranca.forma)">
+                          
+                          <suggest-combo [formGroup]="pagamentoItemDetalheForm" placeholder="Bandeira" [disabled]="alteracaoNaoPermitida()"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Bandeira" required
+                            [(model)]="detalhe.bandeira" [formatter]="bandeiraFormatter" [list]="bandeiras"></suggest-combo>
+
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número cartão" [maxIntegerChars]="4" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}NumeroCartao" [(model)]="detalhe.numeroCartao"></integer-input>
+
+                          <date-picker [formGroup]="pagamentoItemDetalheForm" placeholder="Data transação" [(model)]="detalhe.dataTransacao"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}DataTransacao" [disabled]="alteracaoNaoPermitida()" required></date-picker>
+
+                          <decimal-input [formGroup]="pagamentoItemDetalheForm" placeholder="Valor" [maxIntegerChars]="9" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Valor" [(model)]="detalhe.valor"></decimal-input>
+                          
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número de parcelas" [maxIntegerChars]="2" disabled
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}QuantidadeParcelas" [(model)]="detalhe.quantidadeParcelas"></integer-input>
+
+                          <simple-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número autorização" [minLength]="3" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}NumeroAutorizacao" [(model)]="detalhe.numeroAutorizacao"></simple-input>
+
+                        </div>
+
+                        <div *ngIf="pagamento.tipoCobranca.forma==='DP'">
+
+                          <date-picker [formGroup]="pagamentoItemDetalheForm" placeholder="Data depósito" [(model)]="detalhe.dataDeposito"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}DataDeposito" [disabled]="alteracaoNaoPermitida()" required></date-picker>
+
+                          <suggest-combo [formGroup]="pagamentoItemDetalheForm" placeholder="Portador"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Portador" [disabled]="alteracaoNaoPermitida()" required
+                            [(model)]="detalhe.portador" [formatter]="portadorFormatter" [list]="portadores"></suggest-combo>
+
+                          <simple-input [formGroup]="pagamentoItemDetalheForm" placeholder="Banco" disabled
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}PortadorBanco" *ngIf="detalhe.portador"
+                            [model]="bancoFormatter(detalhe.portador.conta)"></simple-input>
+
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Agência" [maxIntegerChars]="5" disabled
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}PortadorBancoAgencia" *ngIf="detalhe.portador"
+                            [model]="detalhe.portador.conta.numeroAgencia"></integer-input>
+
+                          <simple-input [formGroup]="pagamentoItemDetalheForm" placeholder="Conta" disabled
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}PortadorBancoConta" *ngIf="detalhe.portador"
+                            [model]="numeroContaFormatter(detalhe.portador.conta)"></simple-input>
+
+                          <simple-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número terminal"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}NumeroTerminal"
+                            [(model)]="detalhe.numeroTerminal" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+                          <decimal-input [formGroup]="pagamentoItemDetalheForm" placeholder="Valor depósito" [maxIntegerChars]="9" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Valor" [(model)]="detalhe.valor"></decimal-input>
+
+                        </div>
+
+                        <div *ngIf="['CH','CP'].includes(pagamento.tipoCobranca.forma)">
+                          
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Código oficial banco" [maxIntegerChars]="3" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}BancoCodigoOficial" [(model)]="detalhe.bancoCodigoOficial"></integer-input>
+
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Agência" [maxIntegerChars]="8" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}BancoAgencia" [(model)]="detalhe.bancoAgencia"></integer-input>
+
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número conta" [maxIntegerChars]="10" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}BancoContaNumero" [(model)]="detalhe.bancoContaNumero"></integer-input>
+
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="DV Conta" [maxIntegerChars]="1" [disabled]="alteracaoNaoPermitida()"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}BancoContaDV" [(model)]="detalhe.bancoContaDV"></integer-input>
+
+                          <integer-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número cheque" [maxIntegerChars]="8" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}NumeroCheque" [(model)]="detalhe.numeroCheque"></integer-input>
+
+                          <date-picker [formGroup]="pagamentoItemDetalheForm" placeholder="Bom para" [(model)]="detalhe.dataBomPara"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}DataBomPara" [disabled]="alteracaoNaoPermitida()" required></date-picker>
+                          
+                          <date-picker [formGroup]="pagamentoItemDetalheForm" placeholder="Data Recebimento" [(model)]="detalhe.dataRecebimento"
+                          name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}DataRecebimento" [disabled]="alteracaoNaoPermitida()" required></date-picker>
+                          
+                          <decimal-input [formGroup]="pagamentoItemDetalheForm" placeholder="Valor" [maxIntegerChars]="9" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Valor" [(model)]="detalhe.valor"></decimal-input>
+                          
+                          <simple-input [formGroup]="pagamentoItemDetalheForm" placeholder="Observação/Emitente" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Observacao" [(model)]="detalhe.observacao"></simple-input>
+
+                        </div>
+
+                        <div *ngIf="pagamento.tipoCobranca.forma==='DN'">
+
+                          <date-picker [formGroup]="pagamentoItemDetalheForm" placeholder="Data pagamento" [(model)]="detalhe.dataPagamento"
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}DataPagamento" [disabled]="alteracaoNaoPermitida()" required></date-picker>
+
+                          <simple-input [formGroup]="pagamentoItemDetalheForm" placeholder="Número recibo" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}NumeroRecibo" [(model)]="detalhe.numeroRecibo"></simple-input>
+
+                          <decimal-input [formGroup]="pagamentoItemDetalheForm" placeholder="Valor" [maxIntegerChars]="9" [disabled]="alteracaoNaoPermitida()" required
+                            name="pagamentoDetalhe{{pagamento.detalhes.indexOf(detalhe)}}Valor" [(model)]="detalhe.valor"></decimal-input>
+
+                        </div>
+
+                        <mat-action-row>
+                          <confirm-dialog-button buttonText="Excluir detalhamento" buttonColor="warn" icon="delete" [disabled]="isPagamentoAprovado(pagamento) || alteracaoNaoPermitida()"
+                            dialogMessage="Confirma exclusão do detalhamento?" (confirm)="removePagamentoDetalhe(pagamento, detalhe)">
+                          </confirm-dialog-button>
+                        </mat-action-row>
+                        
+                      </mat-expansion-panel>
+                    </mat-accordion>
+
+                    <mat-action-row>
+                      <button mat-button color="basic" (click)="addPagamentoDetalhe(pagamento)" [disabled]="isPagamentoAprovado(pagamento) || alteracaoNaoPermitida()">
+                        <mat-icon>add_circle</mat-icon>ADICIONAR NOVO DETALHAMENTO
+                      </button>
+                    </mat-action-row>
+
+                    <mat-action-row>
+                      <button mat-button color="accent" (click)="confirmPagamento(pagamento)" [disabled]="pagamentoItemDetalheForm.invalid || isPagamentoAprovado(pagamento) || alteracaoNaoPermitida()">Confirma</button>
+                      <button mat-button color="warn" (click)="cancelPagamento()">Cancela</button>
+                    </mat-action-row>
+
+                  </form>
+                  
+                </div>
+                  
+              </ng-template>
+
+            </div>
+          </wizard-step>
+          <!-- / ABA PAGAMENTO  -->
+
+        </wizard>
+
+        <div #solicitaAprovacoesModalVCR></div>
+        <ng-template #solicitaAprovacoesModal>
+          
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+            <h2 cdkFocusRegionstart>INCONSISTÊNCIAS</h2>
+            
+            <form [formGroup]="solicitaAprovacoesForm" class="form-container">
+              <div *ngFor="let item of solicitaAprovacaoTracos">
+                <mat-card class="remove-out-padding-left-right">
+                  <div>Traço: <b>{{ tracoString(item.obraTraco) }}</b></div>
+                  <mat-error>{{ item.mensagem }}</mat-error>
+                  <br/>
+  
+                  <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço unitário tabela" [name]="'tracoPrecoUnitarioTabela-'+item.obraTraco.sequencia"
+                    [model]="item.obraTraco.m3PrecoTabela" [maxIntegerChars]="4" showThousandSeparator disabled></decimal-input>
+  
+                  <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço unitário proposto" [name]="'tracoPrecoUnitarioProposto-'+item.obraTraco.sequencia"
+                    [(model)]="item.obraTraco.m3PrecoProposto" [maxIntegerChars]="4" showThousandSeparator required [disabled]="possuiContratoReajuste(item.obraTraco)"></decimal-input>
+
+                  <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço ultimo reajuste" [name]="'tracoPrecoReajuste-'+item.obraTraco.sequencia"
+                  [model]="precoUltimoContratoReajuste(item.obraTraco)" [maxIntegerChars]="4" *ngIf="possuiContratoReajuste(item.obraTraco)" showThousandSeparator disabled></decimal-input>
+
+                  <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço unitário reajustado" [name]="'tracoPrecoReajustadoProposto-'+item.obraTraco.sequencia"
+                  [(model)]="item.obraTraco.precoReajustadoAtual" (modelChange)="atualizaCustoServicoReajustadoItem(item.obraTraco)" [maxIntegerChars]="4" showThousandSeparator required *ngIf="possuiContratoReajuste(item.obraTraco)"></decimal-input>
+  
+                  <simple-input [formGroup]="solicitaAprovacoesForm" [placeholder]="'% ' + labelDescontoAcrescimoTraco(item)" [name]="'tracoDescontoPercentual-'+item.obraTraco.sequencia"
+                    [model]="percentualDescontoAcrescimoFormatadoTraco(item.obraTraco)" disabled *ngIf="!possuiContratoReajuste(item.obraTraco)"></simple-input>
+
+                  <simple-input [formGroup]="solicitaAprovacoesForm" [placeholder]="'% ' + labelDescontoAcrescimoTracoReajuste(item) + ' Preço Reajustado'" [name]="'tracoDescontoReajustadoPercentual-'+item.obraTraco.sequencia"
+                    [model]="percentualDescontoAcrescimoFormatadoTracoReajustado(item.obraTraco)" disabled *ngIf="possuiContratoReajuste(item.obraTraco)"></simple-input>
+  
+                  <simple-input [formGroup]="solicitaAprovacoesForm" placeholder="Justificativa desconto" [name]="'tracoDescontoJustificativa-'+item.obraTraco.sequencia"
+                    [(model)]="item.obraTraco.justificativa" [required]="isJustificativaTracoRequired(item.obraTraco)"></simple-input>
+  
+                </mat-card>
+              </div>
+              
+              <div *ngFor="let item of solicitaAprovacaoBombas">
+                <mat-card class="remove-out-padding-left-right">
+                  <div>Bomba: <b>{{ bombaString(item.obraBomba) }}</b></div>
+                  <mat-error>{{ item.mensagem }}</mat-error>
+                  <br/>
+
+                  <div *ngIf="utilizaCobrancaPorM3(item.obraBomba)">
+                    <mat-card>
+                      <h4>Cobrança por M3 bombeado</h4>
+                          
+                      <div style="max-width: 50%; display: inline-grid; margin-right: 5px;">
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço tabela - Taxa mínima" [maxIntegerChars]="5"
+                          [name]="'bombaPrecoTabelaTaxaMinima-'+item.obraBomba.sequencia" [model]="item.obraBomba.taxaMinimaPrecoTabela" disabled></decimal-input>
+        
+                        <integer-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço tabela - M3 até" [maxIntegerChars]="3"
+                          [name]="'bombaPrecoTabelaM3ate-'+item.obraBomba.sequencia" [model]="item.obraBomba.m3TabelaAte" disabled></integer-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço tabela - Preço por M3" [maxIntegerChars]="4"
+                          [name]="'bombaPrecoTabelaPorM3-'+item.obraBomba.sequencia" [model]="item.obraBomba.m3PrecoTabela" disabled></decimal-input>
+                      </div>
+
+                      <div style="max-width: 50%; display: inline-grid; margin-right: 5px;">
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço proposto - Taxa mínima" [maxIntegerChars]="5"
+                          [name]="'bombaPrecoPropostoTaxaMinima-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.taxaMinimaPrecoProposto" [disabled]="bloqueiaCampoTaxaMinimaNoPrecoDeBomba || possuiReajusteBomba(bomba)" required></decimal-input>
+        
+                        <integer-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço proposto - M3 até" [maxIntegerChars]="3"
+                          [name]="'bombaPrecoPropostoM3ate-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.m3PropostoAte" (modelChange)="taxaMinimaPrecoPropostoPorM3(item.obraBomba)" [validator]="m3AtePrecoPropostoValorMinimoValidator(item.obraBomba)" [disabled]="possuiReajusteBomba(bomba)" required></integer-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço proposto - Preço por M3" [maxIntegerChars]="4"
+                          [name]="'bombaPrecoPropostoPorM3-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.m3PrecoProposto" (modelChange)="taxaMinimaPrecoPropostoPorM3(item.obraBomba)" [disabled]="possuiReajusteBomba(bomba)" required></decimal-input>
+                      </div>
+
+                      <div style="max-width: 50%; display: inline-grid;" *ngIf="possuiReajusteBomba(bomba)">
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço reajustado - Taxa mínima" [maxIntegerChars]="5"
+                          [name]="'bombaPrecoReajustadoTaxaMinima-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.taxaMinimaReajustadaAtual" [disabled]="bloqueiaCampoTaxaMinimaNoPrecoDeBomba || !possuiReajusteBomba(bomba)" required></decimal-input>
+        
+                        <integer-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço reajustado - M3 até" [maxIntegerChars]="3"
+                          [name]="'bombaPrecoReajustadoM3ate-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.m3ReajustadoAteAtual" (modelChange)="taxaMinimaPrecoReajustadoPorM3(item.obraBomba)" [validator]="m3AtePrecoPropostoValorMinimoValidator(item.obraBomba)" [disabled]="!possuiReajusteBomba(bomba)" required></integer-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço reajustado - Preço por M3" [maxIntegerChars]="4"
+                          [name]="'bombaPrecoReajustadoPorM3-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.m3PrecoReajustadoAtual" (modelChange)="taxaMinimaPrecoReajustadoPorM3(item.obraBomba)" [disabled]="!possuiReajusteBomba(bomba)" required></decimal-input>
+                      </div>
+
+                      <simple-input [formGroup]="solicitaAprovacoesForm" [placeholder]="'% ' + labelDescontoAcrescimoBomba(item.obraBomba)  + ' de taxa mínima sobre tabela'" [name]="'bombaDescontoPercentual-'+item.obraBomba.sequencia"
+                        [model]="percentualDescontoAcrescimoFormatadoBomba(item.obraBomba)" disabled></simple-input>
+
+                      <simple-input [formGroup]="solicitaAprovacoesForm" [placeholder]="'% ' + labelDescontoAcrescimoBomba(bomba) + ' de M3 sobre tabela'" name="'bombaDescontoPercentualM3-'+item.obraBomba.sequencia"
+                        [model]="percentualDescontoAcrescimoFormatadoBombaM3(item.obraBomba)" disabled></simple-input>
+
+                    </mat-card>
+
+                    <br/>
+                  </div>
+
+                  <div *ngIf="utilizaCobrancaPorHora(item.obraBomba)">
+                    <mat-card>
+                      <h4>Cobrança por Hora</h4>
+                          
+                      <div style="max-width: 50%; display: inline-grid;">
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço tabela - Taxa mínima" [maxIntegerChars]="5"
+                          [name]="'bombaPrecoTabelaHoraTaxaMinima-'+item.obraBomba.sequencia" [model]="item.obraBomba.horaTaxaMinimaPrecoTabela" disabled></decimal-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço tabela - Horas até" [maxIntegerChars]="3"
+                          [name]="'bombaPrecoTabelaHoraAte-'+item.obraBomba.sequencia" [model]="item.obraBomba.horaTabelaAte" disabled></decimal-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço tabela - Preço por hora" [maxIntegerChars]="4"
+                          [name]="'bombaPrecoTabelaPorHora-'+item.obraBomba.sequencia" [model]="item.obraBomba.horaPrecoTabela" disabled></decimal-input>
+                      </div>
+
+                      <div style="max-width: 50%; display: inline-grid;">
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço proposto - Taxa mínima" [maxIntegerChars]="5"
+                          [name]="'bombaPrecoPropostoHoraTaxaMinima-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.horaTaxaMinimaPrecoProposto" [disabled]="bloqueiaCampoTaxaMinimaNoPrecoDeBomba" required></decimal-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço proposto - Horas até" [maxIntegerChars]="3"
+                          [name]="'bombaPrecoPropostoHoraAte-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.horaPropostoAte" (modelChange)="taxaMinimaPrecoPropostoPorHora(item.obraBomba)" [validator]="horasAtePrecoPropostoValorMinimoValidator(item.obraBomba)" required></decimal-input>
+        
+                        <decimal-input [formGroup]="solicitaAprovacoesForm" placeholder="Preço proposto - Preço por hora" [maxIntegerChars]="4"
+                          [name]="'bombaPrecoPropostoPorHora-'+item.obraBomba.sequencia" [(model)]="item.obraBomba.horaPrecoProposto" (modelChange)="taxaMinimaPrecoPropostoPorHora(item.obraBomba)" required></decimal-input>
+                      </div>
+
+                      <simple-input [formGroup]="solicitaAprovacoesForm" [placeholder]="'%' + labelDescontoAcrescimoBombaHora(item.obraBomba)" [name]="'bombaHoraDescontoPercentual-'+item.obraBomba.sequencia"
+                        [model]="percentualDescontoAcrescimoFormatadoBombaHora(item.obraBomba)" disabled></simple-input>
+
+
+                    </mat-card>
+
+                    <br/>
+                  </div>
+  
+                  <simple-input [formGroup]="solicitaAprovacoesForm" placeholder="Justificativa desconto" [name]="'bombaDescontoJustificativa-'+item.obraBomba.sequencia"
+                    [(model)]="item.obraBomba.justificativa" [required]="isJustificativaBombaRequired(item.obraBomba)"></simple-input>
+  
+                </mat-card>
+              </div>
+              
+              <div *ngFor="let item of outrasInconsistencia">
+                <mat-card class="remove-out-padding-left-right">
+                  <mat-error>
+                    {{ item.key + ': ' + item.message }}
+                  </mat-error>
+                </mat-card>
+              </div>
+
+              <mat-action-row>
+                <button mat-button color="accent" *ngIf="solicitaAprovacaoTracos.length > 0 || solicitaAprovacaoBombas.length > 0"
+                  (click)="confirmSolicitaAprovacoes()" [disabled]="solicitaAprovacoesForm.invalid">Reenviar</button>
+                <button mat-button color="warn" (click)="cancelSolicitaAprovacoes()">Cancela</button>
+              </mat-action-row>
+
+            </form>
+            
+          </div>
+            
+        </ng-template>
+
+        <div #ebitdaTracoModalVCR></div>
+        <ng-template #ebitdaTracoModal>
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+            <h4>Análise de Margens</h4>
+            <mat-card>
+              <ebitda-obra-traco [obraTraco]="tracoExibicaoEbitda" [custoServico]="custoServico" [usinaEntrega]="proposta.obra.usinaEntrega" [obra]="proposta.obra">
+              </ebitda-obra-traco>
+            </mat-card>
+            <mat-action-row>
+              <button mat-button color="warn" (click)="closeModal()">Fechar</button>
+            </mat-action-row>
+          </div>
+        </ng-template>
+
+        <div #ebitdaBombaModalVCR></div>
+        <ng-template #ebitdaBombaModal>
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+            <h4>Análise de Margens</h4>
+            <mat-card>
+              <ebitda-obra-bomba [obraBomba]="bombaExibicaoEbitda" [custoServico]="custoServico" [quantidadeBombeada]="quantidadeBombeada()"> 
+              </ebitda-obra-bomba>
+            </mat-card>
+            <mat-action-row>
+              <button mat-button color="warn" (click)="closeModal()">Fechar</button>
+            </mat-action-row>
+          </div>
+        </ng-template>
+
+        <div #obraFrenteCadastroModalVCR></div>
+        <ng-template #obraFrenteCadastroModal>
+
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+      
+            <h2 cdkFocusRegionstart>Cadastro / Edição de Frente de obra</h2>
+
+            <form [formGroup]="obraFrenteForm" class="form-container">
+      
+              <simple-input [formGroup]="obraFrenteForm" placeholder="Nome Abreviado" [validator]="getEnderecoNomeValidator" name="enderecoNome" required [(model)]="cadObraFrente.enderecoNome"></simple-input>
+
+              <simple-input [formGroup]="obraFrenteForm" placeholder="CEP" name="enderecoCep" required 
+                [mask]="{mask: maskCEP}" minLength="8" [(model)]="cadObraFrente.enderecoCep" (modelChange)="cepChange($event)"
+                (focus)="onFocus()" (focusout)="onFocusout()" [errorMessages]="cepErrorMessages" [validator]="cepInexistenteValidator"
+              ></simple-input>
+
+              <simple-input [formGroup]="obraFrenteForm" placeholder="Logradouro" name="enderecoLogradouro" required [(model)]="cadObraFrente.enderecoLogradouro"></simple-input>
+              <integer-input [formGroup]="obraFrenteForm" placeholder="Número" [validator]="getEnderecoNumeroComplementoValidator" name="enderecoNumero" [(model)]="cadObraFrente.enderecoNumero"></integer-input>
+              <simple-input [formGroup]="obraFrenteForm" placeholder="Complemento" [validator]="getEnderecoNumeroComplementoValidator" name="enderecoComplemento" [(model)]="cadObraFrente.enderecoComplemento"></simple-input>
+              <simple-input [formGroup]="obraFrenteForm" placeholder="Bairro" name="enderecoBairro" required [(model)]="cadObraFrente.enderecoBairro"></simple-input>
+
+              <div *ngIf="cepMunicipioDifereProposta">
+                <mat-card class="obra-frente-aviso-card">
+                  <h4 style="color: #f44336;">É obrigatório que o CEP seja no mesmo múnicipio do endereço da Obra</h4>
+                </mat-card>
+              </div>
+              
+              <mat-action-row>
+                <button mat-button color="accent" (click)="confirmModal()" [disabled]="obraFrenteForm.invalid || cepMunicipioDifereProposta">Confirma</button>
+                <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+              </mat-action-row>
+      
+            </form>
+      
+          </div>
+      
+        </ng-template>
+
+    </div>
+    <!-- / CONTENT CARD -->
+
+</div>

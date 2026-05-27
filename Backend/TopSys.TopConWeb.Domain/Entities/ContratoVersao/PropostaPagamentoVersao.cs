@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TopSys.TopConWeb.Domain.Entities
+{
+    public class PropostaPagamentoVersao : PropostaPagamentoBase <PropostaPagamentoDetalheVersao>
+    {
+        public PropostaPagamentoVersao() : base() { }
+        public int NumeroVersao { get; set; }
+    }
+}

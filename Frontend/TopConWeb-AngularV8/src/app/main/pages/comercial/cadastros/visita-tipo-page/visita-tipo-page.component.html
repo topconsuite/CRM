@@ -1,0 +1,157 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>TIPOS DE VISITA</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+  
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg" fusePerfectScrollbar>
+  
+      <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+        [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+  
+        <view-selector [key]="'CAD-TIPO-VISITA'" [currentValue]="currentViewValue"
+        (selectedChange)="viewChanged($event)">
+  
+        </view-selector><br *ngIf="isSmallScreen"/>
+      
+        <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="CAD-TIPO-VISITA">
+  
+          <integer-input [formGroup]="filter.form" placeholder="Codigo" name="==|codigo"
+            [(model)]="filtro.codigo" [maxIntegerChars]="10"></integer-input>
+  
+          <suggest-combo [formGroup]="filter.form" placeholder="Descrição" name="tipoVisita"
+            (textChange)="filtrarTipoVisitaPorDescricao($event)" [list]="tiposVisita" [mustBeValid]="false"
+            [(model)]="filtro.tipoVisita" [formatter]="tipoVisitaFormatter"></suggest-combo>
+          <simple-input [formGroup]="filter.form" name="%=|descricao" [(model)]="filtro.descricao" hidden></simple-input>  
+        </filter>
+      </paginator>
+  
+      <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+        <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+      </mat-accordion>
+      
+      <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">    
+        <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+            <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+            <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+        </ng-container>
+  
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValue(element, hColumn) }}
+                      <mat-divider></mat-divider>
+                    </div>
+                  </div>
+              </div>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="edit">        
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-mini-fab color="accent" (click)="showModal(tipoVisitaModal, tipoVisitaModalVCR, addTipoVisita)">
+              <mat-icon matTooltip="Adicionar">add</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="accent" (click)="showModal(tipoVisitaModal, tipoVisitaModalVCR, updateTipoVisita, undefined, element)">
+              <mat-icon matTooltip="Editar">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+                dialogMessage="Confirma exclusão deste item?" (confirm)="deleteTipoVisita(element)"></confirm-dialog-button>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="expand">
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+              <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+            <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+          </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+        <tr mat-row *matRowDef="let element; columns: columnNames;"
+            class="element-row"
+            [class.expanded-row]="expandedElement === element"
+            (click)="expandedElement = expandedElement === element ? null : element">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+      </table>
+  
+      <div #tvModalVCR></div>
+      <ng-template #tipoVisitaModal>
+          
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+          <h2 cdkFocusRegionstart>TIPO VISITA</h2>
+              
+          <form [formGroup]="tipoVisitaForm" class="form-container">
+  
+            <simple-input [formGroup]="tipoVisitaForm" placeholder="Código" name="codigo" disabled
+            [model]="item.codigo"></simple-input>
+  
+            <simple-input [formGroup]="tipoVisitaForm" placeholder="Descrição" name="descricao"
+            [(model)]="item.descricao" [maxLength]="50" required></simple-input>
+
+            <div class="checkbox">
+              <mat-checkbox formControlName="ativo" [ngModel]="item.ativo" (change)="checkBoxChange($event,'ativo')">
+                Ativo
+              </mat-checkbox>
+            </div>
+      
+            <mat-action-row>
+                <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="item.descricao == '' || tipoVisitaForm.invalid">Confirma</button>
+                <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+            </mat-action-row>
+  
+          </form>
+          
+          </div>
+          
+      </ng-template>
+  
+      <div #colunasVisualizacaoModalVCR></div>
+      <ng-template #colunasVisualizacaoModal>
+          
+          <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+          <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+            
+            <div *ngFor="let column of allColumnsOrdered">
+              <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              
+              <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                  (change)="setHiddenColumn(column.name, !$event.checked)">
+                {{ column.placeholder }}
+              </mat-checkbox>
+              <br/>
+            </div>
+          </div>
+  
+          <div class="float-right">
+            <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+          </div>
+          
+      </ng-template>
+      </div>
+  </div>

@@ -1,0 +1,225 @@
+.form-container.modal {
+  max-height: 70vh;
+}
+
+@media screen and (max-width: 860px) {
+  .form-container.modal {
+    min-width: 150px;
+  }
+}
+
+@media screen and (min-width: 861px) {
+  .form-container.modal {
+    width: 640px;
+  }
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-title,
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.celula-normal {
+  background-color: lightgray;
+  padding: 0px 3px 0px 2px;
+}
+
+.celula-entregue {
+  background-color: #8080ff;
+  padding: 0px 3px 0px 2px;
+  color: white;
+}
+
+.celula-liberado {
+  background-color: #80ff80;
+  padding: 0px 3px 0px 2px;
+  color: white;
+}
+
+.celula-bloqueado {
+  background-color: #ff8000;
+  padding: 0px 3px 0px 2px;
+  color: white;
+}
+
+.celula-cancelado {
+  background-color: #ff0000;
+  padding: 0px 3px 0px 2px;
+  color: white;
+}
+
+table {
+  width: 100%;
+}
+
+tr.detail-row {
+  height: 0;
+}
+
+tr.element-row:not(.expanded-row):hover {
+  background: #f5f5f5;
+}
+
+tr.element-row:not(.expanded-row):active {
+  background: #efefef;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+}
+
+.mat-header-cell {
+  text-align: right;
+}
+
+.mat-header-cell.mat-column-status {
+  text-align: left;
+}
+
+.mat-header-cell.mat-column-nfBetoneiraCodigo {
+  text-align: center;
+}
+
+.mat-column-statusProgramacao {
+  text-align: left;
+    min-width: 195px;
+    padding-left: 5px !important;
+}
+.mat-column-interveniente {
+  text-align: left;
+  min-width: 180px;
+  padding-right: 10px;
+}
+.mat-column-endereco {
+  text-align: left;
+  min-width: 280px;
+  padding-right: 10px;
+}
+.mat-column-dataHoraProgramacao {
+  text-align: left;
+  padding-right: 10px;
+}
+.mat-column-obra {
+  text-align: left;
+  min-width: 130px;
+  padding-right: 10px;
+}
+.mat-column-bomba {
+  text-align: left;
+  min-width: 120;
+  padding-right: 10px;
+}
+.mat-column-volume {
+  text-align: left;
+  min-width: 70px;
+  padding-right: 10px;
+}
+.mat-column-qtdeCargas {
+  text-align: left;
+  min-width: 70px;
+  padding-right: 10px;
+}
+.mat-column-proposta {
+  text-align: left;
+  min-width: 105px;
+  padding-right: 10px;
+}
+.mat-column-contrato {
+  text-align: left;
+  min-width: 105px;
+  padding-right: 10px;
+}
+.mat-column-programacao {
+  text-align: left;
+  min-width: 135px;
+  padding-right: 10px;
+}
+.mat-column-observacao {
+  text-align: center;
+  padding-right: 10px;
+  min-width: 180px;
+}
+.mat-column-usinaEntrega {
+  text-align: left;
+  padding-right: 10px;
+  min-width: 150px;
+}
+.mat-column-data {
+  text-align: left;
+  padding-right: 10px;
+}
+.mat-column-horario {
+  text-align: left;
+  padding-right: 10px;
+}
+.mat-column-volumeLiberado {
+  text-align: left;
+  min-width: 70px;
+  padding-right: 10px;
+}
+.mat-column-pecaConcretar {
+  text-align: left;
+  padding-right: 10px;
+  min-width: 120px;
+}
+.mat-column-traco {
+  text-align: left;
+  padding-right: 10px;
+  min-width: 180px;
+}
+.mat-column-solicitante {
+  text-align: left;
+  padding-right: 10px;
+  min-width: 120px;
+}
+.mat-column-contato {
+  text-align: left;
+  padding-right: 10px;
+  min-width: 120px;
+}
+.mat-column-condicaoPagamento {
+  text-align: left;
+  padding-right: 10px;
+  min-width: 120px;
+}
+.mat-column-expand {
+  text-align: left;
+  max-width: 40px;
+  min-width: 40px;
+}
+
+.no-h-margim {
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.texto-atencao {
+  color: #e4c800;
+}
+
+.arrow-button:hover {
+  color: lightseagreen !important;
+}
+
+.container-traco{
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+
+.container-itens{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

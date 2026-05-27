@@ -1,0 +1,538 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CADASTRO_GERAL_ERROR_TCON393131" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON39313130" xml:space="preserve">
+    <value>It is not possible to update the code of informed record, as it is being used in a registration</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393132" xml:space="preserve">
+    <value>External id provided is already registered</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393133" xml:space="preserve">
+    <value>Numbering range completed</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393134" xml:space="preserve">
+    <value>Code provided is already registered</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393135" xml:space="preserve">
+    <value>Description cannot be empty</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393136" xml:space="preserve">
+    <value>Short description cannot be empty</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393137" xml:space="preserve">
+    <value>Id not found</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393138" xml:space="preserve">
+    <value>External_id not found</value>
+  </data>
+  <data name="CADASTRO_GERAL_ERROR_TCON393139" xml:space="preserve">
+    <value>It is not possible to delete the informed record, as it is being used in a registration</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_ENUM_DATA_TYPE" xml:space="preserve">
+    <value>Value is not a valid option for field '{0}'</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_FIELD_WITH_OPTIONS" xml:space="preserve">
+    <value>For the field '{0}' it must be one of the options: {1}</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_LICENSE_PLATE_VALIDATION" xml:space="preserve">
+    <value>License plate vehicle invalid</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_MAX_LIST_LENGTH" xml:space="preserve">
+    <value>The list cannot have more than {0} elements</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_MULTIPLE_OF" xml:space="preserve">
+    <value>The field '{0}' must be a multiple of {1}</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_RANGE" xml:space="preserve">
+    <value>The value of the field '{0}' must be between {1} and {2}</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_REQUIRED" xml:space="preserve">
+    <value>Field '{0}' cannot be empty</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_REQUIRED_IF_EQUAL" xml:space="preserve">
+    <value>The field '{0}' is mandatory if it informs the field '{1}' equal to '{2}'</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_REQUIRED_IF_NOT_EMPTY" xml:space="preserve">
+    <value>The field '{0}' is mandatory if it informs the field '{1}'</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_STRING_LENGTH" xml:space="preserve">
+    <value>The field '{0}' must have a maximum of {1} characters</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_STRING_LENGTH_WITH_MINIMUM" xml:space="preserve">
+    <value>The field '{0}' must have a minimum of {1} characters and a maximum of {2} characters</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_TIME_LESS_THAN" xml:space="preserve">
+    <value>The field '{0}' must be less than field '{1}'</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_UNIQUE_COMBINATIONS" xml:space="preserve">
+    <value>The key formed by '{0}' is duplicated in the list</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_UNIQUE_FIELDS" xml:space="preserve">
+    <value>Duplicate field(s) '{0}' in the list</value>
+  </data>
+  <data name="DATA_ANNOTATIONS_MESSAGES_VALID_TIME_FORMAT" xml:space="preserve">
+    <value>The '{0}' field format must be 'HH:mm'</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_ALREADY_EXIST_IN_OUR_SISTEM" xml:space="preserve">
+    <value>The field '{0}' provided already exists in our system</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_CANNOT_BE_EMPTY" xml:space="preserve">
+    <value>The field '{0}' cannot be empty</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_CANT_BE_DELETED_SINCE_ITS_IN_USE" xml:space="preserve">
+    <value>{0} can’t be deleted since it’s already in use by the system</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_DOES_NOT_EXIST_IN_OUR_SYSTEM" xml:space="preserve">
+    <value>The field '{0}' provided doesn't exist in our system</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_ERROR_PROCESSING_RECORDS" xml:space="preserve">
+    <value>Error processing records</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_INTERNAL_ENDPOINT_ERROR" xml:space="preserve">
+    <value>Internal endpoint error</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_INTERNAL_ENDPOINT_ERROR_IN_LIST" xml:space="preserve">
+    <value>Internal error occurred while processing record {0} of the list</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_LESS_THAN_ZERO_MORE_DIGITS_THAN_ALLOWED" xml:space="preserve">
+    <value>The '{0}' field must be a number greater than 0 with up to {1} digits</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_MORE_CHARACTERS_THAN_ALLOWED" xml:space="preserve">
+    <value>The '{0}' field cannot be longer than {1} characters</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_MORE_DIGITS_THAN_ALLOWED" xml:space="preserve">
+    <value>The '{0}' field must be a number with up to {1} digits</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_PRECONDITION_FAILED" xml:space="preserve">
+    <value>Precondition failed</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_REQUIRED_TO_FOLLOW_THE_RULE" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DEFAULT_MESSAGES_TYPE_DOES_NOT_FOLLOW_CORRECT_PATTERN" xml:space="preserve">
+    <value>The {0} does not follow the correct pattern</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_DUPLICATE_ELEMENT_IN_THE_LIST" xml:space="preserve">
+    <value>Duplicate '{0}' in the '{1}' field</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_MORE_ELEMENTS_THAN_ALLOWED" xml:space="preserve">
+    <value>The '{0}' field cannot have more than {1} elements</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_AT_LEAST_AND_AT_MOST_ELEMENTS" xml:space="preserve">
+    <value>The field '{0}' must have at least {1} and at most {2} elements in the list</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_GREATER_THAN_LESS_THAN" xml:space="preserve">
+    <value>The '{0}' field must be a number greater than {1} and less than {2}</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393231" xml:space="preserve">
+    <value>Invalid equipment type</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323130" xml:space="preserve">
+    <value>License plate provided is already registered</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323131" xml:space="preserve">
+    <value>Body type invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323132" xml:space="preserve">
+    <value>Vehicle type invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323133" xml:space="preserve">
+    <value>Owner type invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323134" xml:space="preserve">
+    <value>It is not possible to delete equipment that has already been used</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323135" xml:space="preserve">
+    <value>Concrete batching plant invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323136" xml:space="preserve">
+    <value>Allocated employee invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON39323137" xml:space="preserve">
+    <value>External id provided is already registered</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393232" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393233" xml:space="preserve">
+    <value>Code provided is not valid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393234" xml:space="preserve">
+    <value>Description can not be blank</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393235" xml:space="preserve">
+    <value>State (UF) invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393236" xml:space="preserve">
+    <value>Code in equipments of type concrete mixer need to start with prefix '{0}'</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393237" xml:space="preserve">
+    <value>Hour meter field accept only ‘S’ (Yes) or ‘N’ (No)</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393238" xml:space="preserve">
+    <value>License plate invalid</value>
+  </data>
+  <data name="EQUIPAMENTO_ERROR_TCON393239" xml:space="preserve">
+    <value>Code provided is already registered</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393531" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393532" xml:space="preserve">
+    <value>Cpf provided is already registered</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393533" xml:space="preserve">
+    <value>External id provided is already registered</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393534" xml:space="preserve">
+    <value>System user not found</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393535" xml:space="preserve">
+    <value>It is not possible to delete employees that has already been used</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393536" xml:space="preserve">
+    <value>Department not found</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393537" xml:space="preserve">
+    <value>Status not found</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393538" xml:space="preserve">
+    <value>Role not found</value>
+  </data>
+  <data name="FUNCINARIO_ERROR_TCON393539" xml:space="preserve">
+    <value>Concrete batching plant not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393631" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363130" xml:space="preserve">
+    <value>Not found the contract for the combination of concrete_batching_plant_contract + contract_number + contract_year</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363131" xml:space="preserve">
+    <value>Not found construction site information for the combination of concrete_batching_plant_contract + construction_site_number + contract_item_sequence</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363132" xml:space="preserve">
+    <value>Concrete recipe information does not match what was reported for the construction site</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363133" xml:space="preserve">
+    <value>Scheduled volume greater than contracted volume</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363134" xml:space="preserve">
+    <value>This quantity released field is mandatory when confirm_delivery is equal to 'P'</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363135" xml:space="preserve">
+    <value>Pump time must be less than delivery time</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363136" xml:space="preserve">
+    <value>The pump piping distance field is mandatory if it informs the type of pump</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363137" xml:space="preserve">
+    <value>The pump code field is mandatory if it informs the type of pump</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON39363138" xml:space="preserve">
+    <value>Registered key (concrete_batching_plant_contract + contract_year + contract_number + concreting_sequence) already exists</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393632" xml:space="preserve">
+    <value>Concrete batching plant not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393633" xml:space="preserve">
+    <value>Delivery concrete batching plant not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393634" xml:space="preserve">
+    <value>Construction site city not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393635" xml:space="preserve">
+    <value>Gravel not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393636" xml:space="preserve">
+    <value>Product group not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393637" xml:space="preserve">
+    <value>Pump code not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393638" xml:space="preserve">
+    <value>Resistance type not found</value>
+  </data>
+  <data name="PROGRAMACAO_ERROR_TCON393639" xml:space="preserve">
+    <value>Slump not found</value>
+  </data>
+  <data name="REMESSA_ERROR_TCON393731" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393431" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343130" xml:space="preserve">
+    <value>Intervener cannot be 0 for representatives</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343131" xml:space="preserve">
+    <value>Payment terms cannot be 0 for representatives</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343132" xml:space="preserve">
+    <value>Intervener not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343133" xml:space="preserve">
+    <value>Payment terms not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343134" xml:space="preserve">
+    <value>RE employee not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343135" xml:space="preserve">
+    <value>Godfather seller not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343136" xml:space="preserve">
+    <value>Role doesn’t exist</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343137" xml:space="preserve">
+    <value>RE already used by another representative/seller</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343138" xml:space="preserve">
+    <value>County id not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON39343139" xml:space="preserve">
+    <value>External id provided is already registered</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393432" xml:space="preserve">
+    <value>Company name cannot be empty</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393433" xml:space="preserve">
+    <value>Name cannot be empty</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393434" xml:space="preserve">
+    <value>Id not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393435" xml:space="preserve">
+    <value>External_id not found</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393436" xml:space="preserve">
+    <value>It is not possible to delete the informed record, as it is being used in a registration. The representative/seller will be inactivated.</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393437" xml:space="preserve">
+    <value>Role cannot be empty</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393438" xml:space="preserve">
+    <value>System user cannot be empty for sellers</value>
+  </data>
+  <data name="VENDEDOR_ERROR_TCON393439" xml:space="preserve">
+    <value>System user not found</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_SUM_OF_FIELD" xml:space="preserve">
+    <value>The sum of '{0}' field must be equal to {1}</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_THE_LENGTH_OF_FIELD_MUST_BE_EQUAL_TO" xml:space="preserve">
+    <value>The length of '{0}' field must be {1}</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_FIELD_MUST_BE_A_NUMBER_WITH_X_DIGITS_AND_Y_DECIMAILS" xml:space="preserve">
+    <value>The field '{0}' must be a number with up to {1} digits and {2} decimals</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f35" xml:space="preserve">
+    <value>The sum the current received amount and the liquidation amount can't be higher than the title value</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f32" xml:space="preserve">
+    <value>To liquidate a account is necessary the following fields: liquidation date, bank liquidation, operation liquidate</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f31" xml:space="preserve">
+    <value>The value of '{0}' value can't be higher than the title value</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f33" xml:space="preserve">
+    <value>The amount in the accounts receivable record cannot be less than the amount received</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f34" xml:space="preserve">
+    <value>If the value of the accounts receivable is lower than 0, the amount received can't be even lower than it
+</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f36" xml:space="preserve">
+    <value>To liquidate a title, the subsystem of the operation in the field operation_liquidate must be equal to 'BC'. But if it's a title with tp_doc = 17, the subsystem of the operation in the field operation_liquidate must be equal to 'CR'.</value>
+  </data>
+  <data name="CONDICAO_DE_PAGAMENTO_ERROR_TCON375f315f31" xml:space="preserve">
+    <value>Number of number_of_payments different from the days_to_?th_payment entered</value>
+  </data>
+  <data name="OPERACAO_FINANCEIRA_ERROR_TCON375f325f31" xml:space="preserve">
+    <value>The '{0}' field must be 0 if the update_bank field is equal to 9</value>
+  </data>
+  <data name="OPERACAO_FINANCEIRA_ERROR_TCON375f325f32" xml:space="preserve">
+    <value>The sell_operation field must reference a FinanceOperation that has inclusion_discharge = B</value>
+  </data>
+  <data name="OPERACAO_FINANCEIRA_ERROR_TCON375f325f33" xml:space="preserve">
+    <value>The bank_movement_operation field must reference a FinanceOperation that has inclusion_discharge = B and subsystem = {0}</value>
+  </data>
+  <data name="INTERVENIENTE_ERROR_TCON385F315F32" xml:space="preserve">
+    <value>The cnpj_cpf field must have 11 digits for Cpf or 14 digits for Cnpj</value>
+  </data>
+  <data name="INTERVENIENTE_ERROR_TCON385F315F33" xml:space="preserve">
+    <value>The client_type field must be either C, F, J or P</value>
+  </data>
+  <data name="DEFAULT_MESSAGES_NO_RECORDS_FOUND" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f37" xml:space="preserve">
+    <value>It is not possible to liquidate this title, it has already been completely liquidated</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f38" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because it belongs to a closed month</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f39" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because the main title is liquidated</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f42" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because a payment return title exists</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f43" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because there is settlement of the title generated in accounts payable for the title</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f40" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because full cancellation is necessary when the settlement was made by card</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f41" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because full cancellation is necessary when the settlement was made by bank check</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f44" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because there are reconciled bank transactions linked to the title</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f45" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because there are accounts payable documents used for settling the title.</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f46" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because there is a settled check related to this title</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f47" xml:space="preserve">
+    <value>It is not possible to cancel receipt of this title, because there is a credit generated in the settlement that was offset</value>
+  </data>
+  <data name="FUNCIONARIO_ERROR_TCON393540" xml:space="preserve">
+    <value>RE already linked to another employee</value>
+  </data>
+  <data name="CONTRATO_SIMPLIFICADO_ERROR_TCON393831" xml:space="preserve">
+    <value>No records found</value>
+  </data>
+  <data name="CONTRATO_SIMPLIFICADO_ERROR_TCON393832" xml:space="preserve">
+    <value>Waiting for payment data</value>
+  </data>
+  <data name="CONTRATO_SIMPLIFICADO_ERROR_TCON393833" xml:space="preserve">
+    <value>Payment sequence not found</value>
+  </data>
+  <data name="CONTRATO_SIMPLIFICADO_ERROR_TCON393834" xml:space="preserve">
+    <value>Payment already approved/disapproved financially</value>
+  </data>
+  <data name="CONTAS_A_RECEBER_ERROR_TCON375f335f48" xml:space="preserve">
+    <value>It is not possible to liquidate this title, because the bank operation for the informed liquidation operation could not be found.</value>
+  </data>
+</root>

@@ -1,0 +1,385 @@
+<div class="page-layout simple fullwidth">
+
+    <div class="content mat-white-bg">
+      <div>
+
+        <div *ngIf="temDireitoGrupoAcesso || temDireitoGeralAcesso"
+          style="display: flex; 
+                 justify-content: center; 
+                 align-items: center;
+                 margin-top: 25px;
+                 margin-bottom: 15px;">
+
+            <mat-accordion class="form-container">
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <h2 style="margin-left: 10px;">
+                        <mat-icon>group</mat-icon>
+                        Filtro de Compromisso/Tarefa por Grupo/Usuários
+                      </h2>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <form [formGroup]="formUsuario" >
+
+                  <select-combo [formGroup]="formUsuario" placeholder="Grupo" [disabled]="!temDireitoGrupoAcesso && !temDireitoGeralAcesso"
+                    name="gruposSelecionados" [(model)]="gruposSelecionados" [list]="gruposUsuarios" multiple></select-combo>
+
+                  <select-combo [formGroup]="formUsuario" placeholder="Usuário" [disabled]="gruposSelecionados.length === 0"
+                    name="usuariosSelecionados" [required]="gruposSelecionados.length > 0" multiple
+                    [(model)]="usuariosSelecionados" [list]="usuariosDoGrupo"></select-combo>
+
+                </form>
+
+                <mat-action-row style="display: flex; justify-content: end; align-items: end;">
+                  <button mat-button (click)="redefinirFiltroGrupo()">Redefinir</button>
+                  <button mat-button [disabled]="usuariosSelecionados.length === 0" (click)="filtroPorGrupo()">Buscar</button>
+                </mat-action-row>
+              </mat-expansion-panel>
+            </mat-accordion>               
+
+        </div>
+
+        <div class="flex-container" >
+          <h1 style="margin-left: 10px;">Tarefas</h1>
+
+          <paginator [pagedList]="itensTarefas" (pageChange)="getTarefaPage($event)"
+          [currentPage]="paginaAtualTarefa" [pageSize]="registrosPorPaginaTarefa" [showPageSizeSelection]=false>
+        
+            <view-selector [key]="'AGENDA-TAREFA'" [currentValue]="currentViewValueTarefa"
+            (selectedChange)="viewTarefaChanged($event)">
+      
+            </view-selector><br *ngIf="isSmallScreen"/>
+          
+            <filter #filter (filterChange)="tarefaFilterChange($event)" [(model)]="filtroTarefa" application="AGENDA-TAREFA">
+
+              <simple-input [formGroup]="filter.form" placeholder="Descrição Tarefa" name="%=|descricao" [(model)]="filtroTarefa.descricao"></simple-input>
+
+              <date-picker [formGroup]="filter.form" placeholder="Data de" name="dataDe"
+              [(model)]="filtroTarefa.dataDe" *ngIf="filter.isOpen"></date-picker>
+              <simple-input [formGroup]="filter.form" placeholder="Data de" name=">=|data"
+                [model]="filtroTarefa.dataDe.toISOString().substr(0, 10)" *ngIf="filtroTarefa.dataDe" hidden></simple-input>
+                
+              <date-picker [formGroup]="filter.form" placeholder="Data até" name="dataAte"
+                [(model)]="filtroTarefa.dataAte" *ngIf="filter.isOpen"></date-picker>
+              <simple-input [formGroup]="filter.form" placeholder="Data até" name="<=|data"
+                [model]="filtroTarefa.dataAte.toISOString().substr(0, 10)" *ngIf="filtroTarefa.dataAte" hidden></simple-input>
+
+              <simple-input [formGroup]="filter.form" placeholder="Horário de" name="horarioDe"
+              [(model)]="filtroHorarioDe" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(filtroHorarioDe)"></simple-input>
+
+              <simple-input [formGroup]="filter.form" placeholder="Horário até" name="horarioAte"
+              [(model)]="filtroHorarioAte" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(filtroHorarioAte)"></simple-input>
+
+              <div class="flex-container-buttons">
+                <mat-checkbox [(ngModel)]="filtroTarefaAtrasada" [disabled]="filtroTarefa.finalizado">Tarefas Atrasadas</mat-checkbox>
+                <simple-input [formGroup]="filter.form" placeholder="tarefaAtrasada" 
+                [model]="filtroTarefaAtrasada" hidden></simple-input>
+                <br>
+
+                <mat-checkbox [(ngModel)]="filtroTarefa.finalizado" [disabled]="filtroTarefaAtrasada">Tarefas Concluídas</mat-checkbox>
+                <simple-input [formGroup]="filter.form" placeholder="tarefaConcluida" name="==|finalizado"
+                [model]="filtroTarefa.finalizado" hidden></simple-input>
+                <br>
+              </div>
+
+              <simple-input [formGroup]="filter.form" placeholder="Local" name="%=|local" [(model)]="filtroTarefa.local"></simple-input>
+
+              <integer-input [formGroup]="filter.form" placeholder="Número Visita" name="==|numeroVisita"
+              [(model)]="filtroTarefa.numeroVisita"></integer-input>
+
+              <integer-input [formGroup]="filter.form" placeholder="Ano Visita" name="==|anoVisita"
+              [(model)]="filtroTarefa.anoVisita" [maxIntegerChars]="2"></integer-input>
+
+              <integer-input [formGroup]="filter.form" placeholder="Número Lead" name="==|numeroLead"
+              [(model)]="filtroTarefa.numeroLead"></integer-input>
+
+              <integer-input [formGroup]="filter.form" placeholder="Ano Lead" name="==|anoLead"
+              [(model)]="filtroTarefa.anoLead" [maxIntegerChars]="2"></integer-input>
+
+              <integer-input [formGroup]="filter.form" placeholder="Número Oportunidade" name="==|numeroOportunidade"
+              [(model)]="filtroTarefa.numeroOportunidade"></integer-input>
+
+              <integer-input [formGroup]="filter.form" placeholder="Ano Oportunidade" name="==|anoOportunidade"
+              [(model)]="filtroTarefa.anoOportunidade" [maxIntegerChars]="2"></integer-input>
+
+            </filter>
+        </paginator>  
+        </div>
+
+        <table mat-table [dataSource]="dataSourceTarefas" multiTemplateDataRows class="mat-elevation-z8">    
+          <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumnsTarefa">
+              <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+              <td mat-cell *matCellDef="let element"> {{ getFormattedValueTarefa(element, column) }}</td>
+          </ng-container>
+    
+          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+          <ng-container matColumnDef="expandedDetailTarefa">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsTarefa.length + fixedColumnsTarefa.length">
+                <div class="element-detail" [@detailExpand]="element == tarefaExpandedElement ? 'expanded' : 'collapsed'">
+                    <div *ngIf="element == tarefaExpandedElement">
+                      <div *ngFor="let hColumn of foldedColumnsTarefa">
+                        <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValueTarefa(element, hColumn) }}
+                        <mat-divider></mat-divider>
+                      </div>
+                    </div>
+                </div>
+            </td>
+          </ng-container>
+    
+          <ng-container matColumnDef="edit">        
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-mini-fab color="accent" (click)="showTarefaModal(tarefaModal, tarefaModalVCR, addTarefa)">
+                <mat-icon matTooltip="Adicionar">add</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="accent" (click)="showTarefaModal(tarefaModal, tarefaModalVCR, updateTarefa, undefined, element)">
+                <mat-icon matTooltip="Editar">edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModalTarefa(colunasVisualizacaoModalTarefa)">
+                <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+                  [dialogMessage]="getMensagemConfirmacaoExclusaoTarefa(element)" (confirm)="deleteTarefa(element)"></confirm-dialog-button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="done">
+            <th mat-header-cell *matHeaderCellDef> Finalizar</th>
+            <td mat-cell *matCellDef="let element">
+              <confirm-dialog-button toolTip="Concluído" style="color:#00A500;" icon="done" onlyIcon
+                  [dialogMessage]="getMensagemConfirmacaoFinalizacaoTarefa(element)" (confirm)="updateTarefaFinalizado(element)"></confirm-dialog-button>
+            </td>
+          </ng-container>
+    
+          <ng-container matColumnDef="expandTarefa">
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModalTarefa(colunasVisualizacaoModalTarefa)">
+                <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element">
+            </td>
+          </ng-container>
+    
+          <tr mat-header-row *matHeaderRowDef="columnNamesTarefa"></tr>
+          <tr mat-row *matRowDef="let element; columns: columnNamesTarefa;"
+              class="element-row"
+              [class.expanded-row]="tarefaExpandedElement === element"
+              (click)="tarefaExpandedElement = tarefaExpandedElement === element ? null : element">
+          </tr>
+          <tr mat-row *matRowDef="let row; columns: ['expandedDetailTarefa']" class="detail-row"></tr>
+        </table>
+    
+        <div #colunasVisualizacaoModalTarefaVCR></div>
+        <ng-template #colunasVisualizacaoModalTarefa>
+            
+            <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+            <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+              
+              <div *ngFor="let column of allColumnsOrderedTarefa">
+                <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrderTarefa(column.name, -1)">
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrderTarefa(column.name, +1)">
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+                
+                <mat-checkbox [checked]="!isHiddenColumnTarefa(column.name)"
+                    (change)="setHiddenColumnTarefa(column.name, !$event.checked)">
+                  {{ column.placeholder }}
+                </mat-checkbox>
+                <br/>
+              </div>
+            </div>
+    
+            <div class="float-right">
+              <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+            </div>
+            
+        </ng-template>
+        <br>
+      </div>
+
+    <hr/>
+
+      <div>
+        <div class="flex-container">
+          <h1 style="margin-left: 10px;">Compromissos</h1>
+
+          <paginator [pagedList]="itensCompromissos" (pageChange)="getCompromissoPage($event)"
+          [currentPage]="paginaAtualCompromisso" [pageSize]="registrosPorPaginaCompromisso" [showPageSizeSelection]=false>
+        
+            <view-selector [key]="'AGENDA-COMPROMISSO'" [currentValue]="currentViewValueCompromisso"
+            (selectedChange)="viewCompromissoChanged($event)">
+      
+            </view-selector><br *ngIf="isSmallScreen"/>
+          
+            <filter #filterCompromisso (filterChange)="compromissoFiltroChange($event)" [(model)]="filtroCompromisso" application="AGENDA-COMPROMISSO">
+
+              <simple-input [formGroup]="filterCompromisso.form" placeholder="Descrição compromisso" name="%=|descricao" [(model)]="filtroCompromisso.descricao"></simple-input>
+
+              <date-picker [formGroup]="filterCompromisso.form" placeholder="Data de" name="dataDe"
+              [(model)]="filtroCompromisso.dataDe" *ngIf="filterCompromisso.isOpen"></date-picker>
+              <simple-input [formGroup]="filterCompromisso.form" placeholder="Data de" name=">=|dataInicio"
+                [model]="filtroCompromisso.dataDe.toISOString().substr(0, 10)" *ngIf="filtroCompromisso.dataDe" hidden></simple-input>
+                
+              <date-picker [formGroup]="filterCompromisso.form" placeholder="Data até" name="dataAte"
+                [(model)]="filtroCompromisso.dataAte" *ngIf="filterCompromisso.isOpen"></date-picker>
+              <simple-input [formGroup]="filterCompromisso.form" placeholder="Data até" name="<=|dataFim"
+                [model]="filtroCompromisso.dataAte.toISOString().substr(0, 10)" *ngIf="filtroCompromisso.dataAte" hidden></simple-input>
+
+              <simple-input [formGroup]="filter.form" placeholder="Hora Inicio de" name="horaInicioDe"
+              [(model)]="filtroCompromissoHoraInicioDe" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(filtroCompromissoHoraInicioDe)"></simple-input>
+
+              <simple-input [formGroup]="filter.form" placeholder="Hora Inicio até" name="horaInicioAte"
+              [(model)]="filtroCompromissoHoraInicioAte" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(filtroCompromissoHoraInicioAte)"></simple-input>
+
+              <simple-input [formGroup]="filter.form" placeholder="Hora Final de" name="horaFinalDe"
+              [(model)]="filtroCompromissoHoraFinalDe" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(filtroCompromissoHoraFinalDe)"></simple-input>
+
+              <simple-input [formGroup]="filter.form" placeholder="Hora Final até" name="horaFinalAte"
+              [(model)]="filtroCompromissoHoraFinalAte" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator(filtroCompromissoHoraFinalAte)"></simple-input>
+
+              <simple-input [formGroup]="filterCompromisso.form" placeholder="Local" name="%=|local" [(model)]="filtroCompromisso.local"></simple-input>
+
+              <integer-input [formGroup]="filterCompromisso.form" placeholder="Número Visita" name="==|numeroVisita"
+              [(model)]="filtroCompromisso.numeroVisita"></integer-input>
+
+              <integer-input [formGroup]="filterCompromisso.form" placeholder="Ano Visita" name="==|anoVisita"
+              [(model)]="filtroCompromisso.anoVisita" [maxIntegerChars]="2"></integer-input>
+
+              <integer-input [formGroup]="filterCompromisso.form" placeholder="Número Lead" name="==|numeroLead"
+              [(model)]="filtroCompromisso.numeroLead"></integer-input>
+
+              <integer-input [formGroup]="filterCompromisso.form" placeholder="Ano Lead" name="==|anoLead"
+              [(model)]="filtroCompromisso.anoLead" [maxIntegerChars]="2"></integer-input>
+
+              <integer-input [formGroup]="filterCompromisso.form" placeholder="Número Oportunidade" name="==|numeroOportunidade"
+              [(model)]="filtroCompromisso.numeroOportunidade"></integer-input>
+
+              <integer-input [formGroup]="filterCompromisso.form" placeholder="Ano Oportunidade" name="==|anoOportunidade"
+              [(model)]="filtroCompromisso.anoOportunidade" [maxIntegerChars]="2"></integer-input>
+      
+            </filter>
+        </paginator>  
+        </div>
+
+        <table mat-table [dataSource]="dataSourceCompromissos" multiTemplateDataRows class="mat-elevation-z8">    
+          <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumnsCompromisso">
+              <th mat-header-cell *matHeaderCellDef>{{ column.placeholder }} </th>
+              <td mat-cell *matCellDef="let element"> {{ getFormattedValueCompromisso(element, column) }}</td>
+          </ng-container>
+
+          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+          <ng-container matColumnDef="expandedDetailCompromisso">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsCompromisso.length + fixedColumnsCompromisso.length">
+                <div class="element-detail" [@detailExpand]="element == compromissoExpandedElement ? 'expanded' : 'collapsed'">
+                    <div *ngIf="element == compromissoExpandedElement">
+                      <div *ngFor="let hColumn of foldedColumnsCompromisso">
+                        <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValueCompromisso(element, hColumn) }}
+                        <mat-divider></mat-divider>
+                      </div>
+                    </div>
+                </div>
+            </td>
+          </ng-container>
+    
+          <ng-container matColumnDef="edit">        
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-mini-fab color="accent" (click)="showCompromissoModal(compromissoModal, compromissoModalVCR, addcompromisso)">
+                <mat-icon matTooltip="Adicionar">add</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="accent" (click)="showCompromissoModal(compromissoModal, compromissoModalVCR, updatecompromisso, undefined, element)">
+                <mat-icon matTooltip="Editar">edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModalCompromisso(colunasVisualizacaoModalCompromisso)">
+                <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+                  [dialogMessage]="getMensagemConfirmacaoExclusaoCompromisso(element)" (confirm)="deleteCompromisso(element)"></confirm-dialog-button>
+            </td>
+          </ng-container>
+    
+          <ng-container matColumnDef="expandCompromisso">
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModalCompromisso(colunasVisualizacaoModalCompromisso)">
+                <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element"></td>
+          </ng-container>
+    
+          <tr mat-header-row *matHeaderRowDef="columnNamesCompromisso"></tr>
+          <tr mat-row *matRowDef="let element; columns: columnNamesCompromisso;"
+              class="element-row"
+              [class.expanded-row]="compromissoExpandedElement === element"
+              (click)="compromissoExpandedElement = compromissoExpandedElement === element ? null : element">
+          </tr>
+          <tr mat-row *matRowDef="let row; columns: ['expandedDetailCompromisso']" class="detail-row"></tr>
+        </table>
+
+        <div #colunasVisualizacaoModalCompromissoVCR></div>
+        <ng-template #colunasVisualizacaoModalCompromisso>
+            
+            <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+            <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+              
+              <div *ngFor="let column of allColumnsOrderedCompromisso">
+                <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrderCompromisso(column.name, -1)">
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrderCompromisso(column.name, +1)">
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+                
+                <mat-checkbox [checked]="!isHiddenColumnCompromisso(column.name)"
+                    (change)="setHiddenColumnCompromisso(column.name, !$event.checked)">
+                  {{ column.placeholder }}
+                </mat-checkbox>
+                <br/>
+              </div>
+            </div>
+    
+            <div class="float-right">
+              <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+            </div>
+            
+        </ng-template>
+        <br>
+
+      </div>
+
+      <div #tModalVCR></div>
+      <ng-template #tarefaModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <app-tarefa-form [itemTarefa]="itemTarefa" (cancel)="closeModal($event)" (confirm)="confirmCallback($event)"></app-tarefa-form>
+        </div>
+      </ng-template>
+
+      <div #cModalVCR></div>
+      <ng-template #compromissoModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <app-compromisso-form [itemCompromisso]="itemCompromisso" (cancel)="closeModal($event)" (confirm)="confirmCallback($event)"></app-compromisso-form>
+        </div>
+      </ng-template>
+
+  </div>
+</div>

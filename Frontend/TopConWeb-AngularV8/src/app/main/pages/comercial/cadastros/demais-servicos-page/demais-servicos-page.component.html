@@ -1,0 +1,152 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>DEMAIS SERVIÇOS</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+      [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+    
+      <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro">
+
+        <integer-input [formGroup]="filter.form" placeholder="Codigo" name="==|codigo"
+            [(model)]="filtro.codigo" [maxIntegerChars]="10"></integer-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Usina" name="usina" [list]="usinas"
+            [(model)]="filtro.usina" [formatter]="usinaFormatter"></suggest-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Usina" name="==|usinaCodigo"
+            [model]="filtro.usina.codigo" *ngIf="filtro.usina" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Produto/Serviço" name="mercadoria" [list]="mercadorias"
+            (textChange)="filtrarMercadorias($event)" [(model)]="filtro.mercadoria" [formatter]="mercadoriaFormatter"></suggest-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Produto/Serviço" name="==|mercadoriaCodigo"
+            [model]="filtro.mercadoria.codigo" *ngIf="filtro.mercadoria" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Unidade" name="unidade" [list]="unidades"
+            [(model)]="filtro.unidade" [formatter]="unidadeFormatter"></suggest-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Unidade" name="==|unidadeSigla"
+            [model]="filtro.unidade.sigla" *ngIf="filtro.unidade" hidden></simple-input>
+
+      </filter>
+
+    </paginator>
+
+    <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    </mat-accordion>
+    
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+      <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+          <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+          <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                      <div *ngFor="let hColumn of hiddenColumns">
+                          <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValue(element, hColumn) }}
+                          <mat-divider></mat-divider>
+                      </div>
+                  </div>
+              </div>
+          </td>
+      </ng-container>
+
+      <ng-container matColumnDef="edit">
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-mini-fab color="accent" (click)="showModal(demaisServicosModal, demaisServicosModalVCR, addDemaisServicos)">
+            <mat-icon matTooltip="Adicionar">add</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="accent" (click)="showModal(demaisServicosModal, demaisServicosModalVCR, updateDemaisServicos, undefined, element)">
+            <mat-icon matTooltip="Editar">edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+              dialogMessage="Confirma exclusão deste item?" (confirm)="removeDemaisServicos(element)"></confirm-dialog-button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnNames;"
+          class="element-row"
+          [class.expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+
+    <!-- <div style="z-index: 9999; position: fixed; bottom: 10px; right: 10px;">
+      <button mat-fab color="accent" (click)="showModal(demaisServicosModal, demaisServicosModalVCR, addDemaisServicos)">
+        <mat-icon matTooltip="Adicionar">add</mat-icon>
+      </button>
+    </div> -->
+
+    <div #dsModalVCR></div>
+    <ng-template #demaisServicosModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+        <h2 cdkFocusRegionstart>DEMAIS SERVIÇOS</h2>
+            
+        <form [formGroup]="demaisServicosForm" class="form-container">
+
+            <simple-input [formGroup]="demaisServicosForm" placeholder="Código" name="codigo" disabled
+                [model]="item.codigo"></simple-input>
+
+            <suggest-combo [formGroup]="demaisServicosForm" placeholder="Usina" name="usina" [list]="usinas"
+                [(model)]="item.usina" [formatter]="usinaFormatter" required></suggest-combo>
+
+            <suggest-combo [formGroup]="demaisServicosForm" placeholder="Produto/Serviço" name="mercadoria" [list]="mercadorias" required
+                (textChange)="filtrarMercadorias($event)" [(model)]="item.mercadoria" [formatter]="mercadoriaFormatter"></suggest-combo>
+
+            <suggest-combo [formGroup]="demaisServicosForm" placeholder="Unidade" name="unidade" [list]="unidades"
+                [(model)]="item.unidade" [formatter]="unidadeFormatter" required></suggest-combo>
+
+            <integer-input [formGroup]="demaisServicosForm" placeholder="Número de casas decimais" name="numeroDeCasasDecimais"
+                [(model)]="item.numeroDeCasasDecimais"></integer-input>
+
+            <decimal-input [formGroup]="demaisServicosForm" placeholder="Preço sugerido" name="precoSugerido"
+                [(model)]="item.precoSugerido" [maxIntegerChars]="8" [decimalChars]="2" required></decimal-input>
+
+            <decimal-input [formGroup]="demaisServicosForm" placeholder="Preço mínimo" name="precoMinimo"
+                [(model)]="item.precoMinimo" [maxIntegerChars]="8" [decimalChars]="2" required></decimal-input>
+
+            <suggest-combo [formGroup]="demaisServicosForm" placeholder="Frequência Cobrança" name="frequenciaDeCobranca" [list]="frequenciaCobrancaLista"
+                [(model)]="item.frequenciaDeCobranca" [formatter]="frequenciaCobrancaFormatter" required></suggest-combo>
+
+            <suggest-combo [formGroup]="demaisServicosForm" placeholder="Forma Cobrança" name="formaDeCobranca" [list]="formaDeCobrancaLista"
+                [(model)]="item.formaDeCobranca" [formatter]="formaDeCobrancaFormatter" required></suggest-combo>
+
+            <mat-checkbox formControlName="atualizaEstoque" [(ngModel)]="item.atualizaEstoque">
+              Atualiza estoque
+            </mat-checkbox>
+            
+            <mat-action-row>
+                <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="demaisServicosForm.invalid">Confirma</button>
+                <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+            </mat-action-row>
+
+        </form>
+        
+        </div>
+        
+    </ng-template>
+      
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

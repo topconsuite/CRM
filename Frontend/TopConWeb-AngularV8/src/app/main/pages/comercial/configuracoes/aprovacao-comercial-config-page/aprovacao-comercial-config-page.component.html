@@ -1,0 +1,469 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>APROVAÇÃO COMERCIAL</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <paginator [pagedList]="itens" (pageChange)="getPage($event)" [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+
+      <view-selector [key]="'CONFIG-APROV-COMERCIAL'" [currentValue]="currentViewValue"
+      (selectedChange)="viewChanged($event)">
+
+      </view-selector><br *ngIf="isSmallScreen"/>
+    
+      <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="CONFIG-APROV-COMERCIAL">
+
+      </filter>
+
+    </paginator>
+    
+    <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    </mat-accordion>
+    
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+
+      <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+          <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+          <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValue(element, hColumn) }}
+                      <mat-divider></mat-divider>
+                    </div>
+                  </div>
+              </div>
+          </td>
+      </ng-container>
+
+      <ng-container matColumnDef="hierarquia" style="width: 10;">    
+
+        <th mat-header-cell *matHeaderCellDef>
+        </th>
+
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="accent" (click)="editHierarquiaModal(aprovHierarquia, element)">
+            <mat-icon matTooltip="Parametrização de Alçada">settings</mat-icon>
+          </button>
+        </td>
+
+      </ng-container>
+
+      <ng-container matColumnDef="edit">    
+
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-mini-fab color="accent" (click)="editaUsinaModal(aprovUsinaModal)">
+            <mat-icon matTooltip="Adicionar">add</mat-icon>
+          </button>
+        </th>
+
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="accent" (click)="editaUsinaModal(aprovUsinaModal, element)">
+            <mat-icon matTooltip="Editar">edit</mat-icon>
+          </button>
+        </td>
+
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="openModal(colunasVisualizacaoModal)">
+            <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnNames;"
+          class="element-row"
+          [class.expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+
+    <!-- MODAL - Colunas de Visualização -->
+
+    <div #colunasVisualizacaoModalVCR></div>
+    <ng-template #colunasVisualizacaoModal>
+        
+        <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+        <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+          
+          <div *ngFor="let column of allColumnsOrdered">
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            
+            <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                (change)="setHiddenColumn(column.name, !$event.checked)">
+              {{ column.placeholder }}
+            </mat-checkbox>
+            <br/>
+          </div>
+        </div>
+
+        <div class="float-right">
+          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+        </div>
+        
+    </ng-template>
+
+    <!-- MODAL - Cadastrar Aprovacao Comercial Usina -->
+
+    <ng-template #aprovUsinaModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <h2 cdkFocusRegionstart>CADASTRO DE USINA - APROV. COMERCIAL</h2>
+            
+          <form [formGroup]="aprovacaoComercialUsinaForm" class="form-container">
+
+            <suggest-combo [formGroup]="aprovacaoComercialUsinaForm" placeholder="Central" name="usina" [list]="usinas"
+              [(model)]="edicaoUsinaValores.usina" required [formatter]="usinaFormatter"></suggest-combo>
+            <simple-input [formGroup]="aprovacaoComercialUsinaForm" placeholder="Central" name="usinaCodigo"
+              [model]="edicaoUsinaValores.usina.codigo" *ngIf="edicaoUsinaValores.usina" hidden></simple-input>
+
+            <suggest-combo [formGroup]="aprovacaoComercialUsinaForm" placeholder="Situação" name="situacaoModel" [list]="situacoes"
+              [(model)]="edicaoUsinaValores.situacaoModel" required [formatter]="situacaoFormatter"></suggest-combo>
+            <simple-input [formGroup]="aprovacaoComercialUsinaForm" placeholder="Situação" name="situacao"
+              [model]="edicaoUsinaValores.situacao" *ngIf="edicaoUsinaValores.situacaoModel" hidden></simple-input>
+
+            <suggest-combo [formGroup]="aprovacaoComercialUsinaForm" placeholder="Fluxo Aprovação" name="fluxoAprovacaoModel" [list]="fluxoAprovacoes"
+              [(model)]="edicaoUsinaValores.fluxoAprovacaoModel" required [formatter]="fluxoAprovacaoFormatter"></suggest-combo>
+            <simple-input [formGroup]="aprovacaoComercialUsinaForm" placeholder="Fluxo Aprovação" name="fluxoAprovacao"
+              [model]="edicaoUsinaValores.fluxoAprovacao" *ngIf="edicaoUsinaValores.fluxoAprovacaoModel" hidden></simple-input>
+            
+            <mat-card>
+              <p>{{this.edicaoUsinaValores.fluxoAprovacaoModel.descricao}}</p>
+            </mat-card>
+
+            <mat-action-row>
+              <button mat-button color="accent" (click)="confirmModal()" [disabled]="aprovacaoComercialUsinaForm.invalid || disableConfirmButton">Confirma</button>
+              <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+            </mat-action-row>
+
+          </form>
+        
+        </div>
+        
+    </ng-template>
+
+    <!-- MODAL - Níveis de Hierarquia -->
+
+    <ng-template #aprovHierarquia>
+        
+      <div class="form-container modal" [hidden]="!modalIsOpen">
+
+        <h2 cdkFocusRegionstart>Hierarquia</h2>
+
+        <button mat-raised-button color="accent" (click)="openCadastroHierarquia(aprovHierarquiaCadastro)" [disabled]=" disableConfirmButton">
+          <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar Nível
+        </button>
+        
+            <div *ngFor="let element of hierarquias">
+              <br/>
+              <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+                <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                  <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+    
+                      <mat-panel-title>Nível {{element.nivelAutoridade}}</mat-panel-title>
+    
+                      <mat-panel-description>{{element.titulo}}</mat-panel-description>
+    
+                    </mat-expansion-panel-header>
+
+                    <form [formGroup]="aprovacaoComercialHierarquiaForm" class="form-container">
+
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td class="th-hierarquia">Título :</td>
+                            <td class="td-hierarquia">{{element.titulo}}</td>
+                          </tr>
+                          <tr>
+                            <td class="th-hierarquia">Nível de Autoridade :</td>
+                            <td class="td-hierarquia">{{element.nivelAutoridade}}</td>
+                          </tr>
+                          <tr>
+                            <td class="th-hierarquia">Quant. Aprov. Necessárias :</td>
+                            <td class="td-hierarquia">{{element.quantidadeAprovacoesNecessarias}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <br/>
+
+                      <div>
+
+                        <div style="float: left;">
+
+                          <button mat-button color="accent" (click)="openModalCondicao(aprovHierarquiaCondicao, element)">
+                            <mat-icon matTooltip="Atualizar Percentual/Valor de alçada">attach_money</mat-icon> Condições
+                          </button>
+
+                          <button mat-button color="accent" (click)="openModalCondicaoPagamento(condicoesPagamento, element)">
+                            <mat-icon matTooltip="Atualizar Demais Condições">add</mat-icon> Demais Condições
+                          </button>
+
+                          <button mat-button color="accent" (click)="openModalUsuario(aprovHierarquiaUsuarios, element)">
+                            <mat-icon matTooltip="Gerenciar Usuários Para Nível">supervisor_account</mat-icon> Usuários
+                          </button>
+
+                        </div> 
+
+                        <div style="float: right;">
+
+                          <button mat-button color="warn" (click)="editaUsinaModal(aprovUsinaModal)" disabled *ngIf="false">
+                            <mat-icon matTooltip="Excluir Nível">delete</mat-icon> Excluir
+                          </button>
+                          
+                          <button mat-button color="accent" (click)="openCadastroHierarquia(aprovHierarquiaCadastro, element)">
+                            <mat-icon matTooltip="Editar Nível">edit</mat-icon> Editar
+                          </button>
+
+                        </div> 
+
+                      </div>
+
+                    </form>
+
+                  </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+
+          <mat-action-row>
+            <button mat-button color="accent" (click)="closeModal()">Fechar</button>
+          </mat-action-row>
+      
+      </div>
+      
+  </ng-template>
+
+  <ng-template #aprovHierarquiaCadastro>
+
+    <div class="form-container modal" [hidden]="!subModalIsOpen">
+
+      <h2 cdkFocusRegionstart>Cadastro / Edição de Nível da Hierarquia</h2>
+      <form [formGroup]="aprovacaoComercialCadHierarquiaForm" class="form-container">
+
+        <simple-input [formGroup]="aprovacaoComercialCadHierarquiaForm" placeholder="Título" name="titulo" required [(model)]="cadHierarquiaValores.titulo"></simple-input>
+
+        <simple-input [formGroup]="aprovacaoComercialCadHierarquiaForm" placeholder="Nível de Autoridade" name="nivelAutoridade" disabled [model]="cadHierarquiaValores.nivelAutoridade"></simple-input>
+
+        <suggest-combo [formGroup]="aprovacaoComercialCadHierarquiaForm" placeholder="Aprovações Necessárias para Liberação"  name="quantidadeAprovacoesNecessarias" 
+          [list]="cadHierarquiaAprovacaoNecessarias" [(model)]="cadHierarquiaValores.quantidadeAprovacoesNecessarias" required></suggest-combo>
+
+        <mat-checkbox formControlName="aprovacaoObrigatoria" name="aprovacaoObrigatoria" [(ngModel)]="cadHierarquiaValores.aprovacaoObrigatoria" *ngIf="hierarquiaUsinaSelecionada.fluxoAprovacao != 0">Aprovação obrigatória</mat-checkbox>
+
+        <p></p>
+        
+        <mat-action-row>
+          <button mat-button color="accent" (click)="salvarCadastroHierarquia()" [disabled]="aprovacaoComercialCadHierarquiaForm.invalid">Confirma</button>
+          <button mat-button color="warn" (click)="closeSubModal()">Cancela</button>
+        </mat-action-row>
+
+      </form>
+
+    </div>
+
+  </ng-template>
+
+  <ng-template #aprovHierarquiaUsuarios>
+
+    <div class="form-container modal" [hidden]="!subModalIsOpen">
+
+      <h2 cdkFocusRegionstart>Usuário</h2>
+      <form [formGroup]="aprovacaoComercialCadHierarquiaUsuarioForm" class="form-container">
+
+        <mat-card>
+          <mat-card-title>
+            <p>Adicionar Usuário</p>
+          </mat-card-title>
+          <mat-card-content>
+            <suggest-combo [formGroup]="aprovacaoComercialCadHierarquiaForm" placeholder="Usuário"  name="quantidadeAprovacoesNecessarias" 
+              [list]="cadHierarquiaUsuariosDisponiveis" [formatter]="usuarioFormatter" [(model)]="cadHierarquiaUsuarioSelecionado" required></suggest-combo>
+            
+            <mat-action-row>
+              <button mat-button color="accent" (click)="adicionarUsuario()" [disabled]="aprovacaoComercialCadHierarquiaUsuarioForm.invalid">
+                <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar
+              </button>
+            </mat-action-row>
+          </mat-card-content>
+        </mat-card>
+
+        <br/>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Usuários
+            </mat-panel-title>
+            <mat-panel-description>
+              Com Permissão Para Liberação
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div *ngFor="let usuario of cadHierarquiaUsuarios">
+            <mat-divider></mat-divider>
+            <p>
+                <button mat-button color="warn" (click)="removerUsuario(usuario)" *ngIf="usuario.id !== ''" [disabled]="aprovacaoComercialCadHierarquiaUsuarioForm.invalid">
+                    <mat-icon matTooltip="Remover Permissão do Usuário">delete</mat-icon> Remover
+                </button>
+                <button mat-button color="basic" (click)="desfazerRemoverUsuario(usuario)" *ngIf="usuario.id === ''" [disabled]="aprovacaoComercialCadHierarquiaUsuarioForm.invalid">
+                  <mat-icon matTooltip="Adicionar Usuário Novamente">undo</mat-icon> Desfazer
+                </button>
+                <b>{{usuario.usuarioId}}</b>
+            </p>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-action-row>
+          <button mat-button color="accent" (click)="closeSubModal()">Fechar</button>
+        </mat-action-row>
+
+      </form>
+
+    </div>
+
+  </ng-template>
+
+  <ng-template #aprovHierarquiaCondicao>
+
+    <div class="form-container modal" [hidden]="!subModalIsOpen">
+
+      <h2 cdkFocusRegionstart>Condições</h2>
+      <form [formGroup]="aprovacaoComercialCadHierarquiaCondicaoForm" class="form-container">
+
+        <suggest-combo [formGroup]="aprovacaoComercialCadHierarquiaCondicaoForm" placeholder="Tipo Pessoa"  name="tipoPessoa" (textChange)="changeTipoPessoa($event)"
+              [list]="cadTipoPessoa" [formatter]="tipoPessoaFormatter" [(model)]="cadTipoPessoaSelecionado" required></suggest-combo>
+
+
+
+        <div *ngFor="let element of cadCondicoes; let i = index">
+          <br/>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title style="width: 35%;">
+                {{getTipoValorString(element)}}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{getTipoUnidadeCondicao(element)}} {{formataValor(element.valorDe, 2, false)}} - {{getTipoUnidadeCondicao(element)}} {{formataValor(element.valorAte, 2, false)}} 
+                <div *ngIf="exibirCampoPercentual(element)"> / {{formataValor(element.percentualDe, 1, false)}}% - {{formataValor(element.percentualAte,1, false)}}%</div>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <table>
+
+              <tr>
+                <td style="width: 50%;">
+                  <decimal-input [formGroup]="aprovacaoComercialCadHierarquiaCondicaoForm" placeholder="De ({{getTipoUnidadeCondicao(element)}})" [maxIntegerChars]="9" [decimalChars]="2"
+                    name="field{{i}}" [(model)]="element.valorDe" showThousandSeparator></decimal-input>
+                </td>
+                <td style="width: 50%;">
+                  <decimal-input [formGroup]="aprovacaoComercialCadHierarquiaCondicaoForm" placeholder="Até ({{getTipoUnidadeCondicao(element)}})" [maxIntegerChars]="9" [decimalChars]="2"
+                    name="field1{{i}}" [(model)]="element.valorAte" showThousandSeparator></decimal-input>
+                </td>
+              </tr>
+
+              <tr *ngIf="exibirCampoPercentual(element)">
+                <td style="width: 50%;">
+                  <decimal-input [formGroup]="aprovacaoComercialCadHierarquiaCondicaoForm" placeholder="De (%)" [maxIntegerChars]="9" [decimalChars]="2"
+                    name="field2{{i}}" [(model)]="element.percentualDe" showThousandSeparator></decimal-input>
+                </td>
+                <td style="width: 50%;">
+                  <decimal-input [formGroup]="aprovacaoComercialCadHierarquiaCondicaoForm" placeholder="Até (%)" [maxIntegerChars]="9" [decimalChars]="2"
+                    name="field3{{i}}" [(model)]="element.percentualAte" showThousandSeparator></decimal-input>
+                </td>
+              </tr>
+
+            </table>
+
+          </mat-expansion-panel>
+        </div>
+        
+
+        <mat-action-row>
+          <button mat-button color="accent" (click)="salvarCondicao()">Salvar</button>
+          <button mat-button color="warn" (click)="closeSubModal()">Cancelar</button>
+        </mat-action-row>
+
+      </form>
+
+    </div>
+
+  </ng-template>
+
+
+  </div>
+  <!-- / CONTENT CARD -->
+
+  <!-- MODAL - Condição Pagamento -->
+
+  <ng-template #condicoesPagamento>
+
+    <div class="form-container modal" [hidden]="!subModalIsOpen">
+      <h2 cdkFocusRegionstart>Demais Condições</h2>
+      <form [formGroup]="aprovacaoComercialCadHierarquiaCondicaoPagamentoForm" class="form-container">
+
+        <suggest-combo [formGroup]="aprovacaoComercialCadHierarquiaCondicaoPagamentoForm" placeholder="Tipo Pessoa"  name="tipoPessoa" (textChange)="changeDemaisTipoPessoa($event)"
+              [list]="cadDemaisTipoPessoa" [formatter]="tipoPessoaFormatter" [(model)]="cadDemaisTipoPessoaSelecionado" required></suggest-combo>
+
+        <suggest-combo [formGroup]="aprovacaoComercialCadHierarquiaCondicaoPagamentoForm" placeholder="Segmentação"  name="segmentacao" (textChange)="changeDemaisSegmentacao($event)"
+              [list]="cadDemaisSegmentacao" [formatter]="segmentacaoFormatter" [(model)]="cadDemaisSegmentacaoSelecionado" required></suggest-combo>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title style="width: 35%;">
+              Média de Dias
+            </mat-panel-title>
+            <mat-panel-description>
+              {{formataValor(cadCondicoesPagamentoSelecionada.mediaDiasDe, 2, false)}} DIAS - {{formataValor(cadCondicoesPagamentoSelecionada.mediaDiasAte, 2, false)}} DIAS
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <table>
+
+            <tr>
+              <td style="width: 50%;">
+                <decimal-input [formGroup]="aprovacaoComercialCadHierarquiaCondicaoPagamentoForm" placeholder="De (Dias)" [maxIntegerChars]="9" [decimalChars]="2"
+                  name="mediaDiasDe" [(model)]="cadCondicoesPagamentoSelecionada.mediaDiasDe" showThousandSeparator></decimal-input>
+              </td>
+              <td style="width: 50%;">
+                <decimal-input [formGroup]="aprovacaoComercialCadHierarquiaCondicaoPagamentoForm" placeholder="Até (Dias)" [maxIntegerChars]="9" [decimalChars]="2"
+                  name="mediaDiasAte" [(model)]="cadCondicoesPagamentoSelecionada.mediaDiasAte" showThousandSeparator></decimal-input>
+              </td>
+            </tr>
+
+          </table>
+
+        </mat-expansion-panel>
+
+        <mat-action-row>
+          <button mat-button color="accent" (click)="salvarCondicaoPagamento()">Salvar</button>
+          <button mat-button color="warn" (click)="closeSubModal()">Cancelar</button>
+        </mat-action-row>
+       
+      </form>
+    </div>
+
+  </ng-template>
+
+</div>

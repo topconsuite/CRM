@@ -1,0 +1,425 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>APROVAÇÃO DE ALTERAÇÕES NA TABELA DE VENDA</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+      [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+
+      <button mat-raised-button class="btn-alteracao-lote" color="accent" matTooltip="Alteração em Lote" (click)="showAlteracaoLoteModal(alteracaoLoteModal, alteracaoLoteModalRef, updateTabelaVendaLote)" style="height: 100%;">
+        Alteração em Lote  
+      </button>
+
+      <view-selector [key]="'APROV-TABELA-VENDA'" [currentValue]="currentViewValue"
+      (selectedChange)="viewChanged($event)">
+      
+
+      </view-selector><br *ngIf="isSmallScreen"/>
+      
+    
+      <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="APROV-TABELA-VENDA">
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Central" name="usinaCodigo" [list]="usinas"
+            [(model)]="filtro.usina" (modelChange)="carregaNumeracaoProdutoPorCentral()" [formatter]="usinaFormatter"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Central" name="==|usinaCodigo"
+            [model]="filtro.usina.codigo" *ngIf="filtro.usina" hidden></simple-input>
+
+        <select-combo [formGroup]="segmentacaoForm" placeholder="Segmentacao" name="filtroSegmentacao"
+          [(model)]="segmentacaoFiltro.segmentacao" (modelChange)="carregaUsoPorSegmentacao()" [list]="segmentacao" [formatter]="segmentacaoFormatter"></select-combo>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Numeração de Produto" name="numeracaoProduto" [list]="numeracoesProdutoFiltered"
+          [(model)]="filtro.numeracaoProduto" (modelChange)="tracoNumeracaoProdutoChange($event)" [formatter]="numeracaoProdutoFormatter" [disabled]="desabilitaNumeracaoProduto"></suggest-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Numeração de Produto" name="==|numeracaoProduto"
+          [model]="filtro.numeracaoProduto.numeracao"  *ngIf="filtro.numeracaoProduto" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Uso" name="uso" [list]="usos"
+            [(model)]="filtro.uso" (modelChange)="tracoChange()" [formatter]="usoFormatter" [disabled]="desabilitaCamposTraco"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Uso" name="==|usoCodigo"
+            [model]="filtro.uso.codigo"  *ngIf="filtro.uso" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Pedra" name="pedra" [list]="pedras"
+            [(model)]="filtro.pedra" (modelChange)="tracoChange()" [formatter]="pedraFormatter" [disabled]="desabilitaCamposTraco"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Pedra" name="==|pedraCodigo"
+            [model]="filtro.pedra.codigo" *ngIf="filtro.pedra" hidden></simple-input>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Slump" name="slump" [list]="slumps"
+            [(model)]="filtro.slump" (modelChange)="tracoChange()" [formatter]="slumpFormatter" [disabled]="desabilitaCamposTraco"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Slump" name="==|slumpCodigo"
+            [model]="filtro.slump.codigo" *ngIf="filtro.slump" hidden></simple-input>
+        
+          <suggest-combo [formGroup]="filter.form" placeholder="Resistência Tipo" name="resistenciaTipo" [list]="resistencias"
+            [(model)]="filtro.resistenciaTipo" (modelChange)="tracoChange()" [formatter]="resistenciaFormatter" [disabled]="desabilitaCamposTraco"></suggest-combo>
+          <simple-input [formGroup]="filter.form" placeholder="Resistência Tipo" name="==|resistenciaTipoCodigo"
+            [model]="filtro.resistenciaTipo.codigo" *ngIf="filtro.resistenciaTipo" hidden></simple-input>
+          
+          <integer-input [formGroup]="filter.form" placeholder="MPA" name="==|mpa"
+          [(model)]="filtro.mpa" [maxIntegerChars]="3" [disabled]="desabilitaCamposTraco"></integer-input>
+
+      </filter>
+
+    </paginator>
+
+    <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    </mat-accordion>
+    
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" >    
+      <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+          <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+          <td [ngStyle]="{'text-align': column.align }" mat-cell *matCellDef="let element">
+            <span *ngIf="column.htmlValue" [innerHTML]="getFormattedValue(element, column)"></span>
+            <span *ngIf="!column.htmlValue" style="white-space: nowrap;">{{ getFormattedValue(element, column) }}</span>
+            <span *ngIf="getCellMatIcon(element, column) != ''" class="{{getCellIconClass(element, column)}}"><mat-icon style="font-size: small">{{ getCellMatIcon(element, column) }}</mat-icon></span>
+            
+          </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <b>{{ hColumn.placeholder }}: </b>
+                        <span *ngIf="hColumn.htmlValue" [innerHTML]="getFormattedValue(element, hColumn)"></span>
+                        <span *ngIf="!hColumn.htmlValue">{{ getFormattedValue(element, hColumn) }}</span>
+                        <span *ngIf="getCellMatIcon(element, hColumn) != ''" class="{{getCellIconClass(element, hColumn)}}"><mat-icon style="font-size: small;">{{ getCellMatIcon(element, hColumn) }}</mat-icon></span>
+                      <mat-divider></mat-divider>
+                    </div>
+                  </div>
+              </div>
+          </td>
+      </ng-container>
+
+      <ng-container matColumnDef="confirm">        
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button style="color:#00A500;" (click)="abrirConfirmacaoModal(aprovarTodosModal)">
+            <mat-icon matTooltip="Aprovar Todos">done_all</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button style="color:#00A500;" (click)="showModal(tabelaVendaAprovacaoModal, tabelaVendaAprovacaoModalVCR, updateTabelaVenda, undefined, element)">
+            <mat-icon matTooltip="Confirmar">done</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="disapprove">        
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button style="color:#FF3733;" (click)="abrirConfirmacaoModal(reprovarTodosModal)">
+            <mat-icon matTooltip="Reprovar Todos">cancel</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button style="color:#FF3733;" (click)="showModal(reprovarValorVendaModal, tabelaVendaAprovacaoModalVCR, reprovarTabelaVenda, undefined, element)">
+            <mat-icon matTooltip="Reprovar">clear</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+            <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnNames;"
+          class="element-row"
+          [class.expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+
+    <div #tvModalVCR></div>
+    <ng-template #tabelaVendaAprovacaoModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+        <h2 cdkFocusRegionstart>ALTERAÇÃO NA TABELA VENDA</h2>
+            
+          <form [formGroup]="tabelaVendaAprovacaoForm" class="form-container">
+
+            <simple-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Descrição do Traço" name="tracoString" disabled
+            [model]="itemTracoString"></simple-input>
+
+            <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+              <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+
+                  <mat-panel-title>Custo Material (R$)</mat-panel-title>
+                  <mat-panel-description>
+                    <label *ngIf="!itemValores.novoTraco">{{ formataValor(itemValores.valorCustoAtual, 2, true) }}</label>
+                    <label class="mat-label-new">{{ formataValor(itemValores.valorCusto, 2, true) }}</label>
+                    <label *ngIf="!itemValores.novoTraco" [class]="getCorPercentual(calculoPercentualDiferenca(itemValores.valorCustoAtual,itemValores.valorCusto))">
+                      {{ formataValor(calculoPercentualDiferenca(itemValores.valorCustoAtual,itemValores.valorCusto), 3, true) }}%
+                      <mat-icon style="font-size: small">
+                        {{ getIconeDiferenca(calculoPercentualDiferenca(itemValores.valorCustoAtual,itemValores.valorCusto)) }}
+                      </mat-icon>
+                    </label>
+                </mat-panel-description>
+
+                </mat-expansion-panel-header>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Atual" name="valorCustoAtual"
+                  [(model)]="itemValores.valorCustoAtual"  [maxIntegerChars]="8" [decimalChars]="2" disabled></decimal-input>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Novo" name="valorCusto"
+                  [(model)]="itemValores.valorCusto" [maxIntegerChars]="8" [decimalChars]="2" disabled></decimal-input>
+
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <br/>
+
+            <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+              <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+
+                  <mat-panel-title>
+                    Valor Serviço (R$)
+                  </mat-panel-title>
+
+                  <mat-panel-description>
+
+                      <label *ngIf="!itemValores.novoTraco">{{ formataValor(itemValores.valorServicoAtual, 2, true) }}</label>
+                      <label class="mat-label-new">{{ formataValor(itemValores.valorServico, 2, true) }}</label>
+
+                      <label *ngIf="!itemValores.novoTraco" [class]="getCorPercentual(calculoPercentualDiferenca(itemValores.valorServicoAtual,itemValores.valorServico))">
+                        {{ formataValor(calculoPercentualDiferenca(itemValores.valorServicoAtual,itemValores.valorServico), 3, true) }}%
+                        <mat-icon style="font-size: small">
+                          {{ getIconeDiferenca(calculoPercentualDiferenca(itemValores.valorServicoAtual,itemValores.valorServico)) }}
+                        </mat-icon>
+                      </label>
+
+                  </mat-panel-description>
+
+                </mat-expansion-panel-header>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Atual" name="valorServicoAtual"
+                  [(model)]="itemValores.valorServicoAtual"  [maxIntegerChars]="8" [decimalChars]="2" disabled></decimal-input>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Novo" name="valorServico"
+                  [(model)]="itemValores.valorServico" (focusout)="atualizaServico()" [maxIntegerChars]="8" [decimalChars]="2" required></decimal-input>
+
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <br/>
+
+            <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+              <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+
+                  <mat-panel-title>
+                    Markup (%)
+                  </mat-panel-title>
+
+                  <mat-panel-description>
+
+                    <label *ngIf="!itemValores.novoTraco">{{ formataValor(itemValores.valorMarkupAtual, 2, true) }}%</label>
+                    <label class="mat-label-new">{{ formataValor(itemValores.valorMarkup, 2, true) }}%</label>
+                    <label *ngIf="!itemValores.novoTraco" [class]="getCorPercentual(calculoPercentualDiferenca(itemValores.valorMarkupAtual,itemValores.valorMarkup))">
+                      {{ formataValor(calculoPercentualDiferenca(itemValores.valorMarkupAtual,itemValores.valorMarkup), 3, true) }}%
+                      <mat-icon style="font-size: small">
+                        {{ getIconeDiferenca(calculoPercentualDiferenca(itemValores.valorMarkupAtual, itemValores.valorMarkup)) }}
+                      </mat-icon>
+                    </label>
+
+                </mat-panel-description>
+
+                </mat-expansion-panel-header>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Atual" name="valorMarkupAtual"
+                  [(model)]="itemValores.valorMarkupAtual"  [maxIntegerChars]="2" [decimalChars]="2" disabled></decimal-input>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Novo" name="valorMarkup"
+                  [(model)]="itemValores.valorMarkup" (focusout)="atualizaMarkup()" [maxIntegerChars]="2" [decimalChars]="2"></decimal-input>
+
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <br/>
+
+            <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+              <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+
+                  <mat-panel-title>
+                    Valor M3 (R$)
+                  </mat-panel-title>
+
+                  <mat-panel-description>
+
+                    <label *ngIf="!itemValores.novoTraco">{{ formataValor(itemValores.valorPrecoM3Atual, 2, true) }}</label>
+                    <label class="mat-label-new">{{ formataValor(itemValores.valorPrecoM3, 2, true) }}</label>
+                    <label *ngIf="!itemValores.novoTraco" [class]="getCorPercentual(calculoPercentualDiferenca(itemValores.valorPrecoM3Atual, itemValores.valorPrecoM3))">
+                      {{ formataValor(calculoPercentualDiferenca(itemValores.valorPrecoM3Atual, itemValores.valorPrecoM3), 3, true) }}%
+                      <mat-icon style="font-size: small">
+                        {{ getIconeDiferenca(calculoPercentualDiferenca(itemValores.valorPrecoM3Atual, itemValores.valorPrecoM3)) }}
+                      </mat-icon>
+                    </label>
+
+                </mat-panel-description>
+
+                </mat-expansion-panel-header>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Atual" name="valorm3PrecoAtual"
+                  [(model)]="itemValores.valorPrecoM3Atual"  [maxIntegerChars]="8" [decimalChars]="2" disabled></decimal-input>
+
+                <decimal-input [formGroup]="tabelaVendaAprovacaoForm" placeholder="Novo" name="valorm3Preco"
+                  [(model)]="itemValores.valorPrecoM3" (focusout)="atualizaM3()" [maxIntegerChars]="8" [decimalChars]="2" required></decimal-input>
+
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <mat-action-row>
+              <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="tabelaVendaAprovacaoForm.invalid || disableConfirmButton">Confirma</button>
+              <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+            </mat-action-row>
+
+          </form>
+        
+        </div>
+        
+    </ng-template>
+
+    <div #reprovarValorVendaModalVCR></div>
+    <ng-template #reprovarValorVendaModal>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <h3>Deseja realmente reprovar a alteração do valor de Venda?</h3>
+        <button mat-button color="accent" (click)="validarCustoEValorServico(custoMaiorQueValorVendaModal)">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #custoMaiorQueValorVendaVendaModalVCR></div>
+    <ng-template #custoMaiorQueValorVendaModal>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <h3>O novo custo do material é maior que valor de venda vigente. Com isso, o valor de venda receberá
+          o valor do novo custo do material e o valor de serviço ficará zerado.
+          Deseja realmente reprovar a alteração do valor de Venda?</h3>
+        <button mat-button color="accent" (click)="reprovarValorVenda()">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #custoMaiorQueValorVendaVendaModalTodosVCR></div>
+    <ng-template #custoMaiorQueValorVendaModalTodos>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <h3>O novo custo do material é maior que valor de venda vigente. Com isso, o valor de venda receberá
+          o valor do novo custo do material e o valor de serviço ficará zerado.
+          Deseja realmente reprovar a alteração do valor de Venda?</h3>
+        <button mat-button color="accent" (click)="reprovarTodos()">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #aprovarTodosModalVCR></div>
+    <ng-template #aprovarTodosModal>
+      <h3>Deseja realmente aprovar todas as alterações?</h3>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <button mat-button color="accent" (click)="aprovarTodos()">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #reprovarTodosModalVCR></div>
+    <ng-template #reprovarTodosModal>
+      <h3>Deseja realmente reprovar todas as alterações?</h3>
+      <div class="form-container modal" [hidden]="!modalIsOpen">  
+        <button mat-button color="accent" (click)="validarCustoEValorServicos(custoMaiorQueValorVendaModalTodos)">Sim</button>
+        <button mat-button color="warn" (click)="closeModal()">Não</button>
+      </div>
+    </ng-template>
+
+    <div #colunasVisualizacaoModalVCR></div>
+    <ng-template #colunasVisualizacaoModal>
+        
+        <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+        <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+          
+          <div *ngFor="let column of allColumnsOrdered">
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            
+            <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                (change)="setHiddenColumn(column.name, !$event.checked)">
+              {{ column.placeholder }}
+            </mat-checkbox>
+            <br/>
+          </div>
+        </div>
+
+        <div class="float-right">
+          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+        </div>
+        
+    </ng-template>
+
+    <div #alteracaoLoteModalVCR></div>
+    <ng-template #alteracaoLoteModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <h2 cdkFocusRegionstart>Alteração de Preço de Venda em Lote</h2>
+                
+          <h3>Valor de Serviço</h3>
+                
+          <mat-radio-group [(ngModel)]="edicaoLote.valorAlteracaoLote">
+            <mat-radio-button [value]="1">Alterar em %</mat-radio-button>
+            <mat-radio-button [value]="2">Alterar em Valor</mat-radio-button>
+            <mat-radio-button [value]="3">Valor Fixo de Serviço</mat-radio-button>
+            <mat-radio-button [value]="4">Manter Preço de Venda</mat-radio-button>
+          </mat-radio-group>    
+                
+          <decimal-negative-input [formGroup]="alteracaoLoteForm" placeholder="(%)" name="percentualServico" [allowNegativeNumbers]="true"
+          [(model)]="edicaoLote.valorServicoPorcentagem" [maxIntegerChars]="8" [decimalChars]="2" *ngIf="edicaoLote.valorAlteracaoLote === 1" showThousandSeparator></decimal-negative-input>
+          <decimal-negative-input [formGroup]="alteracaoLoteForm" placeholder="(R$)" name="valorServico" [allowNegativeNumbers]="true"
+          [(model)]="edicaoLote.valorServico" [maxIntegerChars]="8" [decimalChars]="2" *ngIf="edicaoLote.valorAlteracaoLote === 2" showThousandSeparator></decimal-negative-input>
+          <decimal-input [formGroup]="alteracaoLoteForm" placeholder="(R$)" name="valorServicoFixo"
+          [(model)]="edicaoLote.valorServicoFixo" [maxIntegerChars]="8" [decimalChars]="2" *ngIf="edicaoLote.valorAlteracaoLote === 3" showThousandSeparator></decimal-input>
+          
+          <h3>Percentual de Markup</h3>
+
+          <mat-radio-group [(ngModel)]="edicaoLote.valorAlteracaoLote">
+            <mat-radio-button [value]="5">Alterar em %</mat-radio-button>
+            <mat-radio-button [value]="6">Fixar em %</mat-radio-button>
+          </mat-radio-group>             
+
+          <decimal-negative-input [formGroup]="alteracaoLoteForm" placeholder="(%)" name="valorMarkup" [allowNegativeNumbers]="true"
+          [(model)]="edicaoLote.valorMarkup" [maxIntegerChars]="8" [decimalChars]="2" *ngIf="edicaoLote.valorAlteracaoLote === 5" showThousandSeparator></decimal-negative-input>
+          <decimal-input [formGroup]="alteracaoLoteForm" placeholder="(%)" name="valorMarkupFixo"
+          [(model)]="edicaoLote.valorMarkupFixo" [maxIntegerChars]="8" [decimalChars]="2" *ngIf="edicaoLote.valorAlteracaoLote === 6" showThousandSeparator></decimal-input>
+
+          <p></p>
+          <mat-action-row>
+            <button mat-button color="accent" (click)="updateTabelaVendaLote()" [disabled]="alteracaoLoteForm.invalid || disableConfirmButton || edicaoLote.valorAlteracaoLote === 0">Confirma</button>
+            <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+          </mat-action-row>
+        </div> 
+    </ng-template>    
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

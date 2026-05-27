@@ -1,0 +1,245 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>PROGRAMAÇÃO</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg">
+      
+      <wizard (onComplete)="onComplete()" innerHeightPercent="71"> 
+        
+        <!-- ABA GERAL -->
+        <wizard-step title="Geral" icon="receipt" [stepForm]="geralForm" (onNext)="onGeralNext()">
+          
+          <form [formGroup]="geralForm" class="form-container">
+
+            <simple-input [formGroup]="geralForm" placeholder="Numero proposta" name="numeroProposta"
+              [model]="numeroPropostaString()" disabled></simple-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Cliente" name="cliente" disabled
+              [model]="proposta.intervenienteCodigo + ' - ' + proposta.intervenienteRazao"></simple-input>
+
+            <simple-input [formGroup]="geralForm" placeholder="Nome da obra" name="obraNome" disabled
+              [model]="programacao.obraNome"></simple-input>
+
+            <suggest-combo [formGroup]="geralForm" placeholder="Endereço de Frente de Obra" name="obraFrenteSequencia" [(model)]="obraFrenteSelecionada"
+              (modelChange)="carregaFrenteObra($event)" [list]="listaObraFrentes" [formatter]="obraFrenteFormatter" [disabled]="isDisabled()" noCase></suggest-combo>
+
+            <simple-input [formGroup]="geralForm" placeholder="Endereço da obra" name="obraEndereco" disabled
+              [model]="enderecoObraString()" multiline></simple-input>
+          </form>
+        </wizard-step>
+
+        <!-- ABA PROGRAMAÇÃO  -->
+        <wizard-step title="Programação" icon="date_range" [stepForm]="programacaoForm" (onNext)="onProgramacaoNext()" (onPrevious)="onProgramacaoPrevious()">
+          <form [formGroup]="programacaoForm" class="form-container">
+            
+            <suggest-combo [formGroup]="programacaoForm" placeholder="Usina entrega" name="usinaEntrega"
+              [formatter]="usinaFormatter" [list]="usinas" required [disabled]="isDisabled() || this.temDireitoAlterarUsina === false"
+              [model]="programacao.usinaEntrega" (modelChange)="usinaEntregaChange($event)"></suggest-combo>
+
+            <date-picker [formGroup]="programacaoForm" placeholder="Data concretagem" name="dataConcretagem"
+              [(model)]="programacao.dataConcretagem" required [disabled]="isDisabled(true) || this.podeAlterarDataProgramacao === false"></date-picker>
+            
+            <simple-input [formGroup]="programacaoForm" placeholder="Hora" name="hora" required [disabled]="isDisabled()"
+              [(model)]="programacao.horario" [mask]="{mask: maskHora}" minLength="4" [validator]="horaIntervaloValidator"></simple-input>
+
+            <select-combo [formGroup]="programacaoForm" placeholder="A confirmar" name="necessitaConfirmacao" required [disabled]="isDisabled()"
+              [model]="programacao.necessitaConfirmacao" (modelChange)="necessitaConfirmacaoChange($event)"
+              [list]="aConfirmarOpcoes" [formatter]="aConfirmarFormatter"></select-combo>
+            
+            <suggest-combo [formGroup]="programacaoForm" placeholder="Intervalo (em minutos)" name="intervalo" required
+              [(model)]="programacao.intervaloEmMinutosEntreCargas" [list]="intervalos" [disabled]="isDisabled()"></suggest-combo>
+            
+            <integer-input matTooltip="Parâmetro específico da programação atual. Caso seja 0, será considerado o parâmetro definido para a central." [formGroup]="programacaoForm" placeholder="Tempo de deslocamento até a obra (Minutos)" name="tempoAteAObra" [disabled]="isDisabled()"
+              [(model)]="programacao.tempoAteAObra" [required]="utilizaCalculoPrecoTabelaPorUsina" [maxIntegerChars]="4"></integer-input>
+
+              <integer-input matTooltip="Parâmetro específico da programação atual. Caso seja 0, será considerado o parâmetro definido para a central." [formGroup]="programacaoForm" placeholder="Tempo de permanência na obra (Minutos)" name="tempoBtNaObra" [disabled]="isDisabled()"
+              [(model)]="programacao.tempoBtNaObra" [required]="utilizaCalculoPrecoTabelaPorUsina" [maxIntegerChars]="4"></integer-input>
+
+              <integer-input matTooltip="Parâmetro específico da programação atual. Caso seja 0, será considerado o parâmetro definido para o ponto de carga." [formGroup]="programacaoForm" placeholder="Tempo de descarga (Minutos)" name="tempoDescarga" [disabled]="isDisabled()"
+              [(model)]="programacao.tempoDescarga" [required]="utilizaCalculoPrecoTabelaPorUsina" [maxIntegerChars]="4"></integer-input>
+
+            <simple-input [formGroup]="programacaoForm" placeholder="Solicitante" name="solicitante" required
+              [(model)]="programacao.solicitante" [disabled]="isDisabled()"></simple-input>
+
+            <select-combo [formGroup]="programacaoForm" placeholder="Corpo de Prova - Tipo" name="CorpoDeProvaTipo"
+              [disabled]="isDisabled()" (modelChange)="corpoDeProvaTipoChange($event)"
+              [(model)]="programacao.corpoDeProvaTipo" [list]="corpoDeProvaTipos" noCase *ngIf="this.temDireitoColetaCp"></select-combo>
+            
+            <suggest-combo [formGroup]="programacaoForm" placeholder="Corpo de Prova - Quantidade" name="CorpoDeProvaQuantidade" 
+              [required]="this.programacao.corpoDeProvaTipo !== 'Nenhum'" [disabled]="isDisabled() || this.programacao.corpoDeProvaTipo === 'Nenhum'" 
+              [(model)]="programacao.corpoDeProvaQuantidade"  [list]="quantidadeCorpoDeProva" noCase *ngIf="this.temDireitoColetaCp"></suggest-combo>
+
+            <integer-input [formGroup]="programacaoForm" placeholder="Corpo de Prova - Intervalo" [maxIntegerChars]="2"
+              [disabled]="isDisabled() || this.programacao.corpoDeProvaTipo === 'Nenhum' || this.programacao.corpoDeProvaTipo === 'Total'"
+              name="CorpoDeProvaIntervalo" [(model)]="programacao.corpoDeProvaIntervalo" [required]="this.programacao.corpoDeProvaTipo === 'Parcial'" *ngIf="this.temDireitoColetaCp"></integer-input>
+            
+            <select-combo [formGroup]="programacaoForm" placeholder="Corpo de Prova - Moldador" name="corpoDeProvaMoldador"
+              [disabled]="isDisabled() || this.programacao.corpoDeProvaTipo === 'Nenhum'"
+              [formatter]="corpoDeProvaMoldadoresFormatter" [list]="corpoDeProvaMoldadores" [(model)]="programacao.corpoDeProvaMoldador"
+              [required]="this.programacao.corpoDeProvaTipo !== 'Nenhum'" *ngIf="this.temDireitoColetaCp"></select-combo>
+
+            <select-combo [formGroup]="programacaoForm" placeholder="Corpo de Prova - Moldagem Remota" name="corpoDeProvaMoldagemRemota"
+              [disabled]="isDisabled() || this.programacao.corpoDeProvaTipo === 'Nenhum'"
+              [formatter]="corpoDeProvaMoldagemRemotaFormatter" [list]="corpoDeProvaMoldagemRemota" [(model)]="programacao.corpoDeProvaMoldagemRemota"
+              [required]="this.programacao.corpoDeProvaTipo !== 'Nenhum'" *ngIf="this.temDireitoColetaCp"></select-combo>
+
+            <simple-input [formGroup]="programacaoForm" placeholder="Observação" name="observacao"
+              [(model)]="programacao.observacao" [disabled]="isDisabled()"></simple-input>
+
+            <simple-input [formGroup]="programacaoForm" placeholder="Observação Interna" name="observacaoInterna"
+              [(model)]="programacao.observacaoInterna" [disabled]="isDisabled()"></simple-input>
+
+          </form>
+        </wizard-step>
+        <!-- / ABA PROGRAMAÇÃO  -->
+
+        <!-- ABA TRAÇO  -->
+        <wizard-step title="Traço" icon="colorize" [stepForm]="tracoForm" (onNext)="onTracoNext()" (onPrevious)="onTracoPrevious()">
+          <form [formGroup]="tracoForm" class="form-container">
+
+            <mat-card>
+              <label><b>Legenda:</b> Uso - Pedra - Slump - TP Resistência e MPA - Volume Contratado - Volume Consumido - Saldo Total</label>
+              <radio-input [formGroup]="tracoForm" title="Selecionar traço: " *ngIf="!isUndefined(proposta.obra.obraTracos)" name="obraTracoSequencia" [valueFormatter]="getSequencia" [valueDisable]="getDisabled"
+                [formatter]="tracoString" [list]="proposta.obra.obraTracos" [model]="programacao.obraTracoSequencia"
+                (modelChange)="obraTracoSequenciaChange($event)" [disabled]="isDisabled()"></radio-input>
+            </mat-card><br/>
+            <mat-action-row>
+              <button mat-button disabled>
+                Total Contratado: {{ formataValor(volumeTotalTracosContratado(), 1, true) }} M3 
+              </button>
+              <button mat-button disabled>
+                 Consumido: {{ formataValor(volumeTotalTracosConsumido(), 1, true) }} M3 
+              </button>
+                <button mat-button disabled>
+                 Saldo total: {{ formataValor(volumeTotalTracosContratado() - volumeTotalTracosConsumido(), 1, true) }} M3 
+                </button>
+            </mat-action-row>
+
+            <decimal-input [formGroup]="tracoForm" placeholder="Qtde. M3 contratada" name="volumeContratado"
+              [model]="tracoSelecionado.m3Quantidade" [decimalChars]="1" disabled></decimal-input>
+
+            <decimal-input [formGroup]="tracoForm" placeholder="Qtde. M3" name="volumeTotal" [validator]="volumeValidator"
+              [required]="programacao.obraTracoSequencia !== 0" [disabled]="isDisabled() || programacao.obraTracoSequencia === 0"
+              [(model)]="programacao.volumeTotal" [decimalChars]="1"></decimal-input>
+
+            <decimal-input [formGroup]="tracoForm" placeholder="Qtde. já Liberada" name="volumeLiberado"
+              [(model)]="programacao.volumeLiberado" [decimalChars]="1" *ngIf="isVolumeLiberadoParcial()"></decimal-input>
+
+            <decimal-input [formGroup]="tracoForm" placeholder="Qtde. P/BT" name="volumePorCarga"
+              [required]="programacao.obraTracoSequencia !== 0" disabled
+              [(model)]="programacao.volumePorCarga" [decimalChars]="1"></decimal-input>
+
+            <suggest-combo [formGroup]="tracoForm" placeholder="Peça a concretar" name="pecaConcretar"
+              [required]="programacao.obraTracoSequencia !== 0" [disabled]="isDisabled() || programacao.obraTracoSequencia === 0"
+              [(model)]="programacao.pecaConcretar" [list]="pecasConcretar" [formatter]="pecaConcretarFormatter"></suggest-combo>
+
+            <suggest-combo [formGroup]="tracoForm" placeholder="Andar" name="andar"
+              [disabled]="isDisabled() || programacao.obraTracoSequencia === 0"
+              [(model)]="andar" [list]="andares" noCase></suggest-combo>
+            
+          </form>
+        </wizard-step>
+        <!-- / ABA TRAÇO  -->
+
+        <!-- ABA BOMBA  -->
+        <wizard-step title="Bomba" icon="build" [stepForm]="bombaForm" (onNext)="onBombaNext()" (onPrevious)="onBombaPrevious()">
+          <form [formGroup]="bombaForm" class="form-container">
+
+              <mat-card>
+                <radio-input [formGroup]="bombaForm" title="Selecionar bomba:" name="obraBombaSequencia" [valueFormatter]="getSequencia" [valueDisable]="getDisabled"
+                  [formatter]="bombaString" [list]="proposta.obra.obraBombas" [model]="programacao.obraBombaSequencia" noneOption
+                  (modelChange)="obraBombaSequenciaChange($event)" [disabled]="isDisabled()" noneDescription="Nenhuma"></radio-input>
+              </mat-card><br/>
+
+              <integer-input [formGroup]="bombaForm" placeholder="Distância tubulação" [maxIntegerChars]="3"
+                [required]="programacao.obraBombaSequencia !== 0 && bombaSelecionada.bombaPropria" [disabled]="isDisabled() || programacao.obraBombaSequencia === 0"
+                name="distanciaTubulacao" [(model)]="programacao.distanciaTubulacao"></integer-input>
+              
+              <simple-input [formGroup]="bombaForm" placeholder="Horário bomba" name="horaBomba"
+                [required]="programacao.obraBombaSequencia !== 0" [disabled]="isDisabled() || programacao.obraBombaSequencia === 0"
+                [(model)]="programacao.horarioBomba" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator"></simple-input>
+            
+          </form>
+        </wizard-step>
+        <!-- / ABA BOMBA  -->
+
+        <!-- ABA DEMAIS SERVIÇOS  -->
+        <wizard-step title="Demais serviços" icon="more" [stepForm]="demaisServicosForm" (onPrevious)="onDemaisServicosPrevious()" (onStepSelected)="onDemaisServicosStepSelected()">
+          <form [formGroup]="demaisServicosForm" class="form-container">
+
+            <mat-card>
+                <h2>VIBRADOR</h2>
+
+                <integer-input [formGroup]="demaisServicosForm" placeholder="Quantidade" [maxIntegerChars]="3"
+                  name="vibradorQuantidade" [(model)]="programacao.vibradorQuantidade" [disabled]="isDisabled()"></integer-input>
+    
+                <decimal-input [formGroup]="demaisServicosForm" placeholder="Valor unitário" [maxIntegerChars]="4" [disabled]="isDisabled()"
+                  name="vibradorValorUnitario" [(model)]="programacao.vibradorValorUnitario" [decimalChars]="2"></decimal-input>
+    
+                <decimal-input [formGroup]="demaisServicosForm" placeholder="Valor total" [maxIntegerChars]="6" disabled
+                  name="vibradorValorTotal" [model]="vibradorValorTotal" [decimalChars]="2"></decimal-input>
+    
+                <suggest-combo [formGroup]="demaisServicosForm" placeholder="Vendedor" name="vibradorVendedor" [disabled]="isDisabled()"
+                  [(model)]="programacao.vibradorVendedor" [list]="vendedores" [formatter]="vendedorFormatter"></suggest-combo>
+            </mat-card>
+            <br /> <!-- -->
+
+            <integer-input [formGroup]="demaisServicosForm" name="isTracoSelecionado" hidden required
+              [model]="programacao.obraTracoSequencia || programacao.obraBombaSequencia"></integer-input>
+
+            <mat-error *ngIf="programacao.obraTracoSequencia === 0 && programacao.obraBombaSequencia === 0 && !isDisabled()">
+              Selecione um traço ou uma bomba!
+            </mat-error>
+
+            <div class="form-container" *ngIf="demaisServicosShowContent">
+              <h4>DEMAIS SERVIÇOS</h4>
+              <mat-accordion class="expansion-panel-headers-align">
+                <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                <mat-expansion-panel *ngFor="let item of proposta.obra.obraDemaisServicos">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <mat-checkbox [formControlName]="getFormControlNameDemaisServicosSelected(item)" (click)="$event.stopPropagation()" [disabled]="isDisabled()"
+                        [ngModel]="getItemDemaisServicosSelected(item)" (ngModelChange)="setItemDemaisServicosSelected(item, $event)">
+                      </mat-checkbox>
+                    </mat-panel-title>
+                    <mat-panel-description>{{ item.mercadoria.descricao }}</mat-panel-description>
+                  </mat-expansion-panel-header>
+                  
+                  <div>Frequencia Cobrança: <b>{{ frequenciaCobrancaFormatter(item.frequenciaDeCobranca) }}</b></div>
+                  <div>Forma Cobrança: <b>{{ formaDeCobrancaFormatter(item.formaDeCobranca) }}</b></div>
+                  <div>Valor Unitário: <b>{{ formataMoeda(item.precoProposto) }}</b></div>
+                  <div>Quantidade Total Proposta: <b>{{ formataValor(item.quantidade, item.numeroDeCasasDecimais, false) }}</b></div>
+
+                  <div *ngIf="getItemDemaisServicosSelected(item)">
+                    <br/>
+                    <mat-divider></mat-divider>
+                    <decimal-input [formGroup]="demaisServicosForm" placeholder="Quantidade" name="quantidade-{{item.sequencia}}" required [disabled]="isDisabled()"
+                        [(model)]="getItemDemaisServicos(item).quantidade" [maxIntegerChars]="8" [decimalChars]="item.numeroDeCasasDecimais"></decimal-input>
+                  </div>
+
+                </mat-expansion-panel>
+              </mat-accordion>
+
+              <mat-action-row>
+                <button mat-button disabled>Valor total: {{ formataMoeda(valorTotalDemaisServicos()) }}</button>
+              </mat-action-row>
+
+            </div>
+            
+          </form>
+
+            
+        </wizard-step>
+        <!-- / ABA DEMAIS SERVIÇOS  -->
+
+      </wizard>
+
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

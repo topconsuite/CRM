@@ -1,0 +1,12 @@
+::ng-deep .month-year-picker .mat-calendar-period-button {
+    pointer-events: none;
+  }
+  
+  ::ng-deep .month-year-picker .mat-calendar-arrow {
+    display: none;
+  }
+  
+  ::ng-deep .month-year-picker .mat-calendar-table-header {
+    display: none;
+  }
+  

@@ -1,0 +1,262 @@
+<div class="form-container modal">
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>CONFIGURAR ASSINATURA ELETRÔNICA</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+  
+
+  <div>
+      <div style="padding: 12px 25px 16px 25px;">
+        <button mat-raised-button color="primary" type="button" (click)="openClicksignConfigModal(clicksignConfigModal)"
+          style="font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">
+          <mat-icon style="margin-right: 6px;">settings</mat-icon> Configurações ClickSign
+        </button>
+      </div>
+
+      <form [formGroup]="assinaturaEletronicaForm" style="margin-left: 25px" fusePerfectScrollbar>
+
+          <simple-input [formGroup]="assinaturaEletronicaForm" placeholder="Corpo Email" name="corpoEmail"
+          [(model)]="clicksignParametro.corpoEmail" multiline [noCase]="true" [disabled]="!temDireitoAlteracao"></simple-input>
+
+          <simple-input [formGroup]="assinaturaEletronicaForm" placeholder="Prazo  limite para assinatura (em dias)" name="prazoLimiteAssinatura"
+          [(model)]="clicksignParametro.prazoLimiteAssinatura" multiline [noCase]="true" [disabled]="!temDireitoAlteracao"></simple-input>
+
+          <div class="div-check">
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.obrigaDocumentoOficial" formControlName="obrigaFotoDocumentoOficial" [disabled]="!temDireitoAlteracao">
+              <mat-icon>account_circle</mat-icon>
+              Obriga foto do documento oficial 
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.obrigaSelfie" formControlName="obrigaSelfie" [disabled]="!temDireitoAlteracao">
+              <mat-icon>perm_identity</mat-icon>
+              Obriga selfie com documento
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.obrigaAssinaturaManuscrita" formControlName="obrigaAssinaturaManuscrita" [disabled]="!temDireitoAlteracao">
+              <mat-icon>gesture</mat-icon>
+              Obriga assinatura manuscrita
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.obrigaReconhecimentoFacial" formControlName="obrigaReconhecimentoFacial" [disabled]="!temDireitoAlteracao">
+              <mat-icon>videocam</mat-icon>
+              Obriga reconhecimento facial
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.notificaClienteNaConfirmacaoDeAssinatura" formControlName="notificaClienteNaConfirmacaoDeAssinatura" [disabled]="!temDireitoAlteracao">
+              <mat-icon>mark_email_read</mat-icon>
+              Envia e-mail de notificação ao cliente na confirmação da assinatura
+            </mat-checkbox>
+
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.permiteAssinaturaWhatsApp" formControlName="permiteAssinaturaWhatsApp" 
+                          (change)="confirmacaoCienciaCobrancaAssinaturaWhatsApp($event.checked)" [disabled]="!temDireitoAlteracao">
+              <mat-icon>gesture</mat-icon>
+              Permite assinatura via WhatsApp
+            </mat-checkbox>
+
+          </div>
+          <br>
+          <mat-divider></mat-divider>
+          <br>
+          <div class="div-check">
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.enviaAssinaturaContratada" formControlName="enviaAssinaturaContratada" [disabled]="!temDireitoAlteracao">
+              <mat-icon>gesture</mat-icon>
+              Solicita assinatura da contratada
+            </mat-checkbox>
+          </div>
+          <div class="div-check">
+            <mat-checkbox [formGroup]="assinaturaEletronicaForm" [(ngModel)]="clicksignParametro.enviaAssinaturaResponsavelSolidario"  formControlName="enviaAssinaturaResponsavelSolidario" [disabled]="!temDireitoAlteracao">
+              <mat-icon>gesture</mat-icon>
+              Solicita assinatura do Responsável Solidário (se houver)
+            </mat-checkbox>
+          </div>
+          <br>
+
+          <h2>Dados Contratada</h2>
+          <select-combo [formGroup]="assinaturaEletronicaForm" placeholder="Envio para Assinatura" name="envioAssinaturaContratada" [list]="metodoEnvioAssinaturaLista"
+              [(model)]="clicksignParametro.metodoEnvioAssinaturaContratada" (modelChange)="metodoEnvioAssinaturaContratadaChange($event)" [formatter]="metodoEnvioAssinaturaFormatter" 
+              [required]="clicksignParametro.enviaAssinaturaContratada" [disabled]="!temDireitoAlteracao || !clicksignParametro.enviaAssinaturaContratada"></select-combo>
+
+          <select-combo [formGroup]="assinaturaEletronicaForm" placeholder="Autenticação" name="autenticacaoContratada" [list]="metodoAutenticacaoLista" [required]="clicksignParametro.enviaAssinaturaContratada"
+              [(model)]="clicksignParametro.metodoAutenticacaoContratada" [formatter]="metodoAutenticacaoFormatter" [disabled]="!temDireitoAlteracao || !clicksignParametro.enviaAssinaturaContratada || envioAssinaturaWhatsApp"></select-combo>
+
+          <simple-input [formGroup]="assinaturaEletronicaForm" placeholder="Email do Responsável da Contratada" name="emailContratada" email 
+          [required]="clicksignParametro.enviaAssinaturaContratada"
+          [(model)]="clicksignParametro.emailContratada" lowercase [noCase]="true" [disabled]="!temDireitoAlteracao || !clicksignParametro.enviaAssinaturaContratada"></simple-input>
+          
+          <phone-input [formGroup]="assinaturaEletronicaForm" placeholder="Celular do Responsável da Contratada" name="telefoneContratada" 
+          [required]="clicksignParametro.enviaAssinaturaContratada && possuiEnvioOuAutenticaoCelular()"
+          [(modelDdd)]="clicksignParametro.dddContratada" [(modelNumber)]="clicksignParametro.telefoneContratada" [disabled]="!temDireitoAlteracao || !clicksignParametro.enviaAssinaturaContratada"></phone-input>
+          <br>
+
+          <h2>Dados Testemunhas</h2>
+          <select-combo [formGroup]="assinaturaEletronicaForm" placeholder="Primeira Testemunha" name="primeiraTestemunha" [list]="opcoesPrimeiraTestemunhaLista" 
+              [(model)]="clicksignParametro.primeiraTestemunha" [formatter]="opcoesTestemunhasFormatter" [disabled]="!temDireitoAlteracao"></select-combo>
+
+          <select-combo [formGroup]="assinaturaEletronicaForm" placeholder="Segunda Testemunha" name="segundaTestemunha" [list]="opcoesSegundaTestemunhaLista" 
+              [(model)]="clicksignParametro.segundaTestemunha" [formatter]="opcoesTestemunhasFormatter" [disabled]="!temDireitoAlteracao"></select-combo>
+          <br>
+
+          <mat-divider></mat-divider>
+          <div class="float-right">
+              <button mat-button color="accent" (click)="salvarConfiguracao()" [disabled]="!temDireitoAlteracao || assinaturaEletronicaForm.invalid">Salvar Alterações</button>
+          </div>
+      </form>
+
+  </div> 
+
+</div>
+
+<ng-container #modalVCR></ng-container>
+<ng-container #subModalVCR></ng-container>
+
+<ng-template #clicksignConfigModal>
+
+  <div class="form-container modal" style="min-width: 500px; width: 45vw; max-width: 700px;">
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2 cdkFocusRegionstart>Configurações ClickSign</h2>
+    </div>
+
+    <div style="padding: 16px;">
+
+      <div style="margin-bottom: 16px;">
+        <button mat-button color="accent" type="button" (click)="openConfiguracaoFormModal(clicksignConfigFormModal)" [disabled]="!temDireitoAlteracao">
+          <mat-icon>add</mat-icon> Nova Configuração
+        </button>
+      </div>
+
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let config of clicksignConfiguracoes">
+          <mat-expansion-panel-header>
+            <mat-panel-title style="flex: 1; display: flex; align-items: center; gap: 8px;">
+              {{ config.alias || config.email }}
+            </mat-panel-title>
+            <mat-panel-description style="flex: 0 0 auto; justify-content: flex-end; min-width: 90px; text-align: right; font-weight: 600; text-transform: uppercase;">
+              {{ config.ativo ? 'Ativo' : 'Desativado' }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <table>
+            <tbody>
+              <tr>
+                <td style="padding-right: 16px; color: gray;">E-mail:</td>
+                <td>{{ config.email }}</td>
+              </tr>
+              <tr>
+                <td style="padding-right: 16px; color: gray;">URL Base:</td>
+                <td>{{ config.baseUrl }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <br/>
+
+          <div style="display: flex; gap: 8px;">
+            <button mat-button color="accent" type="button" (click)="openUsinasModal(clicksignUsinasModal, config)">
+              <mat-icon matTooltip="Gerenciar Usinas">domain</mat-icon> Usinas
+            </button>
+            <button mat-button color="accent" type="button" (click)="openConfiguracaoFormModal(clicksignConfigFormModal, config)" [disabled]="!temDireitoAlteracao">
+              <mat-icon matTooltip="Editar Configuração">edit</mat-icon> Editar
+            </button>
+            <button mat-button color="warn" type="button" (click)="removerConfiguracao(config)" [disabled]="!temDireitoAlteracao">
+              <mat-icon matTooltip="Remover Configuração">delete</mat-icon> Remover
+            </button>
+          </div>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <mat-action-row>
+        <button mat-button color="accent" type="button" (click)="closeModal()">Fechar</button>
+      </mat-action-row>
+
+    </div>
+  </div>
+
+</ng-template>
+
+<ng-template #clicksignConfigFormModal>
+
+  <div class="form-container modal" style="min-width: 440px; width: 40vw; max-width: 620px;" [hidden]="!subModalIsOpen">
+    <h2 cdkFocusRegionstart>{{ configuracaoNovo ? 'Nova Configuração' : 'Editar Configuração' }}</h2>
+    <form [formGroup]="clicksignConfiguracaoForm" class="form-container">
+
+      <simple-input [formGroup]="clicksignConfiguracaoForm" placeholder="Alias (identificação)" name="alias"
+        [(model)]="configuracaoEmEdicao.alias" [noCase]="true"></simple-input>
+
+      <simple-input [formGroup]="clicksignConfiguracaoForm" placeholder="E-mail" name="csEmail"
+        [(model)]="configuracaoEmEdicao.email" lowercase [noCase]="true"></simple-input>
+
+      <simple-input [formGroup]="clicksignConfiguracaoForm" placeholder="Token de Acesso" name="token"
+        [(model)]="configuracaoEmEdicao.token" [noCase]="true"></simple-input>
+
+      <simple-input [formGroup]="clicksignConfiguracaoForm" placeholder="URL Base da API" name="baseUrl"
+        [(model)]="configuracaoEmEdicao.baseUrl" [noCase]="true"></simple-input>
+
+      <simple-input [formGroup]="clicksignConfiguracaoForm" placeholder="SHA256 Secret (Webhook)" name="sha256Secret"
+        [(model)]="configuracaoEmEdicao.sha256Secret" [noCase]="true"></simple-input>
+
+      <div style="margin-top: 16px; margin-bottom: 16px;">
+        <mat-checkbox formControlName="ativo" [(ngModel)]="configuracaoEmEdicao.ativo">Ativo</mat-checkbox>
+      </div>
+
+      <mat-action-row>
+        <button mat-button color="accent" type="button" (click)="salvarClicksignConfiguracao()" [disabled]="!temDireitoAlteracao">Confirma</button>
+        <button mat-button color="warn" type="button" (click)="closeSubModal()">Cancela</button>
+      </mat-action-row>
+
+    </form>
+  </div>
+
+</ng-template>
+
+<ng-template #clicksignUsinasModal>
+
+  <div class="form-container modal" style="min-width: 440px; width: 40vw; max-width: 620px;" [hidden]="!subModalIsOpen">
+    <h2 cdkFocusRegionstart>Usinas — {{ configuracaoSelecionada.alias || configuracaoSelecionada.email }}</h2>
+    <form [formGroup]="clicksignConfiguracaoForm" class="form-container">
+
+      <mat-card>
+        <mat-card-title>
+          <p>Vincular Usina</p>
+        </mat-card-title>
+        <mat-card-content>
+          <suggest-combo [formGroup]="clicksignConfiguracaoForm" placeholder="Usina" name="usinaVincular"
+            [list]="usinasDisponiveis" [formatter]="usinaFormatter" [(model)]="usinaSelecionada"></suggest-combo>
+          <mat-action-row>
+            <button mat-button color="accent" type="button" (click)="vincularUsina()" [disabled]="!usinaSelecionada">
+              <mat-icon>link</mat-icon> Vincular
+            </button>
+          </mat-action-row>
+        </mat-card-content>
+      </mat-card>
+
+      <br/>
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Usinas Vinculadas</mat-panel-title>
+          <mat-panel-description>Utilizarão esta configuração ClickSign</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div style="max-height: 280px; overflow-y: auto;">
+        <div *ngFor="let usina of usinasVinculadas">
+          <mat-divider></mat-divider>
+          <p>
+            <button mat-button color="warn" type="button" (click)="desvincularUsina(usina)">
+              <mat-icon matTooltip="Desvincular Usina">link_off</mat-icon> Desvincular
+            </button>
+            <b>{{ usina.codigo }} - {{ usina.nome }}</b>
+          </p>
+        </div>
+        <p *ngIf="usinasVinculadas.length === 0" style="color: gray; font-style: italic; padding: 8px 0;">Nenhuma usina vinculada.</p>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-action-row>
+        <button mat-button color="accent" type="button" (click)="closeSubModal()">Fechar</button>
+      </mat-action-row>
+
+    </form>
+  </div>
+
+</ng-template>

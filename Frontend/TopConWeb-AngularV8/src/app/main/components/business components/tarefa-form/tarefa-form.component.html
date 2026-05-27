@@ -1,0 +1,74 @@
+
+<h2 cdkFocusRegionstart>AGENDAR TAREFA</h2>
+            
+<form [formGroup]="tarefaForm" class="form-container ! important">
+
+  <div *ngIf="itemTarefa.idAgrupamento !== '' && temPermissaoParaAlterar()">
+    <mat-card style="text-align: center; margin-bottom: 15px;">
+      <h2 style="color: rgb(119, 0, 0);">Atenção: Esta tarefa está vinculada a outras. Modificá-la afetará as tarefas vinculadas.</h2>
+    </mat-card>
+  </div>
+
+  <div *ngIf="itemTarefa.idAgrupamento !== '' && !temPermissaoParaAlterar()">
+    <p style="color: rgb(119, 0, 0);">Atenção: Esta tarefa está vinculada a outras. Você não possui permissão para modificá-la.</p>
+  </div>
+
+  <simple-input [formGroup]="tarefaForm" placeholder="Descrição Tarefa" name="descricao" [(model)]="itemTarefa.descricao" required maxLength="30"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemTarefa.descricao, 30)}}</div>
+
+  <div *ngIf="(temDireitoGrupoInclui || temDireitoGeralInclui) && itemTarefa.codigo === 0">
+    <mat-checkbox formControlName="tarefaParaOutrosUsuario" [(ngModel)]="tarefaParaOutrosUsuario">
+      Tarefa para outro(s) usuário(s)/grupo(s)
+    </mat-checkbox>
+    <br>
+  </div>
+
+  <div *ngIf="tarefaParaOutrosUsuario" style="margin-bottom: 15px;">
+    <mat-card>
+      <select-combo [formGroup]="tarefaForm" placeholder="Grupo" [disabled]="!temDireitoGrupoAcesso && !temDireitoGeralAcesso"
+        name="grupoSelecionado" [(model)]="gruposSelecionado" [list]="gruposUsuarios" multiple></select-combo>
+
+      <select-combo [formGroup]="tarefaForm" placeholder="Usuário" [disabled]="grupoSelecionado === ''"
+        name="usuariosSelecionados" [required]="grupoSelecionado !== ''" multiple
+        [(model)]="usuariosSelecionados" [list]="usuariosDoGrupo"></select-combo>
+    </mat-card>
+  </div>
+
+  
+  <mat-checkbox formControlName="diaInteiro" [(ngModel)]="itemTarefa.diaInteiro"  >
+    Dia Inteiro
+  </mat-checkbox>
+  <br>
+
+  <date-picker [formGroup]="tarefaForm" placeholder="Data" name="data" required [(model)]="itemTarefa.data"></date-picker>
+
+  <div *ngIf="!itemTarefa.diaInteiro">
+    <simple-input [formGroup]="tarefaForm" placeholder="Hora" name="hora" [required]="!itemTarefa.diaInteiro" [disabled]="itemTarefa.diaInteiro"
+      [(model)]="itemTarefa.horarioString" (modelChange)="changeHorario($event)" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidator"></simple-input>
+  </div>
+
+  <simple-input [formGroup]="tarefaForm" placeholder="Contato" name="contato" [(model)]="itemTarefa.contato"></simple-input>
+
+  <phone-input  [formGroup]="tarefaForm" placeholder="Telefone" name="telefone" [(modelDdd)]="itemTarefa.dddTelefone" 
+    [(modelNumber)]="itemTarefa.telefone"></phone-input>
+
+  <phone-input  [formGroup]="tarefaForm" placeholder="Celular" name="celular" [(modelDdd)]="itemTarefa.dddCelular" 
+  [(modelNumber)]="itemTarefa.celular"></phone-input>
+
+  <simple-input [formGroup]="tarefaForm" placeholder="Email" name="email" email lowerCase
+        [(model)]="itemTarefa.email"></simple-input>
+
+  <simple-input [formGroup]="tarefaForm" placeholder="Observação" name="observacao" [(model)]="itemTarefa.observacao" maxLength="100"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemTarefa.observacao, 100)}}</div>
+
+  <simple-input [formGroup]="tarefaForm" placeholder="Providências" name="providencia" [(model)]="itemTarefa.providencia" maxLength="100"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemTarefa.providencia, 100)}}</div>
+
+  <simple-input [formGroup]="tarefaForm" placeholder="Conclusões" name="conclusao" [(model)]="itemTarefa.conclusao" maxLength="100"></simple-input>
+  <div style="margin-bottom: 5px;">{{remainingCharacters(itemTarefa.conclusao, 100)}}</div>
+</form>
+
+<mat-action-row class="action-buttons">
+  <button mat-button color="accent" (click)="confirmModal(itemTarefa)" [disabled]="tarefaForm.invalid || !temPermissaoParaAlterar()">Confirma</button>
+  <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+</mat-action-row>

@@ -1,0 +1,1489 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>APROVAÇÕES</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+      [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+
+      <view-selector [key]="'APROV-PROPOSTA'" [currentValue]="currentViewValue"
+        (selectedChange)="viewChanged($event)">
+
+      </view-selector><br *ngIf="isSmallScreen"/>
+    
+      <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="APROV-PROPOSTA">
+
+        <integer-input [formGroup]="filter.form" placeholder="Número proposta" name="==|numeroProposta"
+          [(model)]="filtro.numeroProposta"></integer-input>
+        
+        <integer-input [formGroup]="filter.form" placeholder="Ano proposta" name="==|anoProposta"
+          [(model)]="filtro.anoProposta" [maxIntegerChars]="2"></integer-input>
+
+        <integer-input [formGroup]="filter.form" placeholder="Número contrato" name="==|numeroContrato"
+          [(model)]="filtro.numeroContrato"></integer-input>
+
+        <integer-input [formGroup]="filter.form" placeholder="Ano contrato" name="==|anoContrato"
+          [(model)]="filtro.anoContrato" [maxIntegerChars]="2"></integer-input>
+
+        <select-combo [formGroup]="filter.form" placeholder="Central de entrega" name="usinaEntrega"  [list]="usinas"
+          [(model)]="filtro.usinaEntregaIn" [formatter]="usinaFormatter" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Usina entrega" name="==|usinaEntregaIn"
+          [model]="usinaEntregaIn" *ngIf="filtro.usinaEntregaIn && filtro.usinaEntregaIn.length > 0" hidden></simple-input>
+
+        <select-combo [formGroup]="filter.form" placeholder="Analista" name="analista"  [list]="analistas"
+          [(model)]="filtro.analistaIn" [formatter]="analistaFormatter" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Analista" name="==|analistaIn"
+          [model]="analistaIn" *ngIf="filtro.analistaIn && filtro.analistaIn.length > 0" hidden></simple-input>
+        
+        <select-combo [formGroup]="filter.form" placeholder="Tipo cobrança" name="tipoCobranca"  [list]="tiposCobranca"
+          [(model)]="filtro.tipoCobrancaIn" [formatter]="tipoCobrancaFormatter" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Tipo cobrança" name="==|tipoCobrancaIn"
+          [model]="tipoCobrancaIn" *ngIf="filtro.tipoCobrancaIn && filtro.tipoCobrancaIn.length > 0" hidden></simple-input>
+        
+        <select-combo [formGroup]="filter.form" placeholder="Bandeira cartão" name="bandeira"  [list]="cartaoBandeiras"
+          [(model)]="filtro.bandeiraIn" [formatter]="bandeiraFormatter" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Bandeira cartão" name="==|bandeiraIn"
+          [model]="bandeiraIn" *ngIf="filtro.bandeiraIn && filtro.bandeiraIn.length > 0" hidden></simple-input>
+        
+        <select-combo [formGroup]="filter.form" placeholder="Portador" name="portador"  [list]="portadores"
+          [(model)]="filtro.portadorIn" [formatter]="portadorFormatter" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Portador" name="==|portadorIn"
+          [model]="portadorIn" *ngIf="filtro.portadorIn && filtro.portadorIn.length > 0" hidden></simple-input>
+
+          <select-combo [formGroup]="filter.form" placeholder="Status contrato" name="statusGeracaoContrato" [list]="statusGeracaoContrato"
+          [formatter]="statusFormatter" [(model)]="filtro.statusGeracaoContratoIn" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status contrato" name="==|statusGeracaoContratoIn"
+          [model]="statusGeracaoContratoIn" hidden *ngIf="filtro.statusGeracaoContratoIn && filtro.statusGeracaoContratoIn.length > 0"></simple-input>
+
+        <select-combo [formGroup]="filter.form" placeholder="Status cadastro" name="statusCadastro" [list]="statusCadastro"
+          [formatter]="statusFormatter" [(model)]="filtro.statusCadastroIn" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status cadastro" name="==|statusCadastroIn"
+          [model]="statusCadastroIn" hidden *ngIf="filtro.statusCadastroIn && filtro.statusCadastroIn.length > 0"></simple-input>
+        
+        <select-combo [formGroup]="filter.form" placeholder="Status comercial" name="statusComercial" [list]="statusComercial"
+          [formatter]="statusFormatter" [(model)]="filtro.statusComercialIn" multiple [disabled]="filtro.aguardandoOutroNivel"></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status comercial" name="==|statusComercialIn"
+          [model]="statusComercialIn" hidden *ngIf="filtro.statusComercialIn && filtro.statusComercialIn.length > 0"></simple-input>
+        
+        <mat-checkbox [(ngModel)]="filtro.aguardandoOutroNivel">Aguardando aprovação de outro nível de hierarquia</mat-checkbox>
+        <simple-input [formGroup]="filter.form" placeholder="Aguardando aprovação de outro nível de hierarquia" name="==|aguardandoOutroNivel"
+            [model]="filtro.aguardandoOutroNivel" (modelChange)="aguardandoOutroNivelChange($event)" hidden></simple-input>
+        <mat-error *ngIf="filtro.aguardandoOutroNivel">
+          Desmarque para filtrar os demais Status Comerciais
+        </mat-error>
+        <select-combo [formGroup]="filter.form" placeholder="Status engenharia" name="statusEngenharia" [list]="statusEngenharia"
+          [formatter]="statusFormatter" [(model)]="filtro.statusEngenhariaIn" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status engenharia" name="==|statusEngenhariaIn"
+          [model]="statusEngenhariaIn" hidden *ngIf="filtro.statusEngenhariaIn && filtro.statusEngenhariaIn.length > 0"></simple-input>
+        
+        <select-combo [formGroup]="filter.form" placeholder="Status financeiro" name="statusFinanceiro" [list]="statusFinanceiro"
+          [formatter]="statusFormatter" [(model)]="filtro.statusFinanceiroIn" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status financeiro" name="==|statusFinanceiroIn"
+          [model]="statusFinanceiroIn" hidden *ngIf="filtro.statusFinanceiroIn && filtro.statusFinanceiroIn.length > 0"></simple-input>
+
+        <select-combo [formGroup]="filter.form" placeholder="Status assinatura eletrônica" name="statusClicksignDocumento" [list]="statusClicksignDocumento"
+          [formatter]="statusFormatter" [(model)]="filtro.statusClicksignDocumentoIn" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Status assinatura eletrônica" name="==|statusClicksignDocumentoIn"
+          [model]="statusClicksignDocumentoIn" hidden *ngIf="filtro.statusClicksignDocumentoIn && filtro.statusClicksignDocumentoIn.length > 0"></simple-input>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Grupo Econômico" name="grupoEconomico"
+          (textChange)="filtrarGrupoEconomicoPorDescricao($event)" [list]="gruposEconomicos" [mustBeValid]="false"
+          [(model)]="filtro.grupoEconomico" [formatter]="grupoEconomicoFormatter"></suggest-combo>
+        <integer-input [formGroup]="filter.form" placeholder="Grupo Econômico" name="==|grupoEconomico"
+          [(model)]="filtro.grupoEconomico.codigo" hidden *ngIf="filtro.grupoEconomico"></integer-input> 
+
+        <mat-radio-group [(ngModel)]="filtro.tipoDocumento">
+              <mat-radio-button [value]="0">CPF </mat-radio-button>
+              <mat-radio-button [value]="1">CNPJ</mat-radio-button>
+        </mat-radio-group>
+
+        <cpf-input [formGroup]="filter.form" placeholder="Informe o cpf" name="==|cpfCnpj"
+              [(model)]="filtro.cpfCnpj" *ngIf="filtro.tipoDocumento === 0"></cpf-input>
+
+        <cnpj-input [formGroup]="filter.form" placeholder="Informe o cnpj" name="==|cpfCnpj"
+              [(model)]="filtro.cpfCnpj" *ngIf="filtro.tipoDocumento === 1"></cnpj-input>
+        
+        <suggest-combo [formGroup]="filter.form" placeholder="Cliente" name="interveniente" [mustBeValid]="false"
+              (textChange)="filtrarIntervenientesPorRazao($event)" [list]="intervenientes"
+              [(model)]="filtro.interveniente" [formatter]="intervenienteFormatter"></suggest-combo>
+        <integer-input [formGroup]="filter.form" placeholder="Interveniente" name="==|cliente"
+              [(model)]="filtro.interveniente.codigo" hidden *ngIf="filtro.interveniente"></integer-input>
+
+        <mat-radio-group [(ngModel)]="filtro.periodoRelativo">
+          <mat-radio-button [value]="false">Data contrato fixo </mat-radio-button>
+          <mat-radio-button [value]="true">Data contrato relativo</mat-radio-button>
+        </mat-radio-group>
+
+        <integer-input [formGroup]="filter.form" placeholder="Quantidade de dias anteriores à data atual " name="periodoDiasAteDataAtual"
+              [(model)]="filtro.periodoDiasAteDataAtual" *ngIf="filtro.periodoRelativo"
+              (modelChange)="setPeriodoDiasAteDataAtual($event)"></integer-input>
+        <date-picker [formGroup]="filter.form" placeholder="Data contrato de" name="periodoDe"
+              [(model)]="filtro.periodoDe" *ngIf="filter.isOpen" [disabled]="filtro.periodoRelativo"></date-picker>
+        <simple-input [formGroup]="filter.form" placeholder="Data contrato de" name="==|periodoDe"
+              [model]="periodoDe" *ngIf="filtro.periodoDe" hidden></simple-input>
+
+        <integer-input [formGroup]="filter.form" placeholder="Quantidade de dias posteriores à data atual " name="periodoDiasAposDataAtual"
+              [(model)]="filtro.periodoDiasAposDataAtual" *ngIf="filtro.periodoRelativo"
+              (modelChange)="setPeriodoDiasAposDataAtual($event)"></integer-input>
+        <date-picker [formGroup]="filter.form" placeholder="Data contrato até" name="periodoAte"
+              [(model)]="filtro.periodoAte" *ngIf="filter.isOpen" [disabled]="filtro.periodoRelativo"></date-picker>
+        <simple-input [formGroup]="filter.form" placeholder="Data contrato até" name="==|periodoAte"
+              [model]="periodoAte" *ngIf="filtro.periodoAte" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Vendedor" name="vendedor"  [list]="vendedoresPermitidos"
+              [(model)]="filtro.vendedor" [formatter]="vendedorFormatter"></suggest-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Vendedor" name="==|vendedor"
+              [model]="filtro.vendedor.codigo" *ngIf="filtro.vendedor" hidden></simple-input>
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Segmentação" name="segmentacao"  [list]="segmentacao"
+            [(model)]="filtro.segmentacao" [formatter]="segmentacaoFormatter"></suggest-combo> 
+        <simple-input [formGroup]="filter.form" placeholder="Segmentação" name="==|segmentacao"
+            [model]="filtro.segmentacao.id" *ngIf="filtro.segmentacao" hidden></simple-input>   
+
+        <suggest-combo [formGroup]="filter.form" placeholder="Finalidade do Contrato" name="contratoFinalidade"  [list]="finalidades"
+          [(model)]="filtro.contratoFinalidade" [formatter]="finalidadeFormatter"></suggest-combo> 
+        <simple-input [formGroup]="filter.form" placeholder="Finalidade do Contrato" name="==|contratoFinalidade"
+          [model]="filtro.contratoFinalidade.codigo" *ngIf="filtro.contratoFinalidade" hidden></simple-input>   
+
+        <mat-checkbox [(ngModel)]="filtro.considerarEncerrados">Considerar encerrados</mat-checkbox>
+        <simple-input [formGroup]="filter.form" placeholder="Considerar encerrados" name="==|considerarEncerrados"
+              [model]="filtro.considerarEncerrados" hidden></simple-input>
+
+        <br/><br/>
+        <mat-checkbox [(ngModel)]="filtro.analisarLimiteCredito" *ngIf="!temAnaliseCreditoPorTerceiros">Incluir análise de limite de crédito</mat-checkbox>
+        <simple-input [formGroup]="filter.form" placeholder="Incluir análise de limite de crédito" name="==|analisarLimiteCredito"
+              [model]="filtro.analisarLimiteCredito" hidden></simple-input>
+
+        <br/>
+        <mat-radio-group [(ngModel)]="filtro.analiseLimiteConsiderarPrevisao" *ngIf="filtro.analisarLimiteCredito">
+          <mat-radio-button [value]="true">Previsão</mat-radio-button><br/>
+          <mat-radio-button [value]="false">Produção</mat-radio-button>
+        </mat-radio-group>
+        <simple-input [formGroup]="filter.form" placeholder="Incluir análise de limite de crédito" name="==|analiseLimiteConsiderarPrevisao"
+              [model]="filtro.analiseLimiteConsiderarPrevisao" hidden></simple-input>
+        
+        <br/><br/>
+        <mat-radio-group [(ngModel)]="filtro.programacaoDataRelativa">
+          <mat-radio-button [value]="false">Data programação fixa </mat-radio-button>
+          <mat-radio-button [value]="true">Data programação relativa</mat-radio-button>
+        </mat-radio-group>
+
+        <br/><br/>
+        <integer-input [formGroup]="filter.form" placeholder="Quantidade de dias anteriores à data atual " name="programacaoDiasAteDataAtual"
+              [(model)]="filtro.programacaoDiasAteDataAtual" *ngIf="filtro.programacaoDataRelativa" [disabled]="analiseLimitePrevisao()"
+              (modelChange)="setProgramacaoDiasAteDataAtual($event)"></integer-input>
+        <date-picker [formGroup]="filter.form" placeholder="Data programação de" name="programacaoDataDe" minDate={{dataMinima()}} maxDate={{dataMaxima()}}
+              [(model)]="filtro.programacaoDataDe" *ngIf="filter.isOpen" [required]="filtro.analiseLimiteConsiderarPrevisao" [disabled]="filtro.programacaoDataRelativa"></date-picker>
+        <simple-input [formGroup]="filter.form" placeholder="Horario programação de" name="programacaoHoraDe" *ngIf="filtro.programacaoDataDe" required
+              [(model)]="filtro.programacaoHoraDe" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidatorDe(filtro.programacaoHoraDe)"></simple-input>
+        <simple-input [formGroup]="filter.form" placeholder="Data programação de" name="==|programacaoDataHoraDe"
+              [model]="programacaoDataHoraDe" *ngIf="filtro.programacaoDataDe" hidden></simple-input>
+        
+        <br/>
+        <integer-input [formGroup]="filter.form" placeholder="Quantidade de dias posteriores à data atual " name="programacaoDiasAposDataAtual"
+              [(model)]="filtro.programacaoDiasAposDataAtual" *ngIf="filtro.programacaoDataRelativa" [disabled]="analiseLimiteProducao()"
+              (modelChange)="setProgramacaoDiasAposDataAtual($event)"></integer-input>
+        <date-picker [formGroup]="filter.form" placeholder="Data programação até" name="programacaoDataAte" minDate={{dataMinima()}} maxDate={{dataMaxima()}}
+              [(model)]="filtro.programacaoDataAte" *ngIf="filter.isOpen" [required]="filtro.analiseLimiteConsiderarPrevisao" [disabled]="filtro.programacaoDataRelativa"></date-picker>
+        <simple-input [formGroup]="filter.form" placeholder="Horario programação até" name="programacaoHoraAte" *ngIf="filtro.programacaoDataAte" required
+              [(model)]="filtro.programacaoHoraAte" [mask]="{mask: maskHora}" minLength="4" [validator]="horaValidatorAte(filtro.programacaoHoraAte)"></simple-input>
+        <simple-input [formGroup]="filter.form" placeholder="Data programação até" name="==|programacaoDataHoraAte"
+              [model]="programacaoDataHoraAte" *ngIf="filtro.programacaoDataAte" hidden></simple-input>
+      </filter>
+
+    </paginator>
+
+    <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    </mat-accordion>
+    
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+            <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon matTooltip="Status cadastro: {{dadosStatusCadastro(element.statusCadastro).descricao}}"
+            [style.color]="dadosStatusCadastro(element.statusCadastro).color">how_to_reg</mat-icon>
+          <mat-icon matTooltip="Status comercial: {{dadosStatusComercial(element.statusComercial, element.statusAprovComAlcada).descricao}}"
+            [style.color]="dadosStatusComercial(element.statusComercial, element.statusAprovComAlcada).color">local_grocery_store</mat-icon>
+          <mat-icon matTooltip="Status engenharia: {{dadosStatusEngenharia(element.statusEngenharia).descricao}}"
+            [style.color]="dadosStatusEngenharia(element.statusEngenharia).color">build</mat-icon>
+          <mat-icon matTooltip="Status financeiro: {{dadosStatusFinanceiro(element.statusFinanceiro).descricao}}"
+            [style.color]="dadosStatusFinanceiro(element.statusFinanceiro).color">monetization_on</mat-icon>
+          <mat-icon matTooltip="{{element.limiteCreditoAnalise}}" *ngIf="filtro.analisarLimiteCredito"
+            [style.color]="corAnaliseLimiteCredito(element.limiteCreditoAnalise)">credit_card</mat-icon>
+        </td>
+      </ng-container>
+      
+      <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+          <th mat-header-cell *matHeaderCellDef><button mat-flat-button (click)="alterarOrdenacao(column.name)"> {{ column.placeholder }}
+            <mat-icon *ngIf="semOrdenacao[column.name]">unfold_more</mat-icon>
+            <mat-icon *ngIf="ordenacaoCrescente[column.name]">expand_less</mat-icon>
+            <mat-icon *ngIf="ordenacaoDecrescente[column.name]">expand_more</mat-icon>
+          </button></th>
+          <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                      <div *ngFor="let hColumn of foldedColumns">
+                          <b>{{ getFormattedPlaceholder(element, hColumn) }}: </b>{{ getFormattedValue(element, hColumn) }}
+                          <mat-divider></mat-divider>
+                      </div>
+                      <div>
+                          <button mat-button color="accent" [routerLink]="['../usina/'+element.usina+'/ano/'+element.propostaAno+'/numero/'+element.propostaNumero]">
+                            <mat-icon matTooltip="Abrir">edit</mat-icon>Detalhar proposta
+                          </button>
+                          <button mat-button color="accent"  (click)="openObraProgramacoes(element)">
+                            <mat-icon matTooltip="Abrir">date_range</mat-icon>Detalhar programações
+                          </button>
+                          <button mat-button color="accent" (click)="openObraLog(element)">
+                            <mat-icon matTooltip="Logs">history</mat-icon>Logs
+                          </button>
+                          <button mat-button color="accent" (click)="showModal(anexosModal, anexosModalRef, element)" *ngIf="temDireitoAcessoAnexo">
+                            <mat-icon matTooltip="Anexos">attach_file</mat-icon>Anexos
+                          </button>
+                          <button mat-button color="accent" (click)="openHistoricoInterveniente(element)" *ngIf="temContratoGerado(expandedElement)">
+                            <mat-icon matTooltip="Historico Interveniente"> event_note</mat-icon>Historico Interveniente
+                          </button>
+                          <button mat-button color="accent" (click)="showModal(ebitdaModal, ebitdaModalRef, element)" *ngIf="temDireitoAcessoMargemPosTransporte">
+                            <mat-icon matTooltip="Ebitda">insert_chart_outlined</mat-icon>Análise de Margens
+                          </button>
+                        </div>
+                      <mat-card>
+                          <!-- <h4>Aprovações:</h4> -->
+                          <button mat-raised-button class="btn-aprovacao" [style.backgroundColor]="dadosStatusCadastro(element.statusCadastro).color"
+                            (click)="showModal(cadastroModal, cadastroModalRef, element)" *ngIf="temContratoGerado(expandedElement)">
+                            <mat-icon>how_to_reg</mat-icon>
+                            Cadastro
+                          </button>
+                          <button mat-raised-button class="btn-aprovacao" [style.backgroundColor]="dadosStatusComercial(element.statusComercial, element.statusAprovComAlcada).color"
+                          (click)="showModal(comercialModal, comercialModalRef, element)">
+                            <mat-icon>local_grocery_store</mat-icon>
+                            Comercial
+                          </button>
+                          <button mat-raised-button class="btn-aprovacao" [style.backgroundColor]="dadosStatusEngenharia(element.statusEngenharia).color"
+                          (click)="showModal(engenhariaModal, engenhariaModalRef, element)" *ngIf="temContratoGerado(expandedElement)">
+                            <mat-icon>build</mat-icon>
+                            Engenharia
+                          </button>
+                          <button mat-raised-button class="btn-aprovacao" [style.backgroundColor]="dadosStatusFinanceiro(element.statusFinanceiro).color"
+                          (click)="showModal(financeiroModal, financeiroModalRef, element)" *ngIf="temContratoGerado(expandedElement) && !inativarAprovacoesFinanceiras">
+                            <mat-icon>monetization_on</mat-icon>
+                            Financeiro
+                          </button>
+                          
+                      </mat-card>
+                  </div>
+              </div>
+          </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnNames;"
+          class="element-row"
+          [class.expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+
+    <div #cadastroModalVCR></div>
+    <ng-template #cadastroModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen" *ngIf="obra">
+          <h2 cdkFocusRegionstart>CADASTRO</h2>
+
+          <form [formGroup]="cadastroForm" class="form-container">
+
+            <mat-accordion *ngIf="!limiteCreditoPorGrupoEconomico || obra.contrato.interveniente.grupoEconomicoCodigo == 0">
+              <mat-expansion-panel #expansionPanelLimiteCredito>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Limite de Credito
+                      <mat-icon  [style.color]="limiteCreditoColor(obra)" >
+                        {{limiteCreditoIcon(obra)}}
+                      </mat-icon>
+                      <mat-error *ngIf="possuiLimiteDeCreditoVencido(obra)">
+                        Limite de Credito Vencido!
+                      </mat-error>
+                      <div *ngIf="possuiLimiteDeCreditoVazioEPagamentoFuturo(obra) && !possuiLimiteDeCreditoVencido(obra)" class="texto-atencao">
+                        Interveniente não possui limite de Credito!
+                      </div> 
+                    </mat-panel-title>
+                    <mat-panel-description></mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <decimal-input *ngIf="!temAnaliseCreditoPorTerceiros" [formGroup]="cadastroForm" placeholder="Limite de Credito" [maxIntegerChars]="9"
+                name="limiteCreditoValor" [(model)]="obra.contrato.interveniente.limiteValor" showThousandSeparator [disabled]="!temDireitoAprovacaoLimiteCredito"></decimal-input>
+
+                <date-picker *ngIf="!temAnaliseCreditoPorTerceiros" [formGroup]="cadastroForm" placeholder="Data Limite de Credito" name="dataLimiteCredito" [(model)]="obra.contrato.interveniente.limiteData" [disabled]="!temDireitoAprovacaoLimiteCredito"></date-picker>
+
+                <suggest-combo [formGroup]="cadastroForm" placeholder="Motivo bloqueio" name="bloqueioMotivo" 
+                [list]="motivosBloqueioInterveniente"
+                [formatter]="motivoBloqueioFormatter" [(model)]="obra.contrato.interveniente.bloqueioMotivo" ></suggest-combo>
+
+                <simple-input [formGroup]="cadastroForm" placeholder="Observação" name="cadastroAprovacaoObservacao" 
+                *ngIf="obra.contrato.interveniente.bloqueioMotivo !== null" [(model)]="obra.contrato.interveniente.bloqueioObservacao"></simple-input>
+                
+                <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                  (click)="confirmarAlteracaoLimiteCredito(obra, expansionPanelLimiteCredito)" *ngIf="temDireitoAprovacaoLimiteCredito">CONFIRMAR</button>
+
+              </mat-expansion-panel>
+            </mat-accordion>
+
+            <mat-accordion *ngIf="limiteCreditoPorGrupoEconomico && obra.contrato.interveniente.grupoEconomicoCodigo != 0">
+              <mat-expansion-panel #expansionPanelLimiteCreditoGrupo>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Limite de Credito Grupo Econômico
+                      <mat-icon  [style.color]="limiteCreditoColor(obra)" >
+                        {{limiteCreditoIcon(obra)}}
+                      </mat-icon>
+                      <mat-error *ngIf="possuiLimiteDeCreditoVencido(obra)">
+                        Limite de Credito Vencido!
+                      </mat-error>
+                      <div *ngIf="possuiLimiteDeCreditoVazioEPagamentoFuturo(obra) && !possuiLimiteDeCreditoVencido(obra)" class="texto-atencao">
+                        Grupo Econômico não possui limite de Credito!
+                      </div> 
+                    </mat-panel-title>
+                    <mat-panel-description></mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <decimal-input [formGroup]="cadastroForm" placeholder="Limite de Credito" [maxIntegerChars]="9"
+                name="limiteCreditoValor" [(model)]="obra.contrato.interveniente.grupoEconomico.limiteValor" showThousandSeparator [disabled]="!temDireitoAprovacaoLimiteCredito"></decimal-input>
+
+                <date-picker [formGroup]="cadastroForm" placeholder="Data Limite de Credito" name="dataLimiteCredito" [(model)]="obra.contrato.interveniente.grupoEconomico.limiteData" [disabled]="!temDireitoAprovacaoLimiteCredito"></date-picker>
+
+                <suggest-combo [formGroup]="cadastroForm" placeholder="Motivo bloqueio" name="bloqueioMotivo" 
+                [list]="motivosBloqueioInterveniente"
+                [formatter]="motivoBloqueioFormatter" [(model)]="obra.contrato.interveniente.grupoEconomico.bloqueioMotivo" ></suggest-combo>
+
+                <simple-input [formGroup]="cadastroForm" placeholder="Observação" name="cadastroAprovacaoObservacao" 
+                *ngIf="obra.contrato.interveniente.grupoEconomico.bloqueioMotivo !== null" [(model)]="obra.contrato.interveniente.grupoEconomico.bloqueioObservacao"></simple-input>
+                
+                <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                  (click)="confirmarAlteracaoLimiteCredito(obra, expansionPanelLimiteCreditoGrupo)" *ngIf="temDireitoAprovacaoLimiteCredito">CONFIRMAR</button>
+
+              </mat-expansion-panel>
+            </mat-accordion>
+
+            <br/>
+            <mat-accordion>
+              <mat-expansion-panel #expansionPanelDadosFiscais>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                      Dados fiscais da obra
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div><b>Cliente: </b> {{ getInterveniente(expandedElement) }}</div>
+                <div><b>Cpf/Cnpj: </b> {{ getCpfCnpj(expandedElement) }}</div>
+                <div><b>Contrato: </b> {{ getContratoNumero(expandedElement) }}</div>
+                <div><b>Endereço da obra: </b> {{ ederecoToString(obra.endereco) }}</div>
+                <br />
+
+                <simple-input [formGroup]="cadastroForm" placeholder="Observação NF" name="observacaoNf"
+                  [(model)]="obra.observacaoNf" [disabled]="!temDireitoAlteracaoStatusCadastro"></simple-input>
+
+                <simple-input [formGroup]="cadastroForm" placeholder="CEI/CNO" name="cei" [mask]="{mask: maskCEI}"
+                  [(model)]="obra.cei" [disabled]="!temDireitoAlteracaoStatusCadastro"></simple-input>
+
+                <simple-input [formGroup]="cadastroForm" placeholder="Código Obra Pref." name="codigoObraPrefeitura"
+                  [model]="obra.contrato.codigoObraPrefeitura" (modelChange)="changeCodigoObraPrefeitura($event)" [disabled]="!temDireitoAlteracaoStatusCadastro"></simple-input>
+
+                <button mat-raised-button color="accent" (click)="openTributacoesMunicipaisModal()">
+                  Códigos na prefeitura por usina
+                </button>
+
+                <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                  (click)="confirmarAlteracaoDadosFiscais(obra, expansionPanelDadosFiscais)" *ngIf="temDireitoAlteracaoStatusCadastro">CONFIRMAR</button>
+              </mat-expansion-panel>
+            </mat-accordion>
+            
+            <div *ngIf="pendenteAprovacaoCoincidenciasCadastro(obra.contrato)">
+              <br/>
+              <mat-accordion>
+                <mat-expansion-panel #expansionPanelCoincidencias>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Coincidências
+                      <mat-icon [style.color]="getColorAtencaoCadastro" >
+                        {{getIconAtencaoCadastro}}
+                      </mat-icon>
+                    </mat-panel-title>
+                    <mat-panel-description></mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div *ngFor="let coincidencia of getCoincidencias">
+                    <b>{{coincidencia}}</b><br>
+                  </div>
+
+                  <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                    (click)="aprovarCoincidenciaCadastro(obra, expansionPanelCoincidencias)" *ngIf="temDireitoAprovacaoReprovacaoCoincidencias">APROVAR COINCIDÊNCIAS</button>
+                  <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']"
+                    (click)="reprovarCoincidenciaCadastro(obra, expansionPanelCoincidencias)" *ngIf="temDireitoAprovacaoReprovacaoCoincidencias">REPROVAR COINCIDÊNCIAS</button>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+          
+            <div *ngIf="obra.pendenteAprovacaoDistanciaUsinaCEP">
+              <br/>
+              <mat-accordion>
+                <mat-expansion-panel #expansionPanelDistanciaUsinaCEP>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Distância usina entrega/CEP
+                      <mat-icon [style.color]="getColorAtencaoCadastro">
+                        {{getIconAtencaoCadastro}}
+                      </mat-icon>
+                    </mat-panel-title>
+                    <mat-panel-description></mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div> 
+                    <strong>CEP: </strong>{{cepFormatter(obra.endereco.cep)}}<br>
+                    <strong>Usina Entrega: </strong>{{usinaFormatter(obra.usinaEntrega)}}<br><br>
+                  </div>
+                  <integer-input [formGroup]="cadastroForm" placeholder="Distância" name="distanciaUsinaCep"
+                  [(model)]="obra.distanciaUsina" [disabled]="!temDireitoAlteracaoDistancia"></integer-input>
+                  
+                  <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                    (click)="aprovarDistanciaUsinaCepCadastro(obra, expansionPanelDistanciaUsinaCEP)" *ngIf="temDireitoAlteracaoDistancia">APROVAR DISTÂNCIA CEP</button>
+                
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+              
+            <div *ngIf="pendenteAprovacaoISSCadastro(obra.contrato.interveniente)">
+              <br/>
+              <mat-accordion >
+                <mat-expansion-panel #expansionPanelISS>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      ISS
+                      <mat-icon [style.color]="getColorAtencaoCadastro">
+                          {{getIconAtencaoCadastro}}
+                      </mat-icon>
+                    </mat-panel-title>
+                    <mat-panel-description></mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div> 
+                    <strong>Cliente: </strong>{{intervenienteFormatter(obra.contrato.interveniente)}}<br>
+                    <strong>Retem ISS: </strong>{{obra.contrato.interveniente.retemIss}}<br>
+                    <strong>Tipo de cliente: </strong>{{intervenienteTipoFormatter(obra.contrato.interveniente)}}<br>
+                  </div>
+
+                  <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                    (click)="aprovarIssCadastro(obra, expansionPanelISS)" *ngIf="temDireitoAprovacaoIss">APROVAR ISS</button>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+
+            <div *ngIf="pendenteAprovacaoZMRCCadastro(obra)">
+              <br/>
+              <mat-accordion >
+                <mat-expansion-panel #expansionPanelZMRC>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      ZMRC
+                      <mat-icon [style.color]="getColorAtencaoCadastro">
+                          {{getIconAtencaoCadastro}}
+                      </mat-icon>
+                    </mat-panel-title>
+                    <mat-panel-description></mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div> 
+                    <strong>Zona Máxima de Restrição de Circulação: </strong>Alterado de Sim para Não<br>
+                  </div>
+
+                  <div>
+                  <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                    (click)="aprovarZMRC(obra, expansionPanelZMRC)">Aprovar</button>
+                  <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']"
+                    (click)="reprovarZMRC(obra, expansionPanelZMRC)">Reprovar</button>
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+            
+            <br/>
+
+            <suggest-combo [formGroup]="cadastroForm" placeholder="Status cadastro" name="statusCadastro" [list]="statusCadastroCodigos"
+              [formatter]="statusCadastroFormatter" [(model)]="obra.statusCadastro" [disabled]="!temDireitoAlteracaoStatusCadastro"></suggest-combo>
+
+            <suggest-combo [formGroup]="cadastroForm" placeholder="Analista" name="analista" [list]="analistas"
+              [formatter]="analistaFormatter" [(model)]="obra.contrato.analista" [disabled]="!temDireitoAlteracaoStatusCadastro"></suggest-combo>
+
+            <simple-input [formGroup]="cadastroForm" placeholder="Observação" name="observacao" multiline
+              [disabled]="!temDireitoAlteracaoStatusCadastro" [(model)]="obra['observacaoAcompanhamento']"></simple-input>
+
+            <decimal-input [formGroup]="cadastroForm" placeholder="Percentual de retenção contratual" name="percentualRetencaoContratual" 
+              [disabled]="!temDireitoAlteracaoStatusCadastro || !temDireitoInsercaoRetencaoContratual" *ngIf="temDireitoAcessoRetencaoContratual"
+              [(model)]="obra.contrato.percentualRetencaoContratual" [maxIntegerChars]="5" [decimalChars]="2"></decimal-input>
+
+            <select-combo [formGroup]="cadastroForm" placeholder="Mão de obra própria" name="maoObraPropria" [list]="maoObraPropriaOpcoes"
+              [formatter]="maoObraPropriaFormatter" [(model)]="obra.contrato.maoObraPropria" 
+              [disabled]="!temDireitoAlteracaoStatusCadastro" *ngIf="temBomba"></select-combo>
+
+            <decimal-input [formGroup]="cadastroForm" placeholder="Percentual locação" name="percentualLocacao" 
+              [disabled]="!temDireitoAlteracaoStatusCadastro" *ngIf="temBomba && obra.contrato.maoObraPropria==='P'"
+              [(model)]="obra.contrato.percentualLocacao" [maxIntegerChars]="2" [decimalChars]="2" [validator]="percentualLocacaoValorMinimoValidator"></decimal-input>
+
+            <mat-checkbox formControlName="cadastroFaturamentoPendenteForm" [(ngModel)]="obra.contrato.faturamentoPendente"  [disabled]="!geraFaturaNaPesagem || !temDireitoAlteracaoNfPendentes">
+              Não gerar faturamento automaticamente
+            </mat-checkbox><br/><br/>
+
+            <suggest-combo [formGroup]="cadastroForm" placeholder="Modelo Documento Remessa Concreto" name="ModeloDocumentoRemessaConcreto" [disabled]="!allowDocumentoDiferenteRemessa() || !temDireitoAprovarCadastro"
+              [(model)]="obra.contrato.modeloDocumentoRemessaConcreto" [formatter]="modeloDocumentoRemessaFormatter"  [list]="modelosDocumentos" noCase></suggest-combo>
+
+            <suggest-combo [formGroup]="cadastroForm" placeholder="Modelo Documento Remessa Bomba" name="ModeloDocumentoRemessaBomba" [disabled]="!allowDocumentoDiferenteBomba() || !temDireitoAprovarCadastro"
+              [(model)]="obra.contrato.modeloDocumentoRemessaBomba" [formatter]="modeloDocumentoRemessaFormatter"  [list]="modelosDocumentos" noCase></suggest-combo>
+
+            <suggest-combo [formGroup]="cadastroForm" placeholder="Descrição dos itens da Danfe/Romaneio" name="ModeloItensDanfeERomaneio" [disabled]="!temDireitoAprovarCadastro"
+              [(model)]="obra.contrato.modeloItensDanfeERomaneio" [formatter]="descricaoItensdanfeERomaneioFormatter" [list]="modelosDescricaoItensDanfeERomaneio" noCase></suggest-combo>
+
+
+          </form>
+
+          <mat-action-row>
+            <button mat-raised-button [ngClass]="cadastroForm.invalid ? ['btn-aprovacao','desabilitado'] : ['btn-aprovacao','aprovado']" (click)="confirmarAlteracaoStatusCadastroEAnalista(obra)" *ngIf="temDireitoAlteracaoStatusCadastro" [disabled]="cadastroForm.invalid">Confirmar</button>
+            <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="closeModal()">Cancelar</button>
+          </mat-action-row>
+            
+        </div>
+        
+    </ng-template>
+
+    <div #comercialModalVCR></div>
+    <ng-template #comercialModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen" *ngIf="obra">
+          <h2 cdkFocusRegionstart>APROVAÇÕES COMERCIAIS</h2>
+
+          <!-- <mat-card>
+            <h2>Dados da obra</h2>
+
+            <strong>{{obra.usinaEntrega.nome}}</strong><br/>
+            Nome: <strong>{{obra.nome}}</strong><br/>
+            Endereço: <strong>{{obra.enderecoLogradouro}}, {{obra.enderecoNumero}}  {{obra.enderecoComplemento}}</strong><br/>
+            Bairro: <strong>{{obra.enderecoBairro}}</strong><br/>
+            Municipio: <strong>{{obra.enderecoMunicipio.nome}} / {{obra.enderecoMunicipio.uf}}</strong><br/>
+            CEP: <strong>{{obra.enderecoCep}}</strong><br/>
+            <strong>{{obra.origem}}</strong><br/>
+            Vendedor: <strong>{{obra.vendedorNome}}</strong><br/>
+            Cond. pagamento: <strong>{{obra.condicaoPagamento.descricao}}</strong><br/>
+            Tipo cobrança: <strong>{{obra.tipoCobranca.descricao}}</strong>
+          </mat-card>
+          <br/> -->
+
+          
+
+          <br>
+
+          <mat-card class="no-h-margim" style="padding: 15px;">
+            <h2>Traços</h2>
+
+            <mat-accordion>
+                <mat-expansion-panel *ngFor="let obraTraco of obra.obraTracos;let i = index" style="margin-bottom: 35px;" #expansionPanelTraco>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          {{formataValor(obraTraco.m3Quantidade, 1)}} M3 / {{formataValor(obraTraco.m3Consumido, 1)}} M3 / {{formataValor(obraTraco.m3Quantidade - obraTraco.m3Consumido, 1)}} M3 / {{formataMoeda(obraTraco.m3PrecoProposto*obraTraco.m3Quantidade)}}
+                          <mat-icon *ngIf="!naoNecessitaAprovacao(obraTraco)" [style.color]="itemAprovacaoComercialColor(obraTraco)">
+                            {{itemAprovacaoIcon(obraTraco)}}
+                          </mat-icon>
+                        </mat-panel-title>
+                        <br *ngIf="isSmallScreen"/>
+                        <mat-panel-description>{{obraTraco.resistencia}} / {{obraTraco.pedra.descricao}} / {{obraTraco.slump.descricao}} / {{obraTraco.uso.descricao}}</mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <div class="container-traco">
+                      <mat-card class="container-card">
+                          <mat-card-subtitle>Valores Contratação</mat-card-subtitle>                
+                          <div class="container-itens">
+                            <div>Valor proposto</div>  
+                            <div><strong>{{formataMoeda(obraTraco.m3PrecoProposto)}}</strong></div>
+                          </div>
+                          <div class="container-itens">  
+                            <div>Valor de tabela na data da contratação</div>
+                            <div><strong>{{formataMoeda(obraTraco.m3PrecoTabela)}}</strong></div>
+                          </div>
+                        
+                        <div class="container-itens"> 
+                          <div>Valor de tabela original + ajustes</div>
+                          <div><strong>{{formataMoeda(obraTraco.m3PrecoAjustado)}}</strong></div>
+                        </div>
+
+                        <div class="container-itens"> 
+                          <div>Valor do serviço</div>
+                          <div><strong>{{(obraTraco.valorServico == obraTraco.custoServicoReajustado ? formataMoeda(obraTraco.custoServicoAnterior) :  formataMoeda(obraTraco.valorServico))}}</strong></div>
+                        </div>
+    
+                        <div class="container-itens"> 
+                          <div>{{calculaDesconto(obraTraco.m3PrecoProposto,obraTraco.m3PrecoAjustado) < 0 ? "Acréscimo sobre valor de tabela + ajustes" : "Desconto sobre valor de tabela + ajustes"}}</div>
+                          <div><strong>{{retornaDescontoAcrescimoAbs(calculaDesconto(obraTraco.m3PrecoProposto,obraTraco.m3PrecoAjustado)).toFixed(2)}}%</strong></div>
+                        </div>
+    
+                        <div class="container-itens">
+                          <div>Valor de tabela na data atual</div>
+                          <div><strong>{{formataMoeda(precoTabelaAtualTraco(obraTraco))}}</strong></div> 
+                        </div>
+
+                        <div class="container-itens"> 
+                          <div>Valor do serviço de tabela na data atual</div>
+                          <div><strong>{{formataMoeda(custoServicoTabelaAtualTraco(obraTraco))}}</strong></div>
+                        </div>
+                        <div class="container-itens" *ngIf="temDireitoAcessoMargemPosTransporte">
+                          <div>Margem pós MCC e impostos</div>
+                          <div><strong>{{formataMoeda(calculaMargemPosMCC(tracosExibicaoEbitda[i]))}}</strong></div>
+                        </div>
+                        <div class="container-itens" *ngIf="temDireitoAcessoMargemPosTransporte">
+                          <div>Margem pós transporte</div>
+                          <div><strong>{{formataMoeda(tracosExibicaoEbitda[i].margemPosTransporte)}}</strong></div>
+                        </div>
+                        <div class="container-itens" *ngIf="temDireitoAcessoMargemPosTransporte">
+                          <div>Ebitda Concreto</div>
+                          <div><strong>{{formataMoeda(tracosExibicaoEbitda[i].ebitda)}}</strong></div>
+                        </div>
+
+                        
+                      </mat-card>
+                      <div>
+                        <br>
+                      </div>
+                      <mat-card class="container-card" *ngIf="obraTraco.precoReajustadoAtual > 0">
+                        <mat-card-subtitle>Valores Reajustados</mat-card-subtitle>                
+                        <div class="container-itens">
+                          <div>Valor reajustado vigente</div>  
+                          <div><strong>{{formataMoeda(obraTraco.precoReajustadoAtual)}}</strong></div>
+                        </div>
+                        <div class="container-itens">  
+                          <div>Valor do último reajuste proposto</div>
+                          <div><strong>{{formataMoeda(precoUltimoContratoReajuste(obraTraco))}}</strong></div>
+                        </div>
+                        <div class="container-itens"> 
+                          <div>Data do último reajuste</div>
+                          <div><strong>{{formataData(obraTraco.dataUltimoReajuste)}}</strong></div>
+                        </div>
+                        <div class="container-itens"> 
+                          <div>Acréscimo sobre valor do reajuste proposto</div>
+                          <div><strong>{{retornaDescontoAcrescimoAbs(calculaDesconto(obraTraco.precoReajustadoAtual,precoUltimoContratoReajuste(obraTraco))).toFixed(2)}}%</strong></div>
+                        </div>
+                        <div class="container-itens"> 
+                          <div>Valor do serviço reajustado</div>
+                          <div><strong>{{formataMoeda(obraTraco.custoServicoReajustado)}}</strong></div>
+                        </div>
+                      </mat-card>
+                    </div>          
+
+                    <!--FLAG -->
+                    <mat-checkbox  [(ngModel)]="obraTraco.inativo" [checked]="obraTraco.inativo">
+                      Inativar Item
+                    </mat-checkbox><br/><br/>
+
+                    <div *ngIf="utilizaAprovacaoComercialPorAlcada() && tracoPossuiAprovacaoComercialPendente(obraTraco.sequencia)" style="margin-bottom: 20px;">
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title>Aprovação Comercial</mat-card-title>
+                          
+                        </mat-card-header>
+                        <mat-card-content>
+                          <mat-accordion *ngFor="let restante of filtrarTracosAprovacaoComercialPendente(aprovacaoComercialAprovacoesRestantes.tracos, obraTraco.sequencia)">
+                            <mat-expansion-panel style="margin-bottom: 10px;">
+                              <mat-expansion-panel-header>
+                                <mat-panel-title class="card-titulo-hierarquia">
+                                  {{ restante.nivelAutoridade }} - {{ restante.nivelDescricao }}
+                                </mat-panel-title>
+                                <mat-panel-description class="card-descr-hierarquia">
+                                  {{ formataStatusAprovacao(restante.status, isSmallScreen) }} 
+                                  <br/>
+                                  {{ getAprovacaoRestanteString(restante) }}
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              
+                              <table>
+                                <tbody>
+                                  <tr>
+                                    <td class="th-hierarquia">Nível de Autoridade :</td>
+                                    <td class="td-hierarquia">{{restante.nivelAutoridade}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="th-hierarquia">Descrição :</td>
+                                    <td class="td-hierarquia">{{restante.nivelDescricao}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="th-hierarquia">Quant. Aprovações Necessárias :</td>
+                                    <td class="td-hierarquia">{{restante.quantidadeNotificacoes}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="th-hierarquia">Quant. Aprovações Realizadas :</td>
+                                    <td class="td-hierarquia">{{restante.quantidadeNotificacoesAprovadas}}</td>
+                                  </tr>
+                                  <tr *ngIf="restante.aprovadores != ''">
+                                    <td class="th-hierarquia">Aprovadores :</td>
+                                    <td class="td-hierarquia">{{restante.aprovadores}}</td>
+                                  </tr>
+                                  <tr *ngIf="restante.reprovadores != ''">
+                                    <td class="th-hierarquia">Reprovadores :</td>
+                                    <td class="td-hierarquia">{{restante.reprovadores}}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                            </mat-expansion-panel>
+                          </mat-accordion>
+
+                          <h5 *ngIf="obraEstaReprovado()" class="aviso-alcada-obra-reprovado">
+                            {{ this.getPropostaOuContratoString() }} foi reprovado, não é possível continuar com aprovação(ões) pendente(s)
+                          </h5>
+                        
+                          <span *ngIf="(!naoNecessitaAprovacao(obraTraco) && temDireitoAprovacaoComercial) && possuiPermissaoParaAprovacaoTraco(obraTraco.sequencia)" 
+                            class="container-aprovacao"
+                            text-align="center;">
+                            <h5 style="color: #e4c800;"><b>TRAÇO DEPENDENTE DE SEU NÍVEL DE HIERARQUIA PARA APROVAÇÃO</b></h5>
+                            <div>
+                              <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarItemComercial(obraTraco, expansionPanelTraco)">Aprovar</button>
+                              <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarItemComercial(obraTraco, expansionPanelTraco)">Reprovar</button>
+                            </div>
+                          </span>
+
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+
+                    <span *ngIf="(!naoNecessitaAprovacao(obraTraco) && temDireitoAprovacaoComercial) && !utilizaAprovacaoComercialPorAlcada()"  text-align="right;">
+                      <br/>Solicitante: <strong>{{obraTraco.descontoSolicitante}}</strong>
+                      <br/>Justificativa: <strong>{{obraTraco.justificativa}}</strong>
+                      <br/>Observação: <strong>{{obraTraco.logObservacao}}</strong>
+                      <br/><br/>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarItemComercial(obraTraco, expansionPanelTraco)">Aprovar</button>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarItemComercial(obraTraco, expansionPanelTraco)">Reprovar</button>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','aguardando-aprovacao']" (click)="alterarItemComercial(obraTraco)">Alterar</button>
+
+                      <div *ngIf="isItemComercialEmAlteracao(obraTraco)">
+                        <form [formGroup]="comercialForm" class="form-container">
+                          <decimal-input [formGroup]="comercialForm" placeholder="Preço Proposto" name="comercialM3PrecoProposto"
+                            [(model)]="itemNovosValores.m3PrecoProposto"></decimal-input>
+
+                          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="confirmarAlteracaoItemComercial(obraTraco, itemNovosValores, expansionPanelTraco)">Confirmar</button>
+                        </form>
+                      </div>
+                    </span>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+          </mat-card>
+
+          <br>
+
+          <div *ngIf="utilizaAprovacaoComercialPorAlcada() && volumePossuiAprovacaoComercialPendente()" style="margin-bottom: 20px;">
+            <mat-card>
+              <h2>Volume
+                <mat-icon *ngIf="volumePossuiAprovacaoComercialPendente()" [style.color]="volumeAprovacaoColor(obraTraco)">
+                  {{volumeAprovacaoIcon()}}
+                </mat-icon>
+              </h2>
+              
+              <div *ngIf="volumeSemAprovacao()">
+                <h4>Volume total do Contrato de <b>{{getVolumeTotalContrato()}} M3</b> necessita de aprovação comercial </h4>
+              </div>
+              
+              <mat-card-content>
+                <mat-accordion *ngFor="let restante of aprovacaoComercialAprovacoesRestantes.volumes">
+                  <mat-expansion-panel style="margin-bottom: 10px;">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title class="card-titulo-hierarquia">
+                        {{ restante.nivelAutoridade }} - {{ restante.nivelDescricao }}
+                      </mat-panel-title>
+                      <mat-panel-description class="card-descr-hierarquia">
+                        {{ formataStatusAprovacao(restante.status, isSmallScreen) }} 
+                        <br/>
+                        {{ getAprovacaoRestanteString(restante) }}
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td class="th-hierarquia">Nível de Autoridade :</td>
+                          <td class="td-hierarquia">{{restante.nivelAutoridade}}</td>
+                        </tr>
+                        <tr>
+                          <td class="th-hierarquia">Descrição :</td>
+                          <td class="td-hierarquia">{{restante.nivelDescricao}}</td>
+                        </tr>
+                        <tr>
+                          <td class="th-hierarquia">Quant. Aprovações Necessárias :</td>
+                          <td class="td-hierarquia">{{restante.quantidadeNotificacoes}}</td>
+                        </tr>
+                        <tr>
+                          <td class="th-hierarquia">Quant. Aprovações Realizadas :</td>
+                          <td class="td-hierarquia">{{restante.quantidadeNotificacoesAprovadas}}</td>
+                        </tr>
+                        <tr *ngIf="restante.aprovadores != ''">
+                          <td class="th-hierarquia">Aprovadores :</td>
+                          <td class="td-hierarquia">{{restante.aprovadores}}</td>
+                        </tr>
+                        <tr *ngIf="restante.reprovadores != ''">
+                          <td class="th-hierarquia">Reprovadores :</td>
+                          <td class="td-hierarquia">{{restante.reprovadores}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </mat-expansion-panel>
+                </mat-accordion>
+
+                <h5 *ngIf="obraEstaReprovado()" class="aviso-alcada-obra-reprovado">
+                  {{ this.getPropostaOuContratoString() }} foi reprovado, não é possível continuar com aprovação(ões) pendente(s)
+                </h5>
+              
+                <span *ngIf="temDireitoAprovacaoComercial && this.aprovacaoComercialHierarquiaDireitos.direitoVolume && this.obra.volumeStatusComercial == 1" 
+                  class="container-aprovacao"
+                  text-align="center;">
+                  <h5 style="color: #e4c800;"><b>VOLUME DEPENDENTE DE SEU NÍVEL DE HIERARQUIA PARA APROVAÇÃO</b></h5>
+                  <div>
+                    <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarVolumeComercial()">Aprovar</button>
+                    <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarVolumeComercial()">Reprovar</button>
+                  </div>
+                </span>
+
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <br>
+
+          <div *ngIf="utilizaAprovacaoComercialPorAlcada() && condicaoPagamentoPossuiAprovacaoComercialPendente()" style="margin-bottom: 20px;">
+            <mat-card>
+              <h2>Demais Condições
+                <mat-icon *ngIf="condicaoPagamentoPossuiAprovacaoComercialPendente()" [style.color]="condicaoPagamentoAprovacaoColor(obraTraco)">
+                  {{condicaoPagamentoAprovacaoIcon()}}
+                </mat-icon>
+              </h2>
+              
+              <div *ngIf="condicaoPagamentoSemAprovacao()">
+                <h4>Condição de pagamento (<b>{{getCondicaoPagamentoContrato()}})</b> necessita de aprovação comercial </h4>
+              </div>
+              
+              <mat-card-content>
+                <mat-accordion *ngFor="let restante of aprovacaoComercialAprovacoesRestantes.condicoesPagamento">
+                  <mat-expansion-panel style="margin-bottom: 10px;">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title class="card-titulo-hierarquia">
+                        {{ restante.nivelAutoridade }} - {{ restante.nivelDescricao }}
+                      </mat-panel-title>
+                      <mat-panel-description class="card-descr-hierarquia">
+                        {{ formataStatusAprovacao(restante.status, isSmallScreen) }} 
+                        <br/>
+                        {{ getAprovacaoRestanteString(restante) }}
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td class="th-hierarquia">Nível de Autoridade :</td>
+                          <td class="td-hierarquia">{{restante.nivelAutoridade}}</td>
+                        </tr>
+                        <tr>
+                          <td class="th-hierarquia">Descrição :</td>
+                          <td class="td-hierarquia">{{restante.nivelDescricao}}</td>
+                        </tr>
+                        <tr>
+                          <td class="th-hierarquia">Quant. Aprovações Necessárias :</td>
+                          <td class="td-hierarquia">{{restante.quantidadeNotificacoes}}</td>
+                        </tr>
+                        <tr>
+                          <td class="th-hierarquia">Quant. Aprovações Realizadas :</td>
+                          <td class="td-hierarquia">{{restante.quantidadeNotificacoesAprovadas}}</td>
+                        </tr>
+                        <tr *ngIf="restante.aprovadores != ''">
+                          <td class="th-hierarquia">Aprovadores :</td>
+                          <td class="td-hierarquia">{{restante.aprovadores}}</td>
+                        </tr>
+                        <tr *ngIf="restante.reprovadores != ''">
+                          <td class="th-hierarquia">Reprovadores :</td>
+                          <td class="td-hierarquia">{{restante.reprovadores}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </mat-expansion-panel>
+                </mat-accordion>
+
+                <h5 *ngIf="obraEstaReprovado()" class="aviso-alcada-obra-reprovado">
+                  {{ this.getPropostaOuContratoString() }} foi reprovado, não é possível continuar com aprovação(ões) pendente(s)
+                </h5>
+              
+                <span *ngIf="temDireitoAprovacaoComercial && this.aprovacaoComercialHierarquiaDireitos.direitoCondicaoPagamento && this.obra.condicaoPagamentoStatusComercial == 1" 
+                  class="container-aprovacao"
+                  text-align="center;">
+                  <h5 style="color: #e4c800;"><b>DEMAIS CONDIÇÕES DEPENDENTE DE SEU NÍVEL DE HIERARQUIA PARA APROVAÇÃO</b></h5>
+                  <div>
+                    <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarCondicaoPagamentoComercial()">Aprovar</button>
+                    <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarCondicaoPagamentoComercial()">Reprovar</button>
+                  </div>
+                </span>
+
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <mat-card class="no-h-margim" style="padding: 15px;">
+            <h2>Bombas</h2>
+
+            <mat-accordion>
+                <mat-expansion-panel *ngFor="let obraBomba of obra.obraBombas" style="margin-bottom: 35px;" #expansionPanelBomba>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          R$ {{obraBomba.taxaMinimaPrecoProposto.toFixed(2)}}
+                          <mat-icon *ngIf="!naoNecessitaAprovacao(obraBomba)" [style.color]="itemAprovacaoComercialColor(obraBomba)">
+                            {{itemAprovacaoIcon(obraBomba)}}
+                          </mat-icon>
+                        </mat-panel-title>
+                        <mat-panel-description>{{bombaString(obraBomba)}}</mat-panel-description>
+                    </mat-expansion-panel-header>
+                    
+                    <h4>{{bombaString(obraBomba)}}</h4>
+                    <div>
+                      <div>
+                        <strong>Tabela:</strong><br/>
+                        Até <strong> {{obraBomba.m3TabelaAte.toFixed(1)}} M3</strong><br/>
+                        Tx.Min.: <strong>R$ {{obraBomba.taxaMinimaPrecoTabela.toFixed(2)}}</strong><br/>
+                        M3 Bomb.: <strong>R$ {{obraBomba.m3PrecoTabela.toFixed(2)}}</strong>
+                      </div>
+                      <div>
+                        <strong>Proposto:</strong><br/>
+                        Até <strong>{{obraBomba.m3PropostoAte.toFixed(1)}} M3</strong><br/>
+                        Tx.Min.: <strong>R$ {{obraBomba.taxaMinimaPrecoProposto.toFixed(2)}}</strong><br/>
+                        M3 Bomb.: <strong>R$ {{obraBomba.m3PrecoProposto.toFixed(2)}}</strong>
+                      </div>
+                    </div>
+
+                    <br/>
+                    <div *ngIf="temDireitoAcessoMargemPosTransporte">
+                      Ebitda: <strong >{{formataMoeda(obraBomba.ebitda)}}</strong><br/>
+                    </div>
+                    Desconto taxa mínima: <strong>{{ calculaDesconto(obraBomba.taxaMinimaPrecoProposto, obraBomba.taxaMinimaPrecoTabela).toFixed(2) }}%</strong>
+                    <br/>
+                    Desconto m3 preço: <strong>{{ calculaDesconto(obraBomba.m3PrecoProposto, obraBomba.m3PrecoTabela).toFixed(2) }}%</strong>
+
+                    <div *ngIf="utilizaAprovacaoComercialPorAlcada() && bombaPossuiAprovacaoComercialPendente(obraBomba.sequencia)" style="margin-bottom: 20px; margin-top: 10px;">
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title>Aprovação Comercial</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                          <mat-accordion *ngFor="let restante of filtrarBombasAprovacaoComercialPendente(aprovacaoComercialAprovacoesRestantes.bombas, obraBomba.sequencia)">
+                            <mat-expansion-panel style="margin-bottom: 10px;">
+                              <mat-expansion-panel-header>
+                                <mat-panel-title class="card-titulo-hierarquia">
+                                  {{ restante.nivelAutoridade }} - {{ restante.nivelDescricao }}
+                                </mat-panel-title>
+                                <mat-panel-description class="card-descr-hierarquia">
+                                  {{ formataStatusAprovacao(restante.status, isSmallScreen) }} 
+                                  <br/>
+                                  {{ getAprovacaoRestanteString(restante) }}
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              
+                              <table>
+                                <tbody>
+                                  <tr>
+                                    <td class="th-hierarquia">Nível de Autoridade :</td>
+                                    <td class="td-hierarquia">{{restante.nivelAutoridade}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="th-hierarquia">Descrição :</td>
+                                    <td class="td-hierarquia">{{restante.nivelDescricao}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="th-hierarquia">Quant. Aprovações Necessárias :</td>
+                                    <td class="td-hierarquia">{{restante.quantidadeNotificacoes}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="th-hierarquia">Quant. Aprovações Realizadas :</td>
+                                    <td class="td-hierarquia">{{restante.quantidadeNotificacoesAprovadas}}</td>
+                                  </tr>
+                                  <tr *ngIf="restante.aprovadores != ''">
+                                    <td class="th-hierarquia">Aprovadores :</td>
+                                    <td class="td-hierarquia">{{restante.aprovadores}}</td>
+                                  </tr>
+                                  <tr *ngIf="restante.reprovadores != ''">
+                                    <td class="th-hierarquia">Reprovadores :</td>
+                                    <td class="td-hierarquia">{{restante.reprovadores}}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                            </mat-expansion-panel>
+                          </mat-accordion>
+
+                          <h5 *ngIf="obraEstaReprovado()" class="aviso-alcada-obra-reprovado">
+                            {{ this.getPropostaOuContratoString() }} foi reprovado, não é possível continuar com aprovação(ões) pendente(s)
+                          </h5>
+                        
+                          <span *ngIf="(!naoNecessitaAprovacao(obraBomba) && temDireitoAprovacaoComercial) && possuiPermissaoParaAprovacaoBomba(obraBomba.sequencia)" 
+                            class="container-aprovacao"
+                            text-align="center;">
+                            <h5 style="color: #e4c800;"><b>BOMBA DEPENDENTE DE SEU NÍVEL DE HIERARQUIA PARA APROVAÇÃO</b></h5>
+                            <div>
+                              <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarItemComercial(obraBomba, expansionPanelBomba)">Aprovar</button>
+                              <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarItemComercial(obraBomba, expansionPanelBomba)">Reprovar</button>
+                            </div>
+                          </span>
+
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+
+                    <span *ngIf="(!naoNecessitaAprovacao(obraBomba) && temDireitoAprovacaoComercial) && !utilizaAprovacaoComercialPorAlcada()">
+                      <br/>Solicitante: <strong>{{obraBomba.descontoSolicitante}}</strong>
+                      <br/>Justificativa: <strong>{{obraBomba.justificativa}}</strong>
+                      <br/>Observação: <strong>{{obraBomba.logObservacao}}</strong>
+                      <br/><br/>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarItemComercial(obraBomba, expansionPanelBomba)">Aprovar</button>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarItemComercial(obraBomba, expansionPanelBomba)">Reprovar</button>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','aguardando-aprovacao']" (click)="alterarItemComercial(obraBomba)">Alterar</button>
+
+                      <div *ngIf="isItemComercialEmAlteracao(obraBomba)">
+                        <form [formGroup]="comercialForm" class="form-container">
+                          <decimal-input [formGroup]="comercialForm" placeholder="M3 até" name="comercialM3PropostoAte"
+                            [(model)]="itemNovosValores.m3PropostoAte"></decimal-input>
+
+                          <decimal-input [formGroup]="comercialForm" placeholder="Taxa mínima" name="comercialTaxaMinimaPrecoProposto"
+                            [(model)]="itemNovosValores.taxaMinimaPrecoProposto"></decimal-input>
+
+                          <decimal-input [formGroup]="comercialForm" placeholder="Preço M3 bombeado" name="comercialM3PrecoProposto"
+                            [(model)]="itemNovosValores.m3PrecoProposto"></decimal-input>
+
+                          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="confirmarAlteracaoItemComercial(obraBomba, itemNovosValores, expansionPanelBomba)">Confirmar</button>
+                        </form>
+                      </div>
+                    </span>
+
+                    <br/><br/>
+                    <mat-checkbox  [(ngModel)]="obraBomba.inativo" [checked]="obraBomba.inativo">
+                      Inativar Item
+                    </mat-checkbox>
+                </mat-expansion-panel>
+            </mat-accordion>
+          </mat-card>
+          <br/>
+
+          <mat-card class="no-h-margim" style="padding: 15px;">
+            <h2>Taxas extras</h2>
+
+            <mat-accordion>
+              <div *ngFor="let obraTaxa of obra.obraTaxas" style="margin-bottom: 35px;">
+                  <mat-expansion-panel *ngIf="!naoNecessitaAprovacao(obraTaxa)" #expansionPanelObraTaxa>
+                      <mat-expansion-panel-header>
+                          <mat-panel-title>
+                              {{obraTaxa.descricao}}
+                            <mat-icon *ngIf="!naoNecessitaAprovacao(obraTaxa)" [style.color]="itemAprovacaoComercialColor(obraTaxa)">
+                              {{itemAprovacaoIcon(obraTaxa)}}
+                            </mat-icon>
+                          </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      
+                      <span *ngIf="!naoNecessitaAprovacao(obraTaxa)">
+                        <strong [style.color]="(obraTaxa.selecionada == 'S' ? 'blue' : 'red')">
+                          {{getTipoAprovacaoObraTaxa(obraTaxa)}}
+                        </strong>
+                        <br/>Solicitante: <strong>{{obraTaxa.aprovacaoSolicitante}}</strong>
+                        <br/>Observação: <strong>{{obraTaxa.logObservacao}}</strong>
+                        <br/><br/>
+                        <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                          (click)="aprovarItemComercial(obraTaxa, expansionPanelObraTaxa)" *ngIf="temDireitoAprovacaoComercial">Aprovar</button>
+                        <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']"
+                          (click)="reprovarItemComercial(obraTaxa, expansionPanelObraTaxa)" *ngIf="temDireitoAprovacaoComercial">Reprovar</button>
+                      </span>
+                  </mat-expansion-panel>
+              </div>
+            </mat-accordion>
+          </mat-card>
+          <br/>
+
+          <mat-card class="no-h-margim" style="padding: 15px;">
+            <h2>Demais aprovações</h2>
+            <mat-accordion>
+              <div *ngFor="let item of obra.demaisAprovacoes" style="margin-bottom: 35px;">
+                <mat-expansion-panel *ngIf="!naoNecessitaAprovacao(item)" #expansionPanelDemaisAprovacoes>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            {{item.aprovacaoTipo.descricao}}
+                          <mat-icon *ngIf="!naoNecessitaAprovacao(item)" [style.color]="itemAprovacaoComercialColor(item)">
+                            {{itemAprovacaoIcon(item)}}
+                          </mat-icon>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    
+                    Tipo: <strong>{{item.aprovacaoTipo.descricao}}</strong><br/>
+                    <strong>{{item.dataHoraSolicitacao.replace('T',' ')}}</strong><br/>
+                    Solicitante:<strong>{{item.usuarioRequisitante}}</strong><br/><br/>
+                    Complemento:<br/><strong>{{item.complemento}}</strong><br/><br/>
+                    Observação:<br/><strong>{{item.observacao}}</strong>
+                    <br/>Observação: <strong>{{item.logObservacao}}</strong>
+                    <br/><br/>
+                    <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" 
+                      (click)="aprovarItemComercial(item, expansionPanelDemaisAprovacoes)" *ngIf="temDireitoAprovacaoComercial">Aprovar</button>
+                    <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']"
+                      (click)="reprovarItemComercial(item, expansionPanelDemaisAprovacoes)" *ngIf="temDireitoAprovacaoComercial">Reprovar</button>
+                </mat-expansion-panel>
+              </div>
+            
+            </mat-accordion>
+          </mat-card>
+          <br/>
+
+          <mat-action-row>
+            <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+              (click)="confirmarAprovacaoComercial()" *ngIf="temDireitoAprovacaoComercial && !statusAlcadaAguardandoAprovacaoOutroNivel">Confirmar</button>
+            <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="closeModal()">Cancelar</button>
+          </mat-action-row>
+            
+        </div>
+        
+    </ng-template>
+
+    <div #engenhariaModalVCR></div>
+    <ng-template #engenhariaModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen" *ngIf="obra">
+          <h2 cdkFocusRegionstart>ENGENHARIA</h2>
+
+          <form [formGroup]="engenhariaForm" class="form-container">
+
+            <mat-card class="no-h-margim">
+                <h2>Traços</h2>
+    
+                <mat-accordion>
+                    <mat-expansion-panel *ngFor="let obraTraco of obra.obraTracos" #expansionPanelTracosEngenharia>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                              {{obraTraco.m3Quantidade.toFixed(1)}} M3 / R$ {{obraTraco.m3PrecoProposto.toFixed(2)}}
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!isSmallScreen">{{obraTraco.resistencia}} / {{obraTraco.pedra.descricao}} / {{obraTraco.slump.descricao}} / {{obraTraco.uso.descricao}}</mat-panel-description>
+                        </mat-expansion-panel-header>
+                        
+                        {{obraTraco.resistencia}} / {{obraTraco.pedra.descricao}} / {{obraTraco.slump.descricao}} / {{obraTraco.uso.descricao}}<br/>
+                        Serviço: <strong>R$ {{obraTraco.valorServico.toFixed(2)}}</strong><br/>
+                        Volume: <strong>{{obraTraco.m3Quantidade.toFixed(1)}} M3</strong><br/>
+                        <div *ngIf="obraTraco.m3Consumido">
+                        Volume Consumido: <strong>{{obraTraco.m3Consumido.toFixed(1)}} M3</strong><br/>
+                        Saldo de volume: <strong>{{(obraTraco.m3Quantidade - obraTraco.m3Consumido).toFixed(1)}} M3</strong><br/></div>
+                        <div *ngIf="!obraTraco.m3Consumido">
+                          Volume Consumido: <strong>0.0 M3</strong><br/>
+                          Saldo de volume: <strong>{{obraTraco.m3Quantidade.toFixed(1)}} M3</strong><br/></div>
+                        Tabela: <strong>R$ {{obraTraco.m3PrecoTabela.toFixed(2)}}</strong><br/>
+                        Proposto: <strong>R$ {{obraTraco.m3PrecoProposto.toFixed(2)}}</strong><br/>
+                        Desconto: <strong>{{calculaDesconto(obraTraco.m3PrecoProposto,obraTraco.m3PrecoAjustado).toFixed(2)}}%</strong>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <mat-action-row>
+                  <button mat-button disabled>
+                    Total Contratado: {{ formataValor(volumeTotalTracosContratado(), 1) }} M3 
+                  </button>
+                  <button mat-button disabled>
+                     Consumido: {{ formataValor(volumeTotalTracosConsumido(), 1) }} M3 
+                  </button>
+                    <button mat-button disabled>
+                     Saldo total: {{ formataValor(volumeTotalTracosContratado() - volumeTotalTracosConsumido(), 1) }} M3 
+                    </button>
+                </mat-action-row>
+    
+              </mat-card>
+            <mat-action-row>
+              <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']"
+                (click)="confirmarAprovacaoEngenharia()" *ngIf="pendenteAprovacaoEngenharia(obra) && temDireitoAprovacaoEngenharia">APROVAR</button>
+              <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="closeModal()">Cancelar</button>
+            </mat-action-row>
+          </form>
+            
+        </div>
+        
+    </ng-template>
+
+    <div #financeiroModalVCR></div>
+    <ng-template #financeiroModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen" *ngIf="obra">
+          <h2 cdkFocusRegionstart>FINANCEIRO</h2>
+
+          <div>Cliente: <b>{{ getInterveniente(openedElement) }}</b></div>
+          <div>CPF/CNPJ: <b>{{ getCpfCnpj(openedElement) }}</b></div>
+          <div>Contrato: <b>{{ getContratoNumero(openedElement) }}</b></div>
+          <br />
+          
+          Pagamentos:
+          <form [formGroup]="financeiroForm" class="form-container">
+            <mat-accordion>
+                <mat-expansion-panel *ngFor="let pagamento of obra.obraPagamentos" #expansionPanelPagamentos>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          {{ pagamento.tipoCobranca.descricao }} ({{ formataMoeda(pagamento.valor) }})
+                          <mat-icon *ngIf="!naoNecessitaAprovacao(pagamento) && pagamento.ativoSimNao !== 'N'" [style.color]="itemAprovacaoFinanceiraColor(pagamento)">
+                            {{ itemAprovacaoIcon(pagamento) }}
+                          </mat-icon>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div *ngIf="pagamento.detalhes.length===0">
+                      ► Nenhum detalhamento informado
+                    </div>
+                    
+                    <div *ngIf="isPagamentoInativo(pagamento)"> <mat-error>Pagamento Inativo!</mat-error></div>
+                    
+                    <div *ngFor="let detalhe of pagamento.detalhes" >
+                      <span *ngIf="['BE','BL'].includes(pagamento.tipoCobranca.forma)">
+                        ► Valor: {{formataMoeda(detalhe.valor)}} | Vencimento: {{formataData(detalhe.dataVencimento)}}
+                      </span>
+
+                      <span *ngIf="['CC','CD'].includes(pagamento.tipoCobranca.forma)">
+                        ► Valor: {{formataMoeda(detalhe.valor)}}
+                        <span *ngIf="detalhe.bandeira">| Bandeira: {{detalhe.bandeira.codigo}}-{{detalhe.bandeira.descricao}}</span>
+                        | Nº cartão: {{detalhe.numeroCartao}} | Dt. trans.: {{formataData(detalhe.dataTransacao)}}
+                        | Nº autoriz: {{detalhe.numeroAutorizacao}} | Parcelas: {{detalhe.quantidadeParcelas}}
+                      </span>
+                      
+                      <span *ngIf="['DN'].includes(pagamento.tipoCobranca.forma)">
+                        ► Valor: {{formataMoeda(detalhe.valor)}} 
+                        <span *ngIf="detalhe.numeroRecibo">| Nº recibo.: {{detalhe.numeroRecibo}}</span>
+                        | Dt. pagamento.: {{detalhe.dataPagamento}}
+                      </span>
+                      
+                      <span *ngIf="['DP'].includes(pagamento.tipoCobranca.forma)">
+                        ► Valor: {{formataMoeda(detalhe.valor)}} | Dt. depósito: {{formataData(detalhe.dataDeposito)}}
+                        <span *ngIf="detalhe.portador">| Portador: {{detalhe.portador.descricao}}</span>
+                        | Nº terminal: {{detalhe.numeroTerminal}}
+                      </span>
+                      
+                      <span *ngIf="['CH'].includes(pagamento.tipoCobranca.forma)">
+                        ► Valor: {{formataMoeda(detalhe.valor)}}
+                        | Banco: {{detalhe.bancoCodigoOficial}} | Ag.: {{detalhe.bancoAgencia}}
+                        | Nº cheque: {{detalhe.numeroCheque}} | Nº C/C: {{detalhe.bancoContaNumero}}-{{detalhe.bancoContaDV}}
+                        <span *ngIf="detalhe.dataBomPara">| Bom p/: {{formataData(detalhe.dataBomPara)}}</span>
+                        <span *ngIf="detalhe.dataRecebimento">| Dt. receb.: {{formataData(detalhe.dataRecebimento)}}</span>
+                      </span>
+                    </div>
+                    <br/><br/>
+                    <div *ngIf="!naoNecessitaAprovacao(pagamento) && temDireitoAprovacaoPagamento(pagamento) && pagamento.ativoSimNao !== 'N'">
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="aprovarItemFinanceiro(pagamento, expansionPanelPagamentos)">Aprovar</button>
+                      <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="reprovarItemFinanceiro(pagamento, expansionPanelPagamentos)">Reprovar</button>
+                    </div>
+                    <div *ngIf="temDireitoAprovacaoPagamento(pagamento) && pagamentoAprovado(pagamento)  && pagamento.ativoSimNao !== 'N'">
+                      <confirm-dialog-button buttonText="Desaprovar pagamento" buttonColor="warn" dialogMessage="Confirma desaprovação deste item?"
+                        (confirm)="desaprovarItemFinanceiro(obra,pagamento)"></confirm-dialog-button>
+                    </div>
+                    
+                </mat-expansion-panel>
+            </mat-accordion>
+            <br/>
+
+            <select-combo [formGroup]="financeiroForm" placeholder="Status financeiro atual" name="statusFinanceiro" [list]="statusFinanceiroCodigos"
+                [formatter]="statusFinanceiroFormatter" [(model)]="obra.statusFinanceiro" disabled></select-combo>
+
+            <mat-action-row>
+              <button mat-raised-button *ngIf="temDireitoAprovacaoFinanceira"
+                [ngClass]="['btn-aprovacao','aprovado']" (click)="confirmarAprovacaoFinanceiro()">Confirmar</button>
+              <button mat-raised-button [ngClass]="['btn-aprovacao','reprovado']" (click)="closeModal()">Cancelar</button>
+            </mat-action-row>
+
+          </form>
+            
+        </div>
+        
+    </ng-template>
+
+    <div #colunasVisualizacaoModalVCR></div>
+    <ng-template #colunasVisualizacaoModal>
+        
+        <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+        <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+          
+          <div *ngFor="let column of allColumnsOrdered">
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            
+            <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                (change)="setHiddenColumn(column.name, !$event.checked)">
+              {{ column.placeholder }}
+            </mat-checkbox>
+            <br/>
+          </div>
+        </div>
+
+        <div class="float-right">
+          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+        </div>
+        
+    </ng-template>
+
+    <div #ebitdaModalVCR></div>
+    <ng-template #ebitdaModal>
+      <div class="form-container modal" [hidden]="!modalIsOpen" *ngIf="obra">
+        <mat-accordion>
+            <mat-expansion-panel *ngFor="let obraTraco of obra.obraTracos;let i = index" style="margin-bottom: 35px;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{obraTraco.resistencia}} / {{obraTraco.pedra.descricao}} / {{obraTraco.slump.descricao}} / {{obraTraco.uso.descricao}}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                  <ebitda-obra-traco [obraTraco]="tracosExibicaoEbitda[i]" [custoServico]="custoServico" [usinaEntrega]="obra.usinaEntrega" [obra]="obra">
+                  </ebitda-obra-traco>
+            </mat-expansion-panel>
+        </mat-accordion>
+
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let obraBomba of obra.obraBombas" style="margin-bottom: 35px;">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{bombaString(obraBomba)}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <ebitda-obra-bomba [obraBomba]="obraBomba" [custoServico]="custoServico" [quantidadeBombeada]="quantidadeBombeada()">
+              </ebitda-obra-bomba>
+          </mat-expansion-panel>
+        </mat-accordion>
+        <mat-divider></mat-divider>
+        <div class="div-ebitda-total">
+          <p>Ebitda Médio da Obra:<strong> {{ formataMoeda(EbitdaTotalObra()) }}</strong> por M3.</p>
+        </div>
+        <mat-action-row>
+          <button mat-button color="warn" (click)="closeModal()">Fechar</button>
+        </mat-action-row>
+      </div>
+    </ng-template>
+    
+    <div #anexosModalVCR></div>
+      <ng-template #anexosModal>
+            <div class="form-container modal" [hidden]="!modalIsOpen">
+              <h2 cdkFocusRegionstart>Anexos</h2>
+      
+              <button mat-raised-button color="accent" (click)="abrirSeletorDeArquivos(inputFile)" [disabled]=" disableConfirmButton">
+                <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar Documento
+              </button>
+              <input #inputFile type="file" (change)="arquivoSelecionado($event)" style="display: none;" />
+              
+                  <div *ngFor="let element of anexos">
+                    <br/>
+                    <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+                      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <div class="anexo-panel-content">
+                              <mat-panel-title class="title-text">Descrição</mat-panel-title>
+                              <mat-panel-description class="descricao-text">{{element.descricao}}</mat-panel-description>
+                            </div>
+                          </mat-expansion-panel-header>
+      
+                          <form [formGroup]="anexoForm" class="form-container">
+      
+                            <table>
+                              <tbody>
+                                <tr>
+                                  <td class="th-anexo">Arquivo :</td>
+                                  <td class="td-anexo">{{element.nome}}</td>
+                                </tr>
+                                <tr>
+                                  <td class="th-anexo">Usuario :</td>
+                                  <td class="td-anexo">{{element.usuario}}</td>
+                                </tr>
+                                <tr>
+                                  <td class="th-anexo">Data/Hora :</td>
+                                  <td class="td-anexo">{{ formataDataHora(element.dataHora) }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+      
+                            <br/>
+
+                            <div style="float: left;">
+    
+                              <button mat-button color="accent" (click)="abrirAnexo(element)">
+                                <mat-icon matTooltip="Abrir Anexo">folder_open</mat-icon> Abrir
+                              </button>
+    
+                            </div> 
+
+                            <div style="float: right;">
+
+                              <button mat-button color="accent" (click)="showModalDescricaoAnexo(descricaoAnexoModal, descricaoAnexoModalRef, element)">
+                                <mat-icon matTooltip="Editar Descrição">edit</mat-icon> Editar Descrição
+                              </button>
+
+                              <button mat-button color="warn" (click)="removerAnexo(element)">
+                                <mat-icon matTooltip="Excluir Anexo">delete</mat-icon> Excluir
+                              </button>
+    
+                            </div>
+                          
+                          </form>
+      
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                  </div>
+
+                <div><p>Tamanho máximo de upload de arquivo: 10 MB.</p></div>
+      
+                <mat-action-row>
+                  <button mat-button color="accent" (click)="closeModal()">Fechar</button>
+                </mat-action-row>
+            
+            </div>
+            
+        </ng-template>
+
+        <div #descricaoAnexoModalVCR></div>
+        <ng-template #descricaoAnexoModal>
+            
+            <div class="form-container modal" [hidden]="!modalIsOpen">
+            <h2 cdkFocusRegionstart>DESCRIÇÃO ANEXO</h2>
+                
+            <form [formGroup]="anexoDescricaoForm" class="form-container">
+    
+              <simple-input [formGroup]="anexoDescricaoForm" placeholder="Descrição" name="descricao" noCase
+              [(model)]="anexo.descricao" required [maxLength]="70"></simple-input>
+        
+              <mat-action-row>
+                  <button mat-button color="accent" (click)="atualizarDescricaoAnexo(anexo)" [disabled]="anexo.descricao == '' || !anexoDescricaoForm.valid">Confirmar</button>
+                  <button mat-button color="warn" (click)="cancelSubModal()">Cancelar</button>
+              </mat-action-row>
+    
+            </form>
+            
+            </div>
+            
+        </ng-template>
+      
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

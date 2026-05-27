@@ -1,0 +1,316 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>CONFIGURAR ACESSO APROVAÇÕES</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+  
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg" fusePerfectScrollbar>
+  
+      <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+        [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+  
+        <view-selector [key]="'CONFIG-ACESSO-APROVACAO'" [currentValue]="currentViewValue"
+        (selectedChange)="viewChanged($event)">
+  
+        </view-selector><br *ngIf="isSmallScreen"/>
+      
+        <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="CONFIG-ACESSO-APROVACAO">
+  
+          <integer-input [formGroup]="filter.form" placeholder="Codigo" name="==|codigo"
+            [(model)]="filtro.codigo" [maxIntegerChars]="10"></integer-input>
+  
+          <suggest-combo [formGroup]="filter.form" placeholder="Descrição" name="grupoAcesso"
+            (textChange)="filtrarGrupoAcessoPorDescricao($event)" [list]="gruposAcesso" [mustBeValid]="false"
+            [(model)]="filtro.grupoAcesso" [formatter]="grupoAcessoFormatter"></suggest-combo>
+          <simple-input [formGroup]="filter.form" name="%=|descricao" [(model)]="filtro.descricao" hidden></simple-input>
+        </filter>
+      </paginator>
+  
+      <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+        <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+      </mat-accordion>
+      
+      <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">    
+        <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+            <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+            <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+        </ng-container>
+  
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValue(element, hColumn) }}
+                      <mat-divider></mat-divider>
+                    </div>
+                  </div>
+              </div>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="edit">        
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-mini-fab color="accent" (click)="showModal(grupoModal, grupoModalVCR, addGrupoAcesso)">
+              <mat-icon matTooltip="Adicionar">add</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="accent" (click)="showModal(grupoModal, grupoModalVCR, updateGrupoAcesso, undefined, element)">
+              <mat-icon matTooltip="Editar">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="config">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="accent" (click)="showConfiguracaoModal(configUsuariosModal, configUsuariosModalRef, element)">
+              <mat-icon matTooltip="Configurar">settings</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+                dialogMessage="Deseja excluir o grupo cadastrado?" (confirm)="deleteGrupoAcesso(element)"></confirm-dialog-button>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="expand">
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+              <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+            <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+          </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+        <tr mat-row *matRowDef="let element; columns: columnNames;"
+            class="element-row"
+            [class.expanded-row]="expandedElement === element"
+            (click)="expandedElement = expandedElement === element ? null : element">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+      </table>
+  
+      <div #gModalVCR></div>
+      <ng-template #grupoModal>
+          
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+          <h2 cdkFocusRegionstart>CONFIGURAR GRUPO</h2>
+              
+          <form [formGroup]="grupoForm" class="form-container">
+  
+            <simple-input [formGroup]="grupoForm" placeholder="Código" name="codigo" disabled
+                [model]="item.codigo"></simple-input>
+
+            <suggest-combo [formGroup]="grupoForm" placeholder="Central" name="usina" [list]="usinas"
+                [(model)]="item.usinaInf" required [formatter]="usinaFormatter"></suggest-combo>
+            <simple-input [formGroup]="grupoForm" placeholder="Central" name="usinaCodigo"
+                [model]="item.usinaInf.codigo" *ngIf="item.usina" hidden></simple-input>
+  
+            <simple-input [formGroup]="grupoForm" placeholder="Descrição" name="descricao"
+                [(model)]="item.descricao" [maxLength]="30" required></simple-input>
+
+            <h2 class="titulo">Horários padrões</h2>
+
+            <div formArrayName="liberacaoAcesso">
+              <div class="dias-semana" *ngFor="let dia of diasArray; let diaIndex = index">
+                <button mat-fab [ngClass]="{'blocked-button': grupoForm.get('liberacaoAcesso').at(diaIndex * 2).get('bloquear').value === true}" 
+                    (click)="bloquearDia(grupoForm, diaIndex)" matTooltip="Bloquear Acesso">{{dia.charAt(0)}}</button>
+                <div class="turnos" *ngFor="let turno of turnosArray; let turnoIndex = index">
+                    <div [formGroupName]="diaIndex * 2 + turnoIndex">
+                      <mat-form-field appearance="outline" class="custom-width">
+                        <input matInput type="time" formControlName="horaEntrada" [required]="isHoraEntradaRequired(grupoForm, diaIndex, turnoIndex)">
+                      </mat-form-field>
+                      <mat-icon class="flecha">arrow_forward</mat-icon>
+                      <mat-form-field appearance="outline" class="custom-width margin-right">
+                        <input matInput type="time" formControlName="horaSaida" [required]="isHoraSaidaRequired(grupoForm, diaIndex, turnoIndex)">
+                      </mat-form-field>
+
+                      <input type="hidden" formControlName="diaSemana" [value]="dia">
+                      <input type="hidden" formControlName="turno" [value]="turnoIndex">
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <mat-action-row>
+                <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="grupoForm.invalid || item.descricao == ''">Confirma</button>
+                <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+            </mat-action-row>
+  
+          </form>
+          
+          </div>
+          
+      </ng-template>
+  
+      <div #colunasVisualizacaoModalVCR></div>
+      <ng-template #colunasVisualizacaoModal>
+          
+          <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+          <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+            
+            <div *ngFor="let column of allColumnsOrdered">
+              <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              
+              <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                  (change)="setHiddenColumn(column.name, !$event.checked)">
+                {{ column.placeholder }}
+              </mat-checkbox>
+              <br/>
+            </div>
+          </div>
+  
+          <div class="float-right">
+            <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+          </div>
+          
+      </ng-template>
+      </div>
+  
+      <div #configUsuariosModalVCR></div>
+      <ng-template #configUsuariosModal>
+
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+    
+          <h2 cdkFocusRegionstart>Usuário</h2>
+          <form [formGroup]="configUsuariosForm" class="form-container">
+    
+            <mat-card>
+              <mat-card-title>
+                <p>Adicionar Usuário</p>
+              </mat-card-title>
+              <mat-card-content>
+                <suggest-combo [formGroup]="configUsuariosForm" placeholder="Usuário"  name="cadUsuario" 
+                  [list]="usuariosDisponiveis" [formatter]="usuarioFormatter" [(model)]="usuarioSelecionado" required></suggest-combo>
+                
+                <mat-action-row>
+                  <button mat-button color="accent" (click)="adicionarUsuario()" [disabled]="configUsuariosForm.invalid">
+                    <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar
+                  </button>
+                </mat-action-row>
+              </mat-card-content>
+            </mat-card>
+    
+            <br/>
+    
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Usuários
+                </mat-panel-title>
+                <mat-panel-description>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div *ngFor="let usuario of usuariosAgrupados | keyvalue">
+                <hr>
+                <p class="action-buttons-usuario">
+                    <button mat-button color="warn" (click)="removerUsuario(usuario.value.usuarioId)" *ngIf="usuario.codigo !== ''" [disabled]="configUsuariosForm.invalid">
+                        <mat-icon matTooltip="Remover Usuário do Grupo">delete</mat-icon> Remover
+                    </button>
+                    <b>{{usuario.value.usuarioId}}</b>
+                    <button class="botao-horario" mat-button color="accent" (click)="showSubModal(liberacaoAcessoUsuarioModal, liberacaoAcessoUsuarioModalVCR, updateUsuario, usuario.value.liberacoesAcessos)">
+                      <mat-icon matTooltip="Editar Horários">timer</mat-icon> Horários
+                    </button>
+                </p>
+              </div>
+            </mat-expansion-panel>
+    
+            <mat-action-row>
+              <button mat-button color="accent" (click)="cancelModal()">Fechar</button>
+            </mat-action-row>
+    
+          </form>
+    
+        </div>
+    
+      </ng-template>
+
+      <div #liberacaoAcessoUsuarioModalVCR></div>
+      <ng-template #liberacaoAcessoUsuarioModal>
+
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+    
+          <h2 cdkFocusRegionstart>Usuário</h2>
+          <form [formGroup]="liberacaoAcessoUsuarioForm" class="form-container">
+    
+            <h2 class="titulo">Horários padrões</h2>
+            <div formArrayName="liberacaoAcesso">
+              <div class="dias-semana" *ngFor="let dia of diasArray; let diaIndex = index">
+                <button mat-fab [ngClass]="{'blocked-button': liberacaoAcessoUsuarioForm.get('liberacaoAcesso').at(diaIndex * 2).get('bloquear').value === true}" 
+                    (click)="bloquearDia(liberacaoAcessoUsuarioForm, diaIndex)" matTooltip="Bloquear Acesso">{{dia.charAt(0)}}</button>
+                <div class="turnos" *ngFor="let turno of turnosArray; let turnoIndex = index">
+                    <div [formGroupName]="diaIndex * 2 + turnoIndex">
+                      <mat-form-field appearance="outline" class="custom-width">
+                        <input matInput type="time" formControlName="horaEntrada" [required]="isHoraEntradaRequired(liberacaoAcessoUsuarioForm, diaIndex, turnoIndex)">
+                      </mat-form-field>
+                      <mat-icon class="flecha">arrow_forward</mat-icon>
+                      <mat-form-field appearance="outline" class="custom-width margin-right">
+                        <input matInput type="time" formControlName="horaSaida" [required]="isHoraSaidaRequired(liberacaoAcessoUsuarioForm, diaIndex, turnoIndex)">
+                      </mat-form-field>
+
+                      <input type="hidden" formControlName="diaSemana" [value]="dia">
+                      <input type="hidden" formControlName="turno" [value]="turnoIndex">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ausencia">
+              <div class="ausencia-tipo">
+                <div class="ausencia-tipo">
+                  <mat-checkbox (change)="onTipoAusenciaChange('AFASTAMENTO', $event.checked)" [checked]="tipoAusenciaSelecionado === 'AFASTAMENTO'">Afastamento</mat-checkbox>
+                  <mat-checkbox (change)="onTipoAusenciaChange('AUSENCIA', $event.checked)" [checked]="tipoAusenciaSelecionado === 'AUSENCIA'">Ausência</mat-checkbox>
+                </div>
+              </div>
+            
+              <div class="ausencia-periodo" *ngIf="tipoAusenciaSelecionado">
+                <date-picker [formGroup]="liberacaoAcessoUsuarioForm" [(model)]="periodoAtual.inicioPeriodo" placeholder="Inicio Período" name="inicioPeriodo" [required]="tipoAusenciaSelecionado"></date-picker>
+
+                <date-picker [formGroup]="liberacaoAcessoUsuarioForm" [(model)]="periodoAtual.fimPeriodo" placeholder="Fim Período" name="fimPeriodo" [required]="tipoAusenciaSelecionado"></date-picker>
+              </div>
+            </div>
+              
+            <div class="ausencia">
+              <div class="ausencia-tipo">
+                <div class="ausencia-tipo">
+                  <mat-checkbox (change)="onFeriasChange($event.checked)" [checked]="feriasSelecionado">Férias</mat-checkbox>
+                </div>
+              </div>
+            
+              <div class="ausencia-periodo" *ngIf="feriasSelecionado">
+                <date-picker [formGroup]="liberacaoAcessoUsuarioForm" [(model)]="periodoFeriasAtual.inicioPeriodo" placeholder="Inicio Período" name="inicioPeriodoFerias" [required]="feriasSelecionado"></date-picker>
+
+                <date-picker [formGroup]="liberacaoAcessoUsuarioForm" [(model)]="periodoFeriasAtual.fimPeriodo" placeholder="Fim Período" name="fimPeriodoFerias" [required]="feriasSelecionado"></date-picker>
+              </div>
+            </div>
+
+            <mat-action-row>
+              <button mat-button color="accent" (click)="confirmSubModal()" [disabled]="liberacaoAcessoUsuarioForm.invalid">Confirma</button>
+              <button mat-button color="accent" (click)="closeSubModal()">Fechar</button>
+            </mat-action-row>
+          </form>
+    
+        </div>
+    
+      </ng-template>
+  
+  </div>

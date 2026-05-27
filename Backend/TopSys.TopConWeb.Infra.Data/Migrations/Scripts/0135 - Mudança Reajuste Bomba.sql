@@ -1,0 +1,1 @@
+UPDATE topsys.usr_programa SET Funcao='E' WHERE  Aplicativo='CON' AND num=6131 AND Funcao='';

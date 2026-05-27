@@ -1,0 +1,56 @@
+<div class="form-container modal">
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>SOLICITAR PAGAMENTO POR CARTÃO</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+    
+
+    <div>
+        <form [formGroup]="solicitacaoPagamentoForm" style="margin-left: 25px" fusePerfectScrollbar>
+
+            <suggest-combo [formGroup]="solicitacaoPagamentoForm" placeholder="Estabelecimento" 
+            name="cartaoBandeira" [list]="bandeiras" required 
+            [formatter]="bandeiraFormatter" [(model)]="solicitacaoPagamento.cartaoBandeira"></suggest-combo>
+
+            <select-combo [formGroup]="solicitacaoPagamentoForm" placeholder="Cobranca" [formatter]="cobrancaFormatter"
+            name="tipoCobranca" [list]="tipoCobrancaKeys" required [(model)]="solicitacaoPagamento.tipoCobranca"></select-combo>
+
+            <integer-input [formGroup]="solicitacaoPagamentoForm" placeholder="Número de parcelas" [maxIntegerChars]="2" 
+            name ="quantidadeParcelas" [(model)]="solicitacaoPagamento.quantidadeParcelas" *ngIf="solicitacaoPagamento.tipoCobranca !== 'CD'"></integer-input>
+
+            <decimal-input [formGroup]="solicitacaoPagamentoForm" placeholder="Valor Transação" name="valorTotal"
+            [(model)]="solicitacaoPagamento.valorTotal" [maxIntegerChars]="9" showThousandSeparator required></decimal-input>
+
+            <mat-radio-group formControlName="solicitacaoPagamentoRadioButtonsForm" [(ngModel)]="tipoDocumento" (change)="radioButtonChange()">
+                <mat-radio-button [value]="0">CPF</mat-radio-button>
+                <mat-radio-button [value]="1">CNPJ</mat-radio-button>
+            </mat-radio-group>
+
+            <cpf-input [formGroup]="solicitacaoPagamentoForm" placeholder="Informe o CPF" name="==|cpfCnpj"
+            [(model)]="solicitacaoPagamento.cpfCnpj" (modelChange)="carregaDados($event)" 
+            *ngIf="tipoDocumento === 0" required="tipoDocumento === 0"></cpf-input>
+
+            <cnpj-input [formGroup]="solicitacaoPagamentoForm" placeholder="Informe o CNPJ" name="==|cpfCnpj"
+            [(model)]="solicitacaoPagamento.cpfCnpj" (modelChange)="carregaDados($event)" 
+            *ngIf="tipoDocumento === 1" required="tipoDocumento === 1"></cnpj-input>
+
+            <simple-input [formGroup]="solicitacaoPagamentoForm" placeholder="Nome cliente" name="nome" required [maxLength]="20"
+            [(model)]="solicitacaoPagamento.intervenienteRazao" [disabled]="intervenienteJaCadastrado"></simple-input>
+
+            <select-combo [formGroup]="solicitacaoPagamentoForm" placeholder="Obra"
+            name="obra" [list]="obras" [disabled]="obras.length === 0"
+            [formatter]="obraFormatter" [(model)]="solicitacaoPagamento.obra" ></select-combo>
+
+            <simple-input [formGroup]="solicitacaoPagamentoForm" placeholder="Observação" name="observacao"
+            [(model)]="solicitacaoPagamento.observacao" multiline></simple-input>
+
+            <mat-divider></mat-divider>
+            <div class="float-right">
+                <button mat-button color="accent" (click)="enviarSolicitacao()" [disabled]="solicitacaoPagamentoForm.invalid">Enviar</button>
+                <button mat-button color="warn" (click)="cancelarSolicitacao()" *ngIf="modalMode">Cancela</button>
+            </div>
+        </form>
+    </div> 
+
+</div>

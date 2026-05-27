@@ -1,0 +1,56 @@
+<h2>Vincular lançamentos de banco</h2>
+
+<div class="form-container modal" fusePerfectScrollbar>
+  <div>
+    <form [formGroup]="form" class="form-container">
+      <div>{{ data.conta.codigo }} - {{ data.conta.nome }}</div>
+      <div>Valor selecionado: {{ formataMoeda(valorSelecionado) }} de {{ formataMoeda(data.valorAVincular) }}</div>
+      <date-picker [formGroup]="form" placeholder="Data operação" name="dataOperacao"
+        [(model)]="data.dataOperacao" (modelChange)="carregarMovimentosBancoNaoVinculados()"></date-picker>
+    </form>
+  </div>
+
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let item of registrosPagina" [(expanded)]="item['expanded']">
+      <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-checkbox [(ngModel)]="item['selecionado']" (click)="selectionChange(item)">&nbsp;</mat-checkbox>
+            {{ formataMoeda(item.saldo) }}
+          </mat-panel-title>
+          <mat-panel-description>{{ formataData(item.dataOperacao) }} | {{ item.operacaoDescricao }}</mat-panel-description>
+      </mat-expansion-panel-header>
+      <div>{{ item.operacaoDescricao }}</div>
+      <div>Data operação: {{ formataData(item.dataOperacao) }}</div>
+      <div>Valor: {{ formataMoeda(item.valor) }}</div>
+      <div>Saldo: {{ formataMoeda(item.saldo) }}</div>
+      <div>Obs.: {{ item.observacao }}</div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-action-row>
+    <button mat-button [ngClass]="navigationButtonClass" [disabled]="disablePrevious" (click)="first()">
+      <mat-icon [ngClass]="disabledIconClass(disablePrevious)">skip_previous</mat-icon>
+    </button>
+  
+    <button mat-button [ngClass]="navigationButtonClass" [disabled]="disablePrevious" (click)="previous()">
+      <mat-icon [ngClass]="disabledIconClass(disablePrevious)">navigate_before</mat-icon>
+    </button>
+  
+    <button mat-button disabled>
+      {{ pageInfoLabel }}
+    </button>
+  
+    <button mat-button [ngClass]="navigationButtonClass" [disabled]="disableNext" (click)="next()">
+      <mat-icon [ngClass]="disabledIconClass(disableNext)">navigate_next</mat-icon>
+    </button>
+  
+    <button mat-button [ngClass]="navigationButtonClass" [disabled]="disableNext" (click)="last()">
+      <mat-icon [ngClass]="disabledIconClass(disableNext)">skip_next</mat-icon>
+    </button>
+  </mat-action-row>
+</div>
+
+<mat-action-row>
+    <button mat-button color="accent" (click)="confirm()" [disabled]="data.valorAVincular > valorSelecionado">Confirma</button>
+    <button mat-button cdkFocusRegionstart color="warn" (click)="cancel()">Cancela</button>
+</mat-action-row>

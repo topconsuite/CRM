@@ -1,0 +1,50 @@
+  .form-container.modal {
+    max-height: 90vh;
+  }
+  
+  @media screen and (max-width: 860px) {
+    .form-container.modal {
+        min-width: 150px;
+    }
+  }
+  
+  @media screen and (min-width: 861px) {
+    .form-container.modal {
+        width: 640px;
+    }
+  }
+
+ .container-signatario {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: stretch;
+}
+
+.container-signatario > div {
+	flex-grow: 1;
+}
+
+.scroll-container {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.dadosPessoaisAssinatura-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.dadosPessoais-card {
+  width: 640px;
+  padding: 6px;
+}
+
+.button-right{
+  display: flex;
+  justify-content: flex-end;
+  padding: 3px;
+}

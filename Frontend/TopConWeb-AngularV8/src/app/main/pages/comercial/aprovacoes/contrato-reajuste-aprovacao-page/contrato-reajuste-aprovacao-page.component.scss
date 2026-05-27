@@ -1,0 +1,153 @@
+.form-container.modal {
+    max-height: 70vh;
+  }
+  
+  @media screen and (max-width: 860px) {
+    .form-container.modal {
+        min-width: 150px;
+    }
+  }
+  
+  @media screen and (min-width: 861px) {
+    .form-container.modal {
+        width: 640px;
+    }
+  }
+
+  ::ng-deep .mat-label-new {
+    font-weight: bold;
+    font-size: large;
+  }
+
+  ::ng-deep .mat-label-traco-new {
+    font-weight: bold;
+    color: #46C17D;
+  }
+
+  ::ng-deep .mat-label-positive {
+    font-size: small;
+    font-weight: bold;
+    color: #FF3733;
+  }
+
+  ::ng-deep .mat-label-negative {
+    font-size: small;
+    font-weight: bold;
+    color: #46C17D;
+  }
+
+  ::ng-deep .mat-label-zero {
+    font-size: small;
+    font-weight: bold;
+    color: #1E90FF;
+  }
+
+  ::ng-deep .mat-radio-button {
+    margin-left: 16px;
+    margin-bottom: 7px;
+  }
+  
+  .expansion-panel-headers-align .mat-expansion-panel-header-title, 
+  .expansion-panel-headers-align .mat-expansion-panel-header-description {
+    flex-basis: 0;
+  }
+  
+  .expansion-panel-headers-align .mat-expansion-panel-header-description {
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  tr.detail-row {
+    height: 0;
+  }
+  
+  tr.element-row:not(.expanded-row):hover {
+    background: #f5f5f5;
+  }
+  
+  tr.element-row:not(.expanded-row):active {
+    background: #efefef;
+  }
+  
+  .element-row td {
+    border-bottom-width: 0;
+  }
+  
+  .element-detail {
+    overflow: hidden;
+  }
+
+  .btn-alteracao-lote {
+    float: left;
+    margin-top: 13px;
+    margin-left: 7px;
+  }
+  
+  .mat-column-codigo {
+    text-align: center;
+    padding-right: 10px;
+  }
+
+  .mat-column-quantidadeParcelas {
+    text-align: center;
+    padding-right: 10px;
+  }
+
+  .mat-column-descricao {
+    text-align: center;
+    padding-right: 10px;
+    min-width: 120px;
+  }
+
+  .mat-column-condicaoDaCobranca {
+    text-align: center;
+    padding-right: 10px;
+    min-width: 120px;
+  }
+
+  .mat-column-edit {
+    text-align: left;
+    max-width: 40px;
+  }
+
+  .mat-column-delete {
+    text-align: left;
+    max-width: 40px;
+  }
+
+  .parcelas{
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .checkbox {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
+  .celula-normal {
+    background-color: lightgray;
+    padding: 0px 3px 0px 2px;
+  }
+
+  .reajuste-aprovado {
+    color: #00a500;
+    font-size: medium;
+  }
+
+  .reajuste-reprovado {
+    color: #FF8072;
+    font-size: medium;
+  }
+
+  .reajuste-pendente {
+    color: #ffc800;
+    font-size: medium;
+  }

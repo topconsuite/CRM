@@ -1,0 +1,385 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>OPORTUNIDADES</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+  
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg" fusePerfectScrollbar>
+  
+      <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+        [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+  
+        <view-selector [key]="'LISTA-OPORTUNIDADE'" [currentValue]="currentViewValue"
+        (selectedChange)="viewChanged($event)">
+  
+        </view-selector><br *ngIf="isSmallScreen"/>
+      
+        <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="LISTA-OPORTUNIDADE">
+  
+          <integer-input [formGroup]="filter.form" placeholder="Número Oportunidade" name="==|numero"
+            [(model)]="filtro.numero"></integer-input>
+
+          <integer-input [formGroup]="filter.form" placeholder="Ano Oportunidade" name="==|ano"
+            [(model)]="filtro.ano" [maxIntegerChars]="2"></integer-input>
+
+          <simple-input [formGroup]="filter.form" placeholder="Nome Oportunidade"
+            name="%=|oportunidadeNome" [(model)]="filtro.oportunidadeNome"></simple-input>
+          
+          <suggest-combo [formGroup]="filter.form" placeholder="Tipo" name="oportunidadeTipo" 
+            [list]="tipoOportunidades" [mustBeValid]="false"
+            [(model)]="filtro.oportunidadeTipo" [formatter]="oportunidadeTipoFormatter"></suggest-combo>
+          <integer-input [formGroup]="filter.form" placeholder="Tipo" name="==|oportunidadeTipoCodigo"
+            [(model)]="filtro.oportunidadeTipo.codigo" hidden *ngIf="filtro.oportunidadeTipo"></integer-input>
+
+          <suggest-combo [formGroup]="filter.form" placeholder="Fase" name="fase" 
+            [list]="fases" [mustBeValid]="false"
+            [(model)]="filtro.fase" [formatter]="faseFormatter"></suggest-combo>
+          <integer-input [formGroup]="filter.form" placeholder="Fase" name="==|faseCodigo"
+            [(model)]="filtro.fase.codigo" hidden *ngIf="filtro.fase"></integer-input>
+
+          <suggest-combo [formGroup]="filter.form" placeholder="Classificação" name="classificacaoSelecionada" 
+            [list]="classificacoes" [mustBeValid]="false"
+            [(model)]="filtro.classificacaoSelecionada" [formatter]="genericFormatter"></suggest-combo>
+          <integer-input [formGroup]="filter.form" placeholder="Classificação" name="==|classificacao"
+            [(model)]="filtro.classificacaoSelecionada.codigo" hidden *ngIf="filtro.classificacaoSelecionada"></integer-input>
+
+          <date-picker [formGroup]="filter.form" placeholder="Previsão Fechamento de" name="previsaoFechamentoDe"
+                [(model)]="filtro.dataFechamentoDe" *ngIf="filter.isOpen"></date-picker>
+          <simple-input [formGroup]="filter.form" placeholder="Previsão Fechamento de" name=">=|previsaoFechamento"
+                [model]="filtro.dataFechamentoDe.toISOString().substr(0, 10)" *ngIf="filtro.dataFechamentoDe" hidden></simple-input>
+          
+          <date-picker [formGroup]="filter.form" placeholder="Previsão Fechamento até" name="previsaoFechamentoAte"
+                [(model)]="filtro.dataFechamentoAte" *ngIf="filter.isOpen"></date-picker>
+          <simple-input [formGroup]="filter.form" placeholder="Previsão Fechamento até" name="<=|previsaoFechamento"
+                [model]="filtro.dataFechamentoAte.toISOString().substr(0, 10)" *ngIf="filtro.dataFechamentoAte" hidden></simple-input>
+
+          <date-picker [formGroup]="filter.form" placeholder="Data Oportunidade de" name="dataDe"
+                [(model)]="filtro.dataDe" *ngIf="filter.isOpen"></date-picker>
+          <simple-input [formGroup]="filter.form" placeholder="Data Oportunidade de" name=">=|data"
+                [model]="filtro.dataDe.toISOString().substr(0, 10)" *ngIf="filtro.dataDe" hidden></simple-input>
+          
+          <date-picker [formGroup]="filter.form" placeholder="Data Oportunidade até" name="dataAte"
+                [(model)]="filtro.dataAte" *ngIf="filter.isOpen"></date-picker>
+          <simple-input [formGroup]="filter.form" placeholder="Data Oportunidade até" name="<=|data"
+                [model]="filtro.dataAte.toISOString().substr(0, 10)" *ngIf="filtro.dataAte" hidden></simple-input>
+
+          <simple-input [formGroup]="filter.form" placeholder="Cliente"
+            name="%=|cliente" [(model)]="filtro.cliente"></simple-input>
+
+          <suggest-combo [formGroup]="filter.form" placeholder="Vendedor" name="vendedor" 
+            [list]="vendedores" [mustBeValid]="false"
+            [(model)]="filtro.vendedor" [formatter]="vendedorFormatter"></suggest-combo>
+          <integer-input [formGroup]="filter.form" placeholder="Vendedor" name="==|vendedorCodigo"
+            [(model)]="filtro.vendedor.codigo" hidden *ngIf="filtro.vendedor"></integer-input>
+
+          <simple-input [formGroup]="filter.form" placeholder="Endereço da obra"
+            name="%=|enderecoLogradouro" [(model)]="filtro.enderecoLogradouro"></simple-input>
+
+          <suggest-combo [formGroup]="filter.form" placeholder="Segmentação" name="segmentacao" 
+            [list]="segmentacoes" [mustBeValid]="false"
+            [(model)]="filtro.segmentacao" [formatter]="segmentacaoFormatter"></suggest-combo>
+          <integer-input [formGroup]="filter.form" placeholder="Segmentação" name="==|segmentacaoCodigo"
+            [(model)]="filtro.segmentacao.id" hidden *ngIf="filtro.segmentacao"></integer-input>
+
+        </filter>
+  
+      </paginator>
+  
+      <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+        <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+      </mat-accordion>
+      
+      <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">    
+
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element" >
+                <mat-icon matTooltip="Fase: {{ element.fase.descricao.toUpperCase() }}" style="margin-right: 3px;" [style.color]="element.fase.cor">layers</mat-icon>
+                <mat-icon matTooltip="Classificação: {{ getClassificacao(element.classificacao).descricao }}" [style.color]="getClassificacao(element.classificacao).color">
+                    <span class="material-symbols-outlined">device_thermostat</span>
+                </mat-icon>
+            </td>
+        </ng-container>
+
+        <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+            <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+            <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+        </ng-container>
+  
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement" style="margin-bottom: 10px;">
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <div style="margin-bottom: 3px;" *ngIf="!hidenColumnCondition(element, hColumn)">
+                        <b>{{ hColumn.placeholder }}: </b>
+                        <span *ngIf="hColumn.htmlValue" [innerHTML]="getFormattedValue(element, hColumn)"></span>
+                        <span *ngIf="!hColumn.htmlValue">{{ getFormattedValue(element, hColumn) }}</span>
+                        <span *ngIf="hColumn.button">
+                          <mat-icon [(matTooltip)]="hColumn.buttonOptions.text" 
+                            (click)="performClick(element, hColumn)">{{ hColumn.buttonOptions ? hColumn.buttonOptions.icon : '' }}
+                          </mat-icon>
+                        </span>
+                      </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="float-right">
+                      <button mat-button color="accent" [routerLink]="['../usina/' + element.usinaCodigo + '/ano/' + element.ano + '/numero/' + element.numero]">
+                        <mat-icon matTooltip="Abrir">edit</mat-icon>Abrir
+                      </button>
+                      <button mat-button color="accent" (click)="showModal(oportunidadeLogModal, oportunidadeLogModalRef, element)">
+                        <mat-icon matTooltip="Logs">history</mat-icon>Logs
+                      </button>
+                      <button mat-button color="accent" (click)="showModal(anexosModal, anexosModalRef, element)">
+                        <mat-icon matTooltip="Anexos">attach_file</mat-icon>Anexos
+                      </button>
+                      <button mat-button color="accent"  (click)="openInteracaoOportunidade(element)" *ngIf="interacaoPermitida()">
+                        <mat-icon matTooltip="Interação">record_voice_over</mat-icon>Interações Oportunidade
+                      </button>
+                      <button mat-button color="accent" [routerLink]="['../usina/' + element.usinaCodigo + '/ano/' + element.ano + '/numero/' + element.numero + '/gerar-proposta']">
+                        <mat-icon matTooltip="Gerar Proposta">question_answer</mat-icon>Gerar Proposta
+                      </button>
+                      <button mat-button color="accent" *ngIf="agendaPermitida()" (click)="showModal(tarefaModal, tarefaModalRef, element, undefined, undefined)">
+                        <mat-icon matTooltip="Agendar Tarefa">calendar_today</mat-icon>Agendar Tarefa
+                      </button>
+                      <button mat-button color="accent" *ngIf="agendaPermitida()" (click)="showModal(compromissoModal, compromissoModalRef, element, undefined, undefined)">
+                        <mat-icon matTooltip="Agendar Compromisso">calendar_today</mat-icon>Agendar Compromisso
+                      </button>
+                    </div>
+                  </div>
+              </div>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="expand">
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+              <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+            <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+          </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+        <tr mat-row *matRowDef="let element; columns: columnNames;"
+            class="element-row"
+            [class.expanded-row]="expandedElement === element"
+            (click)="expandedElement = expandedElement === element ? null : element">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+      </table>
+  
+      <div #colunasVisualizacaoModalVCR></div>
+      <ng-template #colunasVisualizacaoModal>
+          
+          <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+          <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+            
+            <div *ngFor="let column of allColumnsOrdered">
+
+              <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+
+              <button mat-icon-button class="arrow-button" [color]="!isHiddenColumn(column.name) ? 'accent' : 'warn'" 
+                (click)="setHiddenColumn(column.name)" aria-label="Marcar coluna como vísivel/oculta">
+                <mat-icon aria-label="Marcar coluna como vísivel/oculta">{{ !isHiddenColumn(column.name) ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              
+              <button mat-icon-button class="arrow-button" [color]="isFoldedColumn(column.name) ? 'primary' : 'accent'" 
+                (click)="setFoldedColumn(column.name)" aria-label="Selecionar se coluna aparece no resumo ou ao expandir">
+                <mat-icon aria-label="Selecionar se coluna aparece no resumo ou ao expandir">{{ isFoldedColumn(column.name) ? 'expand_more' : 'expand_less' }}</mat-icon>
+              </button>
+
+              {{ column.placeholder }}
+
+              <br/>
+
+            </div>
+          </div>
+  
+          <div class="float-right">
+            <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+          </div>
+          
+      </ng-template>
+ 
+      <div #oportunidadeLogModalVCR></div>
+      <ng-template #oportunidadeLogModal>
+          
+          <div class="form-container modal" [hidden]="!modalIsOpen">
+            <h2 cdkFocusRegionstart>LOGS</h2>
+                
+            <div *ngFor="let log of item.logs">
+              <mat-card>
+                <h3>{{ log.evento }}</h3>
+                <mat-card-subtitle>{{ formataDataHora(log.dataHoraEvento) }} - {{ log.usuario }}</mat-card-subtitle>
+                <mat-card-content>
+                  <div>{{ log.complemento }}</div>
+                  <div>{{ log.observacao }}</div>
+                </mat-card-content>
+              </mat-card><br/>
+            </div>
+  
+            <mat-action-row>
+              <button cdkFocusRegionstart mat-button color="basic" class="float-right" (click)="closeModal()" style="position: fixed;">
+                FECHAR
+              </button>
+            </mat-action-row>
+  
+          </div>
+          
+      </ng-template>
+
+      <div #anexosModalVCR></div>
+      <ng-template #anexosModal>
+            <div class="form-container modal" [hidden]="!modalIsOpen">
+              <h2 cdkFocusRegionstart>Anexos</h2>
+      
+              <button mat-raised-button color="accent" (click)="abrirSeletorDeArquivos(inputFile)" [disabled]=" disableConfirmButton">
+                <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar Documento
+              </button>
+              <input #inputFile type="file" (change)="arquivoSelecionado($event)" style="display: none;" />
+              
+                  <div *ngFor="let element of anexos">
+                    <br/>
+                    <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+                      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <div class="anexo-panel-content">
+                              <mat-panel-title class="title-text">Descrição</mat-panel-title>
+                              <mat-panel-description class="descricao-text">{{element.descricao}}</mat-panel-description>
+                            </div>
+                          </mat-expansion-panel-header>
+      
+                          <form [formGroup]="anexoForm" class="form-container">
+      
+                            <table>
+                              <tbody>
+                                <tr>
+                                  <td class="th-anexo">Arquivo :</td>
+                                  <td class="td-anexo">{{element.nome}}</td>
+                                </tr>
+                                <tr>
+                                  <td class="th-anexo">Usuario :</td>
+                                  <td class="td-anexo">{{element.usuario}}</td>
+                                </tr>
+                                <tr>
+                                  <td class="th-anexo">Data/Hora :</td>
+                                  <td class="td-anexo">{{ formataDataHora(element.dataHora) }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+      
+                            <br/>
+
+                            <div style="float: left;">
+    
+                              <button mat-button color="accent" (click)="abrirAnexo(element)">
+                                <mat-icon matTooltip="Abrir Anexo">folder_open</mat-icon> Abrir
+                              </button>
+    
+                            </div> 
+
+                            <div style="float: right;">
+
+                              <button mat-button color="accent" (click)="showModalDescricaoAnexo(descricaoAnexoModal, descricaoAnexoModalRef, element)">
+                                <mat-icon matTooltip="Editar Descrição">edit</mat-icon> Editar Descrição
+                              </button>
+
+                              <button mat-button color="warn" (click)="removerAnexo(element)">
+                                <mat-icon matTooltip="Excluir Anexo">delete</mat-icon> Excluir
+                              </button>
+    
+                            </div>
+                          
+                          </form>
+      
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                  </div>
+
+                <div><p>Tamanho máximo de upload de arquivo: 10 MB.</p></div>
+      
+                <mat-action-row>
+                  <button mat-button color="accent" (click)="closeModal()">Fechar</button>
+                </mat-action-row>
+            
+            </div>
+            
+        </ng-template>
+
+        <div #descricaoAnexoModalVCR></div>
+        <ng-template #descricaoAnexoModal>
+            
+            <div class="form-container modal" [hidden]="!modalIsOpen">
+            <h2 cdkFocusRegionstart>DESCRIÇÃO ANEXO</h2>
+                
+            <form [formGroup]="anexoDescricaoForm" class="form-container">
+    
+              <simple-input [formGroup]="anexoDescricaoForm" placeholder="Descrição" name="descricao" noCase
+              [(model)]="anexo.descricao" required [maxLength]="70"></simple-input>
+        
+              <mat-action-row>
+                  <button mat-button color="accent" (click)="atualizarDescricaoAnexo(anexo)" [disabled]="anexo.descricao == '' || !anexoDescricaoForm.valid">Confirmar</button>
+                  <button mat-button color="warn" (click)="cancelSubModal()">Cancelar</button>
+              </mat-action-row>
+    
+            </form>
+            
+            </div>
+            
+        </ng-template>
+
+      <div #tarefaModalVCR></div>
+      <ng-template #tarefaModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <app-tarefa-form [oportunidade]="item" (cancel)="closeModal($event)" (confirm)="closeModal($event)"></app-tarefa-form>
+        </div>
+      </ng-template>  
+      <div #compromissoModalVCR></div>
+      <ng-template #compromissoModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+          <app-compromisso-form [oportunidade]="item" (cancel)="closeModal($event)" (confirm)="closeModal($event)"></app-compromisso-form>
+        </div>
+      </ng-template>
+
+      <button mat-button id="openPropostaModal" color="accent" hidden (click)="abrirModalPropostasRef(propostasModal, propostasModalRef)"></button>
+      <div #propostasModalVCR></div>
+      <ng-template #propostasModal>
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+
+          <h2 cdkFocusRegionstart>PROPOSTAS VINCULADAS</h2>
+
+          <div *ngFor="let proposta of item.propostas">
+            <mat-card>
+              <h3>{{ proposta.numero.toString().padStart(6, '0') + '-' + proposta.ano }}</h3>
+              <mat-card-subtitle>{{ proposta.Data }}</mat-card-subtitle>
+              <mat-action-row>
+                <button mat-button color="accent" (click)="direcionarProposta(item.usinaCodigo, proposta)">
+                  Abrir
+                </button>
+              </mat-action-row>
+            </mat-card><br/>
+          </div>
+
+          <mat-action-row>
+            <button mat-button color="accent" (click)="closeModal()">Fechar</button>
+          </mat-action-row>
+
+        </div>
+      </ng-template>
+
+      </div>
+  </div>

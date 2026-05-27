@@ -1,0 +1,24 @@
+<simple-input [formGroup]="formGroup" placeholder="CEP" [name]="alias+'Cep'" [mask]="{mask: maskCEP}" minLength="8"
+  [(model)]="model.cep" (modelChange)="cepChange(model,$event)" [required]="required" [disabled]="disabled"
+  (focus)="onFocus()" (focusout)="onFocusout()" [errorMessages]="cepErrorMessages" [validator]="cepInexistenteValidator"></simple-input>
+
+<simple-input [formGroup]="formGroup" placeholder="Endereço" [name]="alias+'Logradouro'" [disabled]="disabled || (!isCepMunicipio && model.cep.length===8)"
+  (focus)="onLogradouroFocus()" (focusout)="onLogradouroFocusOut()"  
+  [(model)]="model.logradouro" (modelChange)="setModel(model)" [required]="required" logradouro></simple-input>
+
+<integer-input [formGroup]="formGroup" placeholder="Número" [name]="alias+'Numero'" [disabled]="disabled"
+  (focus)="onNumeroFocus()" (focusout)="onNumeroFocusOut()" 
+  [(model)]="model.numero" (modelChange)="setModel(model)" [required]="false"></integer-input>
+
+<simple-input [formGroup]="formGroup" placeholder="Complemento" [name]="alias+'Complemento'" [disabled]="disabled"
+  [(model)]="model.complemento" (modelChange)="setModel(model)" [required]="required && model.numero===0"></simple-input>
+
+<simple-input [formGroup]="formGroup" placeholder="Bairro" [name]="alias+'Bairro'" [disabled]="disabled || (!isCepMunicipio && model.cep.length===8)"
+  [(model)]="model.bairro" (modelChange)="setModel(model)" [required]="required || obrigaBairro"></simple-input>
+
+<suggest-combo [formGroup]="formGroup" placeholder="UF" [name]="alias+'Uf'" [list]="siglasEstados" [required]="required || obrigaMunicipio"
+  [formatter]="estadoFormatter" [(model)]="uf" (modelChange)="setUf($event, model)" [disabled]="disabled || (model.cep.length===8 && model.municipio)"></suggest-combo>
+
+<suggest-combo [formGroup]="formGroup" placeholder="Município" [name]="alias+'Municipio'" [disabled]="disabled || (model.cep.length===8 && model.municipio)"
+  [list]="municipiosPorEstado" [formatter]="municipioFormatter" [required]="required || obrigaMunicipio"
+  [(model)]="model.municipio" (modelChange)="setModel(model)"></suggest-combo>

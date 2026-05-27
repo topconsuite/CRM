@@ -1,0 +1,12 @@
+<div>
+  <p>
+    <b>{{ data.title }}</b>
+  </p>
+
+  <div *ngFor="let linha of data.message.split('\n')">{{ linha }}</div>
+
+  <hr />
+
+  <button cdkFocusRegionstart mat-button color="basic" class="float-right" (click)="closeDialog()">OK</button>
+
+</div>

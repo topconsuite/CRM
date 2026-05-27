@@ -1,0 +1,19 @@
+export class TituloContasAReceber {
+    empresaCodigo: number = 0;
+    documentoTipoCodigo: number = 0;
+    documentoSerie: string = "";
+    documentoNumero: number = 0;
+    documentoSequencia: string = "";
+    bancoCodigoOficial: number = 0;
+    bancoNumeroAgencia: number = 0;
+    bancoNumeroConta: number = 0;
+    bancoDvConta: number = 0;
+    desdobramento: number = 0;
+    intervenienteCodigo: number = 0;
+    valor: number = 0;
+    contratoUsinaCodigo: number = 0;
+    contratoAno: number = 0;
+    contratoNumero: number = 0;
+    cartaoNumero: string = "";
+    cartaoAutorizacao: string = "";
+}

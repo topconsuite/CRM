@@ -1,0 +1,836 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D9BACF4C-E567-46BE-A54C-8EB8562281F2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TopSys.TopConWeb.Infra.Data</RootNamespace>
+    <AssemblyName>TopSys.TopConWeb.Infra.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="dbup-core, Version=4.2.0.0, Culture=neutral, PublicKeyToken=4b419c53bdfd4cbf, processorArchitecture=MSIL">
+      <HintPath>..\packages\dbup-core.4.2.0\lib\net45\dbup-core.dll</HintPath>
+    </Reference>
+    <Reference Include="dbup-mysql, Version=4.2.0.0, Culture=neutral, PublicKeyToken=4b419c53bdfd4cbf, processorArchitecture=MSIL">
+      <HintPath>..\packages\dbup-mysql.4.2.0\lib\net45\dbup-mysql.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LinqKit, Version=1.1.13.0, Culture=neutral, PublicKeyToken=bc217f8844052a91, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqKit.1.1.13\lib\net45\LinqKit.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Helpers\DapperHelper.cs" />
+    <Compile Include="Helpers\DataReaderHelper.cs" />
+    <Compile Include="Helpers\EntityMapHelper.cs" />
+    <Compile Include="Migrations\DbUpMigration.cs" />
+    <Compile Include="Persistence\Context\AppDataContext.cs" />
+    <Compile Include="Persistence\Context\CustomEFInterceptor.cs" />
+    <Compile Include="Persistence\Interface\IUnitOfWork.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialHierarquiaCondicaoMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialHierarquiaCondicaoPagamentoMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialHierarquiaMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialHierarquiaUsuariosMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialPendenteCondicaoPagamentoMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialPendenteVolumeMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialPendenteMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialPendenteBombaMap .cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialPendenteTracoMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialTipoPessoaMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoComercial\AprovacaoComercialUsinaMap.cs" />
+    <Compile Include="Persistence\Map\BombaPrecoMap.cs" />
+    <Compile Include="Persistence\Map\BombaPrecoTerceiroMap.cs" />
+    <Compile Include="Persistence\Map\CadastroDiversoMap.cs" />
+    <Compile Include="Persistence\Map\CadastroGeralViaCaptacaoMap.cs" />
+    <Compile Include="Persistence\Map\CompromissoLogMap.cs" />
+    <Compile Include="Persistence\Map\CompromissoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoFinalidadeMap.cs" />
+    <Compile Include="Persistence\Map\ContratoReajusteLogMap.cs" />
+    <Compile Include="Persistence\Map\ContratoReajusteVersaoMap.cs" />
+    <Compile Include="Persistence\Map\LeadAnexoMap.cs" />
+    <Compile Include="Persistence\Map\LeadContatoMap.cs" />
+    <Compile Include="Persistence\Map\LeadFaseMap.cs" />
+    <Compile Include="Persistence\Map\LeadInteracaoMap.cs" />
+    <Compile Include="Persistence\Map\LeadLogMap.cs" />
+    <Compile Include="Persistence\Map\LeadMap.cs" />
+    <Compile Include="Persistence\Map\LiberacaoAcesso\GrupoAcessoMap.cs" />
+    <Compile Include="Persistence\Map\LiberacaoAcesso\LiberacaoAcessoLogMap.cs" />
+    <Compile Include="Persistence\Map\LiberacaoAcesso\LiberacaoAcessoMap.cs" />
+    <Compile Include="Persistence\Map\LiberacaoAcesso\PeriodoAusenciaUsuarioMap.cs" />
+    <Compile Include="Persistence\Map\MotivoPerdaLogMap.cs" />
+    <Compile Include="Persistence\Map\MotivoPerdaMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalDigitalItemComplementoMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalFisicaDemaisServicosMap.cs" />
+    <Compile Include="Persistence\Map\ObraProjecaoMap.cs" />
+    <Compile Include="Persistence\Map\IntervenienteAnexoMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalDigitalDetalhesDistribuicaoMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalDigitalDetalhesFiscaisMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalDigitalItemMap.cs" />
+    <Compile Include="Persistence\Map\FaturaItemMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalDigitalComplementoMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalDigitalMap.cs" />
+    <Compile Include="Persistence\Map\FuncionarioComplementoMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalFisicaItemMap.cs" />
+    <Compile Include="Persistence\Map\FaturaMap.cs" />
+    <Compile Include="Persistence\Map\ObraIndicadorMap.cs" />
+    <Compile Include="Persistence\Map\ObraIndicadorVersaoMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\ConcorrenteMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeAnexoMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeContatoMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeFaseMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeInteracaoMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeLogMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeMap.cs" />
+    <Compile Include="Persistence\Map\Oportunidades\OportunidadeTipoMap.cs" />
+    <Compile Include="Persistence\Map\ClicksignConfiguracaoMap.cs" />
+    <Compile Include="Persistence\Map\ParametrosSSOMap.cs" />
+    <Compile Include="Persistence\Map\PrensaMap.cs" />
+    <Compile Include="Persistence\Map\ReaproveitamentoMap.cs" />
+    <Compile Include="Persistence\Map\OperacaoFinanceiraMap.cs" />
+    <Compile Include="Persistence\Map\SegmentacaoMap.cs" />
+    <Compile Include="Persistence\Map\SituacaoFinanceiraMap.cs" />
+    <Compile Include="Persistence\Map\CentroCustoMap.cs" />
+    <Compile Include="Persistence\Map\CartaoBandeiraMap.cs" />
+    <Compile Include="Persistence\Map\CondicaoPagamentoMap.cs" />
+    <Compile Include="Persistence\Map\CondicaoPagamentoParcelaMap.cs" />
+    <Compile Include="Persistence\Map\GrupoEconomicoMap.cs" />
+    <Compile Include="Persistence\Map\ContaMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoDetalheBoletoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoDetalheCartaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoDetalheChequeMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoDetalheDepositoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoDetalheDinheiroMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoDetalheMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoForSavingMap.cs" />
+    <Compile Include="Persistence\Map\ContratoPagamento\ContratoPagamentoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoBombaReajusteVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoDetalheBoletoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoDetalheCartaoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoDetalheChequeVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoDetalheDepositoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoDetalheDinheiroVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoDetalheVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoForSavingVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoPagamentoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoTracoReajusteVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraBombaVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraDemaisServicosVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraLogVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraMensagemPadraoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraReajusteVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraTaxaVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraTracoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraTributacaoMunicipalVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ObraVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ProgramacaoDemaisServicosVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaCobrancaVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaFaturamentoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoDetalheBoletoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoDetalheCartaoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoDetalheChequeVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoDetalheDepositoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoDetalheDinheiroVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoDetalheVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaPagamentoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaResponsavelSolidarioVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\PropostaVersaoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\TaxaExtraVersaoMap.cs" />
+    <Compile Include="Persistence\Map\CustoServicoMap.cs" />
+    <Compile Include="Persistence\Map\DemaisAprovacaoMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoScriptMap.cs" />
+    <Compile Include="Persistence\Map\AprovacaoTipoMap.cs" />
+    <Compile Include="Persistence\Map\CadastroGeralMap.cs" />
+    <Compile Include="Persistence\Map\CondicaoPagamentoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoMap.cs" />
+    <Compile Include="Persistence\Map\DemaisServicosMap.cs" />
+    <Compile Include="Persistence\Map\EmpresaMap.cs" />
+    <Compile Include="Persistence\Map\EnderecoMap.cs" />
+    <Compile Include="Persistence\Map\EquipamentoMap.cs" />
+    <Compile Include="Persistence\Map\FilialMap.cs" />
+    <Compile Include="Persistence\Map\FuncionarioMap.cs" />
+    <Compile Include="Persistence\Map\IntervenienteHistoricoMap.cs" />
+    <Compile Include="Persistence\Map\IntervenienteLocalMap.cs" />
+    <Compile Include="Persistence\Map\IntervenienteControleFaixaMap.cs" />
+    <Compile Include="Persistence\Map\IntervenienteMap.cs" />
+    <Compile Include="Persistence\Map\LogGeralMap.cs" />
+    <Compile Include="Persistence\Map\MensagemPadraoMap.cs" />
+    <Compile Include="Persistence\Map\MercadoriaMap.cs" />
+    <Compile Include="Persistence\Map\MunicipioMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalFisicaComplementoMap.cs" />
+    <Compile Include="Persistence\Map\NotaFiscalFisicaMap.cs" />
+    <Compile Include="Persistence\Map\ObraBombaMap.cs" />
+    <Compile Include="Persistence\Map\ContratoBombaReajusteMap.cs" />
+    <Compile Include="Persistence\Map\ObraDemaisServicosMap.cs" />
+    <Compile Include="Persistence\Map\ObraFrenteMap.cs" />
+    <Compile Include="Persistence\Map\ObraLogMap.cs" />
+    <Compile Include="Persistence\Map\ObraMap.cs" />
+    <Compile Include="Persistence\Map\ObraMensagemPadraoMap.cs" />
+    <Compile Include="Persistence\Map\ObraReajusteMap.cs" />
+    <Compile Include="Persistence\Map\ObraTaxaMap.cs" />
+    <Compile Include="Persistence\Map\ObraTracoMap.cs" />
+    <Compile Include="Persistence\Map\ContratoTracoReajusteMap.cs" />
+    <Compile Include="Persistence\Map\ObraTributacaoMunicipalMap.cs" />
+    <Compile Include="Persistence\Map\Opportunities\OpportunityFailureReasonMap.cs" />
+    <Compile Include="Persistence\Map\Opportunities\OpportunityMap.cs" />
+    <Compile Include="Persistence\Map\Opportunities\OpportunityOriginMap.cs" />
+    <Compile Include="Persistence\Map\Opportunities\OpportunityTypeMap.cs" />
+    <Compile Include="Persistence\Map\PecaAConcretarMap.cs" />
+    <Compile Include="Persistence\Map\PedraMap.cs" />
+    <Compile Include="Persistence\Map\PortadorMap.cs" />
+    <Compile Include="Persistence\Map\PreTracoPrecoMap.cs" />
+    <Compile Include="Persistence\Map\ProgramacaoDemaisServicosMap.cs" />
+    <Compile Include="Persistence\Map\ProgramacaoHoraMap.cs" />
+    <Compile Include="Persistence\Map\ProgramacaoLogMap.cs" />
+    <Compile Include="Persistence\Map\ProgramacaoMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoDetalheBoletoMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoDetalheChequeMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoDetalheDinheiroMap.cs" />
+    <Compile Include="Persistence\Map\PropostaResponsavelSolidarioMap.cs" />
+    <Compile Include="Persistence\Map\PropostaFaturamentoMap.cs" />
+    <Compile Include="Persistence\Map\PropostaCobrancaMap.cs" />
+    <Compile Include="Persistence\Map\PropostaMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoDetalheCartaoMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoDetalheDepositoMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoDetalheMap.cs" />
+    <Compile Include="Persistence\Map\PropostaPagamento\PropostaPagamentoMap.cs" />
+    <Compile Include="Persistence\Map\RepasseReajusteMap.cs" />
+    <Compile Include="Persistence\Map\ResistenciaTipoMap.cs" />
+    <Compile Include="Persistence\Map\SlumpMap.cs" />
+    <Compile Include="Persistence\Map\SlumpRealMap.cs" />
+    <Compile Include="Persistence\Map\TarefaLogMap.cs" />
+    <Compile Include="Persistence\Map\TarefaMap.cs" />
+    <Compile Include="Persistence\Map\TaxaExtraMap.cs" />
+    <Compile Include="Persistence\Map\TipoCobrancaMap.cs" />
+    <Compile Include="Persistence\Map\TipoDeCobrancaMap.cs" />
+    <Compile Include="Persistence\Map\TipoDocumentoMap.cs" />
+    <Compile Include="Persistence\Map\TituloContasAPagarMap.cs" />
+    <Compile Include="Persistence\Map\TituloContasAReceberMap.cs" />
+    <Compile Include="Persistence\Map\TracoCustoMap.cs" />
+    <Compile Include="Persistence\Map\TracoPrecoMap.cs" />
+    <Compile Include="Persistence\Map\TributacaoPisCofinsMap.cs" />
+    <Compile Include="Persistence\Map\TributacaoReformaMap.cs" />
+    <Compile Include="Persistence\Map\UnidadeMap.cs" />
+    <Compile Include="Persistence\Map\UsinaDistanciaCepMap.cs" />
+    <Compile Include="Persistence\Map\UsinaMap.cs" />
+    <Compile Include="Persistence\Map\UsoMap.cs" />
+    <Compile Include="Persistence\Map\UsuarioMap.cs" />
+    <Compile Include="Persistence\Map\VendedorMap.cs" />
+    <Compile Include="Persistence\Map\ContratoVersao\ContratoVersaoMap.cs" />
+    <Compile Include="Persistence\Map\Visitas\VisitaAnexoMap.cs" />
+    <Compile Include="Persistence\Map\Visitas\VisitaContatoMap.cs" />
+    <Compile Include="Persistence\Map\Visitas\VisitaHistoricoMap.cs" />
+    <Compile Include="Persistence\Map\Visitas\VisitaMap.cs" />
+    <Compile Include="Persistence\Map\Visitas\VisitaTipoMap.cs" />
+    <Compile Include="Persistence\Map\Visitas\VisitaLogMap.cs" />
+    <Compile Include="Repositories\AprovacaoComercialHierarquiaCondicaoRepository.cs" />
+    <Compile Include="Repositories\AprovacaoComercialHierarquiaRepository.cs" />
+    <Compile Include="Repositories\AprovacaoComercialPendenteRepository.cs" />
+    <Compile Include="Repositories\AprovacaoComercialUsinaRepository.cs" />
+    <Compile Include="Repositories\AprovacaoScriptRepository.cs" />
+    <Compile Include="Repositories\ArquivoRepository.cs" />
+    <Compile Include="Repositories\AssinaturaEletronicaIntegracao\ClicksignRepository.cs" />
+    <Compile Include="Repositories\ClicksignConfiguracaoRepository.cs" />
+    <Compile Include="Repositories\BombaPrecoRepository.cs" />
+    <Compile Include="Repositories\CadastroDiversoRepository.cs" />
+    <Compile Include="Repositories\BancoRepository.cs" />
+    <Compile Include="Repositories\BoletoExternoRepository.cs" />
+    <Compile Include="Repositories\CompromissoRepository.cs" />
+    <Compile Include="Repositories\ConcorrenteRepository.cs" />
+    <Compile Include="Repositories\ContratoBombaReajusteRepository.cs" />
+    <Compile Include="Repositories\LeadContatoRepository.cs" />
+    <Compile Include="Repositories\LeadFaseRepository.cs" />
+    <Compile Include="Repositories\LeadRepository.cs" />
+    <Compile Include="Repositories\LiberacaoAcessoRepository.cs" />
+    <Compile Include="Repositories\MotivoPerdaRepository.cs" />
+    <Compile Include="Repositories\ObraProjecaoRepository.cs" />
+    <Compile Include="Repositories\DatabaseRepository.cs" />
+    <Compile Include="Repositories\ContratoTracoReajusteRepository.cs" />
+    <Compile Include="Repositories\NotaFiscalDigitalRepository.cs" />
+    <Compile Include="Repositories\FaturaRepository.cs" />
+    <Compile Include="Repositories\FuncionarioComplementoRepository.cs" />
+    <Compile Include="Repositories\OperacaoFinanceiraRepository.cs" />
+    <Compile Include="Repositories\OportunidadeRepository.cs" />
+    <Compile Include="Repositories\OportunidadeTipoRepository.cs" />
+    <Compile Include="Repositories\PrensaRepository.cs" />
+    <Compile Include="Repositories\PropostaPropagandaRepository.cs" />
+    <Compile Include="Repositories\SegmentacaoRepository.cs" />
+    <Compile Include="Repositories\SituacaoFinanceiraRepository.cs" />
+    <Compile Include="Repositories\CentroCustoRepository.cs" />
+    <Compile Include="Repositories\CadastroGeralRepository.cs" />
+    <Compile Include="Repositories\CartaoBandeiraRepository.cs" />
+    <Compile Include="Repositories\CartaoPagamentoIntegracao\CieloLioDadosRepository.cs" />
+    <Compile Include="Repositories\CartaoTransacaoRepository.cs" />
+    <Compile Include="Repositories\CondicaoPagamentoParcelaRepository.cs" />
+    <Compile Include="Repositories\MunicipioTributacaoRepository.cs" />
+    <Compile Include="Repositories\CondicaoPagamentoRepository.cs" />
+    <Compile Include="Repositories\ContasAReceberRepository.cs" />
+    <Compile Include="Repositories\ContratoPagamentoRepository.cs" />
+    <Compile Include="Repositories\ContratoRepository.cs" />
+    <Compile Include="Repositories\CustoServicoRepository.cs" />
+    <Compile Include="Repositories\DemaisAprovacaoRepository.cs" />
+    <Compile Include="Repositories\DemaisServicosRepository.cs" />
+    <Compile Include="Repositories\EmpresaRepository.cs" />
+    <Compile Include="Repositories\EnderecoRepository.cs" />
+    <Compile Include="Repositories\EquipamentoRepository.cs" />
+    <Compile Include="Repositories\FilialRepository.cs" />
+    <Compile Include="Repositories\FuncionarioRepository.cs" />
+    <Compile Include="Repositories\IntegracaoRepository.cs" />
+    <Compile Include="Repositories\IntervenienteSequenceRepository.cs" />
+    <Compile Include="Repositories\IntervenienteRepository.cs" />
+    <Compile Include="Repositories\LogGeralRepository.cs" />
+    <Compile Include="Repositories\MercadoriaRepository.cs" />
+    <Compile Include="Repositories\MovimentoBancoRepository.cs" />
+    <Compile Include="Repositories\MunicipioRepository.cs" />
+    <Compile Include="Repositories\NotaFiscalFisicaRepository.cs" />
+    <Compile Include="Repositories\ObraFrenteRepository.cs" />
+    <Compile Include="Repositories\ObraTaxaRepository.cs" />
+    <Compile Include="Repositories\OpportunityRepository.cs" />
+    <Compile Include="Repositories\ParametroFinanceiroRepository.cs" />
+    <Compile Include="Repositories\ParametroRepository.cs" />
+    <Compile Include="Repositories\PecaAConcretarRepository.cs" />
+    <Compile Include="Repositories\PedraRepository.cs" />
+    <Compile Include="Repositories\PortadorRepository.cs" />
+    <Compile Include="Repositories\PreTracoPrecoRepository.cs" />
+    <Compile Include="Repositories\GrupoEconomicoRepository.cs" />
+    <Compile Include="Repositories\ProgramacaoRepository.cs" />
+    <Compile Include="Repositories\PropostaRepository.cs" />
+    <Compile Include="Repositories\RepasseReajusteRepository.cs" />
+    <Compile Include="Repositories\RepositoryExtensionMethods.cs" />
+    <Compile Include="Repositories\ResistenciaTipoRepository.cs" />
+    <Compile Include="Repositories\SlumpRepository.cs" />
+    <Compile Include="Repositories\SolicitacaoPagamentoRepository.cs" />
+    <Compile Include="Repositories\SsoRepository.cs" />
+    <Compile Include="Repositories\TarefaRepository.cs" />
+    <Compile Include="Repositories\TipoCobrancaRepository.cs" />
+    <Compile Include="Repositories\TipoDeCobrancaRepository.cs" />
+    <Compile Include="Repositories\TipoDocumentoRepository.cs" />
+    <Compile Include="Repositories\TributacaoReformaRepository.cs" />
+    <Compile Include="Repositories\UsuarioWebFiltroRepository.cs" />
+    <Compile Include="Repositories\VisitaRepository.cs" />
+    <Compile Include="Repositories\VisitaTipoRepository.cs" />
+    <Compile Include="Repositories\TituloContasAPagarRepository.cs" />
+    <Compile Include="Repositories\TituloContasAReceberRepository.cs" />
+    <Compile Include="Repositories\TracoCustoRepository.cs" />
+    <Compile Include="Repositories\TracoPrecoRepository.cs" />
+    <Compile Include="Repositories\TributacaoPisCofinsRepository.cs" />
+    <Compile Include="Repositories\UnidadeRepository.cs" />
+    <Compile Include="Repositories\UsinaDistanciaCepRepository.cs" />
+    <Compile Include="Repositories\UsinaRepository.cs" />
+    <Compile Include="Repositories\UsoRepository.cs" />
+    <Compile Include="Repositories\VendedorRepository.cs" />
+    <Compile Include="Repositories\WebHookRepository.cs" />
+    <Compile Include="UoW\UnitOfWork.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ObraRepository.cs" />
+    <Compile Include="Repositories\RepositoryBase.cs" />
+    <Compile Include="Repositories\UsuarioRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TopSys.TopConWeb.Domain\TopSys.TopConWeb.Domain.csproj">
+      <Project>{b94150ac-4f07-44ce-9494-206e3e7def13}</Project>
+      <Name>TopSys.TopConWeb.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Topsys.TopConWeb.SharedKernel\TopSys.TopConWeb.SharedKernel.csproj">
+      <Project>{89ec4d58-647d-47da-8fa2-cc6e4db8e818}</Project>
+      <Name>TopSys.TopConWeb.SharedKernel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0001 - Initial Configuration.sql" />
+    <EmbeddedResource Include="Migrations\Scripts\0002 - Faturamento-Cobrança-RespSolidario.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0003 - con_obras_trib_mun.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0004 - Distancia-Google.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0005 - Demais Servicos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0006 - Demais Servicos - Direitos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0007 - Cielo Lio.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0008 - Reajuste Bomba.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0009 - Geração Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0010 - Aprovações.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0011 - ContasAReceber.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0012 - Aprovações 2.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0013 - Pagamento Detalhamentos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0014 - Obs Proposta Web.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0015 - Pagamento Detalhamentos 2.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0016 - DescrPersonalizada.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0017 - Correcao Parametros.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0019 - Volume Maximo Por Bt.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0018 - Correcao Script Engenharia Aprovacoes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0020 - Parametros TopCon.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0021 - Alteracaoes con_proposta_item.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0022 - Parametro DemaisAprovacoes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0023 - Alteracoes con_obras_trib_mun.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0024 - View Programacao Demais Servicos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0025 - Parametro GeraFaturaNaPesagem.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0026 - Cartao Bandeira View.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0027 - Parametro Dados da Usina na Proposta.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0028 - Index con_programacao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0029 - Integração Clicksign.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0030 - Integração Clicksign Direitos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0031 - Integração Customer.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories\ContratoVersao\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0032 - Versões de Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0033 - Versões de Contrato - Direitos de Usuário .sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0034 - ObraReajuste.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0035 - Integração Protheus.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0036 - Campo rota_padrao con_obras_versao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0037 - Melhorias para Tech.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0038 - API Integração.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0039 - Aprovação de Inadimplente.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0041 - Grupo econômico.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0040 - Parâmetro Topcon - AnalizaLimCredProd.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0042 - Aprovação por Alçada.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0043 - Usa ZMRC na con_obras.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0047 - Frente de Obra.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0044 - Direitos Usuario.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0045 - Clicksign Mudancas.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0046 - API Integração ajustes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0048 - ZMRC .sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0049 - Aprovacao Cadastro.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0050 - Aprovacao Alcada Por Volume.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0051 - Data Atualizacao Interveniente.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0052 - Segmentacao Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0053 - Condições Gerais Proposta.sql" />
+    <EmbeddedResource Include="Migrations\Scripts\0053 - Trigger  con_contrato_versao_AFTER_UPDATE.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0054 - Data Atualizacao Remessa.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0055 - Data Atualizacao NotaFiscalDigital.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0056 - Numeracao Produto Complemento.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0057 - Validade da Proposta.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0058 - Data Atualizacao TituloContasAReceber.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0059 - Data Atualizacao Fatura.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0060 - Segmentacao Proposta e Programacao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0061 - Numeracao Produto.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0062 - Segmentacao Modelo Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0063 - Email Responsavel Tecnico.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0064 - ClickSign Parametro .sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0066 - Data Criacao Versao de Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0067 - Anexo de Documentos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0065 - Trigger Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0068 - Versao Relatorio Proposta.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0069 - Aprovacao ReajusteVersao .sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0070 - Taxa Cancelamento Programacao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0071 - Parametro Topcon - PermiteVolumeAcimaContratado.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0072 - Status Contrato Encerrado.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0073 - Melhoria Index Tela Aprovacoes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0074 - Melhoria Index Consulta por Data Retorno Automacao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0076 - Direito Inclusao Cliente.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0075 -  Correção con_tab_preco.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0077 - Segmentacao nos usos.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0078 - Controle Indicacao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0079 - ObraProjecao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0080 - TribPisCofins na con_obras.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0081 - Aprovacao Alcada Demais.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0082 - Acesso Aprovacoes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0083 - Visitas.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0084 - Motivo da Perda.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0085 - Cadastros Oportunidade.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0086 - Agenda.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0087 - Separacao Proposta de Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0088 - Leads.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0089 - Prefixo Betoneira.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0090 - Interacoes Leads.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0091 - Oportunidade.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0092 - Interacoes Oportunidade.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0093 - Projecao Carteira.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0094 - Refatoracao Alcada Demais Condicao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0095 - Finalidade de Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0096 - Propaganda de Proposta.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0097 - Parâmetro Informar Bomba Terceiro.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0098 - Melhoria Na Aprovação Por Alçada De Bomba.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0099 - Aumento do tamanho do campo taxa mínima de bomba.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0100 - Mudanca Relogio Ponto.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0101 - Trigger Versão Contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0105 - Parâmetro Testemunha Clicksign.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0103 - CP Por Segmento.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0104 - Mudanca Filtro Web.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0106 - Numeracao Familia no item do contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0102 - Mudanca Aditivo Pendente Cadastro.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0107 - Limite de credito por grupo economico.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0108 - Opcao para ativar apenas uma propaganda.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0109 - Aprovacao reajuste.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0110 - Ajustes reajuste de bomba.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0111 - Inicio e fim vigencia de contrato .sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0112 - Parametro de Validacao da Aprovacao Comparando Com Preco Tabela.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0113 - Ajuste Volume Projeção Mês Atual.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0114 - WebHook Desktop.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0115 - Custo Virtual e Alcada Log.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0116 - Direito External ID.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0117 - Parametro Obriga Num Contrato Anterior .sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0118 - Parametro Para Margem Alteração Custo.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0119 - Parametro Vendedor Exclusivo.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0120 - Aprovacao Medicao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0122 - Integracao Prensa.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0121 - SSO.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0123 - Relogio de Ponto.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0124 - Integracao Boleto Externo.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0125 - Tempo descarga.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0126 - Reforma Tributária.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0127 - Modelo de contrato por usina.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0128 - Compromisso e Tarefa Por Grupo.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0129 - Direitos Dados Pessoais Signatários.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0130 - Novos Campos Reforma Tributária.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0131 - Ajustes encerramento de contrato.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0133 - Mudança tipo de dado email.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0134 - Ajuste tipo de dados email.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0135 - Mudança Reajuste Bomba.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0136 - Criaçao Parametro Mapa Producao.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0137 - Criaçao Parametro Inativação aprovação financeira.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0139 - ClicksignConfiguracao.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

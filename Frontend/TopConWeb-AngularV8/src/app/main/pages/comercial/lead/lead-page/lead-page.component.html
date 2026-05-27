@@ -1,0 +1,123 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>LEAD</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+  
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg">
+        
+        <wizard (onComplete)="onComplete()" innerHeightPercent="71"> 
+          
+          <!-- ABA GERAL -->
+          <wizard-step title="Geral" icon="receipt" [stepForm]="geralForm" (onNext)="onGeralNext()">
+            
+            <form [formGroup]="geralForm" class="form-container">
+  
+              <simple-input [formGroup]="geralForm" placeholder="Numero Lead" name="numeroLead"
+                [model]="numeroLeadString()" disabled></simple-input>
+  
+              <simple-input [formGroup]="geralForm" placeholder="Nome do cliente" name="cliente" required
+                [(model)]="lead.cliente" (modelChange)="changeNomeCliente($event)" [disabled]="alteracaoNaoPermitida()"></simple-input>
+  
+              <phone-input [formGroup]="geralForm" placeholder="Telefone" name="telefone" required 
+                [(modelDdd)]="lead.dddTelefone" (modelDddChange)="changeDddTelefone($event)" 
+                [(modelNumber)]="lead.telefone" (modelNumberChange)="changeTelefone($event)" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+              <phone-input [formGroup]="geralForm" placeholder="Celular" name="celular"
+                [(modelDdd)]="lead.dddCelular" (modelDddChange)="changeDddCelular($event)" 
+                [(modelNumber)]="lead.celular" (modelNumberChange)="changeCelular($event)" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+              <simple-input [formGroup]="geralForm" placeholder="Email" name="email" email multiline lowerCase
+                [(model)]="lead.email" (modelChange)="changeEmail($event)" [disabled]="alteracaoNaoPermitida()"></simple-input>
+              
+              <suggest-combo [formGroup]="geralForm" placeholder="Vendedor" name="vendedor" required
+                [formatter]="vendedorFormatter" [list]="vendedoresPermitidos" [(model)]="lead.vendedor" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+              
+              <suggest-combo [formGroup]="geralForm" placeholder="Via de Captação" name="viaCaptacao"
+                [formatter]="cadastroGeralFormatter" [list]="viasCaptacao" [(model)]="lead.viaCaptacao"
+                 required [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+              <select-combo [formGroup]="geralForm" placeholder="Fase" name="fase" required [colorList]="faseLeadColors"
+               [formatter]="faseLeadFormatter" [list]="fasesLead" [(model)]="lead.fase" [disabled]="alteracaoNaoPermitida()"></select-combo>
+
+              <select-combo [formGroup]="geralForm" placeholder="Classificação" name="classificacao" required [colorList]="classificacaoLeadColors"
+               [formatter]="classificacaoLeadFormatter" [list]="classificacaoLead" [(model)]="lead.classificacao" [disabled]="alteracaoNaoPermitida()"></select-combo>
+
+              <simple-input [formGroup]="geralForm" placeholder="Próxima Etapa" name="proximaEtapa" multiline
+               [(model)]="lead.proximaEtapa" [maxLength]="50" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <simple-input [formGroup]="geralForm" placeholder="Nome Obra" name="nomeObra"
+               [(model)]="lead.obraNome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              <address-group [formGroup]="geralForm" alias="endereco" [(model)]="lead.endereco"
+               obrigaMunicipio  obrigaBairro [disabled]="alteracaoNaoPermitida()"></address-group>
+
+              <suggest-combo [formGroup]="geralForm" placeholder="Motivo da Perda" name="motivoPerda"
+               [formatter]="motivoPerdaFormatter" [list]="motivosPerda" [(model)]="lead.motivoPerda" [required]="isFechadoPerdido()" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+              <simple-input [formGroup]="geralForm" placeholder="Observação Interna" name="observacaoInterna" multiline
+               [(model)]="lead.observacaoInterna" [disabled]="alteracaoNaoPermitida()"></simple-input>
+            </form>
+          </wizard-step>
+  
+          <!-- ABA CONTATO  -->
+          <wizard-step title="Contato" icon="contact_phone" [stepForm]="contatoForm" (onNext)="onContatoNext()" (onPrevious)="onContatoPrevious()">
+            <form [formGroup]="contatoForm" class="form-container">
+              
+              <mat-card>
+                <h4>Contato 1</h4>
+
+                <simple-input [formGroup]="contatoForm" placeholder="Nome Contato" name="contratoPrincipalNome"
+                  [(model)]="lead.contatoPrincipal.nome" required [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+                <suggest-combo [formGroup]="contatoForm" placeholder="Função" name="contatoPrincipalFuncao"
+                  [formatter]="cadastroGeralFormatter" [list]="funcoes" [(model)]="lead.contatoPrincipal.funcao" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+                <phone-input [formGroup]="contatoForm" placeholder="Telefone" name="contatoPrincipalTelefone"
+                  [(modelDdd)]="lead.contatoPrincipal.ddd" required
+                  [(modelNumber)]="lead.contatoPrincipal.telefone" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+                <phone-input [formGroup]="contatoForm" placeholder="Celular" name="contatoPrincipalCelular"
+                  [(modelDdd)]="lead.contatoPrincipal.dddCelular"
+                  [(modelNumber)]="lead.contatoPrincipal.celular" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+                <simple-input [formGroup]="contatoForm" placeholder="Email" name="contatoPrincipalEmail" email multiline lowerCase
+                  [(model)]="lead.contatoPrincipal.email" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              </mat-card><br/>
+
+              <mat-card>
+                <h4>Contato 2</h4>
+
+                <simple-input [formGroup]="contatoForm" placeholder="Nome Contato" name="contatoSecundarioNome"
+                  [(model)]="lead.contatoSecundario.nome" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+                <suggest-combo [formGroup]="contatoForm" placeholder="Função" name="contatoSecundarioFuncao"
+                  [formatter]="cadastroGeralFormatter" [list]="funcoes" [(model)]="lead.contatoSecundario.funcao" [disabled]="alteracaoNaoPermitida()"></suggest-combo>
+
+                <phone-input [formGroup]="contatoForm" placeholder="Telefone" name="contatoSecundarioTelefone"
+                  [(modelDdd)]="lead.contatoSecundario.ddd"
+                  [(modelNumber)]="lead.contatoSecundario.telefone" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+                <phone-input [formGroup]="contatoForm" placeholder="Celular" name="contatoSecundarioCelular"
+                  [(modelDdd)]="lead.contatoSecundario.dddCelular"
+                  [(modelNumber)]="lead.contatoSecundario.celular" [disabled]="alteracaoNaoPermitida()"></phone-input>
+
+                <simple-input [formGroup]="contatoForm" placeholder="Email" name="contatoSecundarioEmail" email multiline lowerCase
+                  [(model)]="lead.contatoSecundario.email" [disabled]="alteracaoNaoPermitida()"></simple-input>
+
+              </mat-card>
+  
+            </form>
+          </wizard-step>
+          <!-- / ABA CONTATO  -->
+        </wizard>
+  
+    </div>
+    <!-- / CONTENT CARD -->
+  
+  </div>
+  

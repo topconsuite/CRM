@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TopSys.TopConWeb.Application.DTOS.Response.Usuario
+{
+    public class UsuarioAprovacaoComercialResponse
+    {
+
+        public string Id { get; private set; }
+
+        public string Nome { get; private set; }
+
+    }
+}

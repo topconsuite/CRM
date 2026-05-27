@@ -1,0 +1,190 @@
+<div class="form-container modal">
+  
+  <div *ngIf="ultimoContratoClicksignEnvio == null">
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg h-60" fxLayout="row" fxLayoutAlign="start left">
+        <h2>SOLICITAR ASSINATURA ELETRÔNICA</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+    <br *ngIf="isSmallScreen">
+    <mat-divider></mat-divider>
+
+      <form [formGroup]="solicitacaoAssinaturaForm" fusePerfectScrollbar>
+      
+        <div #scrollContainer class="scroll-container">
+          <div class="dadosPessoaisAssinatura-container">
+            <div *ngFor="let dadosPessoais of solicitacaoAssinatura.dadosPessoaisAssinatura; let i = index">
+              <mat-card class="dadosPessoais-card">
+                <div class="container-signatario">
+                  <div>
+                    <h2>Dados Pessoais {{ solicitacaoAssinatura.dadosPessoaisAssinatura.length === 1 ? '' : i+1 }}</h2>
+                    <simple-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Email" name="email{{i}}" email
+                      [(model)]="dadosPessoais.email" required [noCase]="true" [disabled]="temDireitoAlterarDadosPessoais === false"></simple-input>
+            
+                    <simple-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Nome cliente" name="nome{{i}}"
+                      [(model)]="dadosPessoais.nomeCompleto" [disabled]="temDireitoAlterarDadosPessoais === false"></simple-input>
+            
+                    <div class="container-signatario">
+                      <cpf-input [formGroup]="solicitacaoAssinaturaForm" placeholder="CPF" name="cpf{{i}}"
+                        [(model)]="dadosPessoais.cpf" (modelChange)="setCpfCnpj($event, i)" [disabled]="temDireitoAlterarDadosPessoais === false"></cpf-input>
+            
+                      <date-picker [formGroup]="solicitacaoAssinaturaForm" placeholder="Data nascimento" name="dataNascimento{{i}}"
+                        [(model)]="dadosPessoais.dataNascimento" [disabled]="temDireitoAlterarDadosPessoais === false"></date-picker>
+                    </div>
+                  </div>
+                  <div *ngIf="!isSmallScreen"></div>
+                  <div>
+                    <h2>Envio e Autenticação</h2>
+                    <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Envio para Assinatura" name="envioAssinatura{{i}}" [list]="metodoEnvioAssinaturaLista"
+                        [(model)]="dadosPessoais.metodoEnvioAssinatura" (modelChange)="metodoEnvioAssinaturaChange($event, i)" [formatter]="metodoEnvioAssinaturaFormatter" required></select-combo>
+            
+                    <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Autenticação" name="autenticacao{{i}}" [list]="metodoAutenticacaoLista" [disabled]="envioAssinaturaWhatsApp"
+                        [(model)]="dadosPessoais.metodoAutenticacao" [formatter]="metodoAutenticacaoFormatter" required></select-combo>
+            
+                    <phone-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Telefone" name="telefone{{i}}"  [required]="telefoneObrigatorio(i)" *ngIf="telefoneObrigatorio(i)"
+                    [(modelDdd)]="dadosPessoais.telefoneDdd" [(modelNumber)]="dadosPessoais.telefoneNumero"></phone-input> 
+                  </div>
+                </div>
+              </mat-card>
+            </div>
+          </div>
+        </div>
+        <div class="button-right">
+          <button mat-raised-button color="accent" [disabled]="temDireitoAdicionarDadosPessoais === false" (click)="adicionarDadosPessoaisAssinatura()">
+            <mat-icon matTooltip="Adicionar Dados Pessoais">add</mat-icon>
+          </button>
+        </div>
+
+        <mat-divider *ngIf="clicksignParametro.enviaAssinaturaResponsavelSolidario && responsavelSolidarioExists()"></mat-divider>
+        <div class="container-signatario" *ngIf="clicksignParametro.enviaAssinaturaResponsavelSolidario && responsavelSolidarioExists()">
+          <div>
+            <h2>Dados Responsável Solidário</h2>
+            <simple-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Email do Responsável Solidário" name="emailResponsavelSolidario" email
+            [(model)]="solicitacaoAssinatura.emailResponsavelSolidario" required [noCase]="true"></simple-input>
+
+            <simple-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Nome Responsável Solidário" name="nomeResponsavelSolidario"
+            [(model)]="solicitacaoAssinatura.nomeCompletoResponsavelSolidario"></simple-input>
+
+            <div class="container-signatario">
+              <cpf-input [formGroup]="solicitacaoAssinaturaForm" placeholder="CPF" name="cpfResponsavelSolidario"
+              [model]="solicitacaoAssinatura.cpfResponsavelSolidario" (modelChange)="setCpfCnpjResponsavelSolidario($event)"></cpf-input>
+
+              <date-picker [formGroup]="solicitacaoAssinaturaForm" placeholder="Data nascimento" name="dataNascimentoResponsavelSolidario"
+              [(model)]="solicitacaoAssinatura.dataNascimentoResponsavelSolidario"></date-picker>  
+            </div>
+          </div>
+          <div *ngIf="!isSmallScreen"></div>
+          <div>
+            <h2>Envio e Autenticação</h2>
+            <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Envio para Assinatura" name="envioAssinaturaResponsavelSolidario" [list]="metodoEnvioAssinaturaLista"
+                [(model)]="solicitacaoAssinatura.metodoEnvioAssinaturaResponsavelSolidario" (modelChange)="metodoEnvioAssinaturaResponsavelSolidarioChange($event)" [formatter]="metodoEnvioAssinaturaFormatter" [required]="clicksignParametro.enviaAssinaturaResponsavelSolidario && responsavelSolidarioExists()"></select-combo>
+
+            <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Autenticação" name="autenticacaoResponsavelSolidario" [list]="metodoAutenticacaoLista" [disabled]="envioAssinaturaWhatsApp"
+                [(model)]="solicitacaoAssinatura.metodoAutenticacaoResponsavelSolidario" [formatter]="metodoAutenticacaoFormatter" [required]="clicksignParametro.enviaAssinaturaResponsavelSolidario && responsavelSolidarioExists()"></select-combo>
+
+            <phone-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Telefone" name="telefoneResponsavelSolidario"  [required]="telefoneObrigatorioResponsavelSolidario" *ngIf="telefoneObrigatorioResponsavelSolidario"
+            [(modelDdd)]="solicitacaoAssinatura.telefoneDddResponsavelSolidario" [(modelNumber)]="solicitacaoAssinatura.telefoneNumeroResponsavelSolidario"></phone-input> 
+          </div>
+        </div>
+
+        <mat-divider *ngIf="enviaPrimeiraTestemunha()"></mat-divider>
+        <div class="container-signatario" *ngIf="enviaPrimeiraTestemunha()">
+          <div>
+            <h2>{{ enviaVendedorPrimeiraTestemunha() ? 'Dados Vendedor' : 'Dados Primeira Testemunha' }}</h2>
+            <simple-input [formGroup]="solicitacaoAssinaturaForm" [placeholder]="enviaVendedorPrimeiraTestemunha() ? 'Email do Vendedor' : 'Email da Primeira Testemunha'" name="emailPrimeiraTestemunha" email
+            [(model)]="solicitacaoAssinatura.emailPrimeiraTestemunha" required [noCase]="true"></simple-input>
+
+            <simple-input [formGroup]="solicitacaoAssinaturaForm" [placeholder]="enviaVendedorPrimeiraTestemunha() ? 'Nome Vendedor' : 'Nome Primeira Testemunha'"  name="nomePrimeiraTestemunha"
+            [(model)]="solicitacaoAssinatura.nomeCompletoPrimeiraTestemunha"></simple-input>
+
+            <div class="container-signatario">
+              <cpf-input [formGroup]="solicitacaoAssinaturaForm" placeholder="CPF" name="cpfPrimeiraTestemunha"
+              [model]="solicitacaoAssinatura.cpfPrimeiraTestemunha" (modelChange)="setCpfCnpjPrimeiraTestemunha($event)"></cpf-input>
+
+              <date-picker [formGroup]="solicitacaoAssinaturaForm" placeholder="Data nascimento" name="dataNascimentoPrimeiraTestemunha"
+              [(model)]="solicitacaoAssinatura.dataNascimentoPrimeiraTestemunha"></date-picker>  
+            </div>
+          </div>
+          <div *ngIf="!isSmallScreen"></div>
+          <div>
+            <h2>Envio e Autenticação</h2>
+            <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Envio para Assinatura" name="envioAssinaturaPrimeiraTestemunha" [list]="metodoEnvioAssinaturaLista"
+                [(model)]="solicitacaoAssinatura.metodoEnvioAssinaturaPrimeiraTestemunha" (modelChange)="metodoEnvioAssinaturaPrimeiraTestemunhaChange($event)" [formatter]="metodoEnvioAssinaturaFormatter" [required]="enviaPrimeiraTestemunha()"></select-combo>
+
+            <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Autenticação" name="autenticacaoPrimeiraTestemunha" [list]="metodoAutenticacaoLista" [disabled]="envioAssinaturaWhatsApp"
+                [(model)]="solicitacaoAssinatura.metodoAutenticacaoPrimeiraTestemunha" [formatter]="metodoAutenticacaoFormatter" [required]="enviaPrimeiraTestemunha()"></select-combo>
+
+            <phone-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Telefone" name="telefonePrimeiraTestemunha"  [required]="telefoneObrigatorioPrimeiraTestemunha" *ngIf="telefoneObrigatorioPrimeiraTestemunha"
+            [(modelDdd)]="solicitacaoAssinatura.telefoneDddPrimeiraTestemunha" [(modelNumber)]="solicitacaoAssinatura.telefoneNumeroPrimeiraTestemunha"></phone-input> 
+          </div>
+        </div>
+
+        <mat-divider *ngIf="enviaSegundaTestemunha()"></mat-divider>
+        <div class="container-signatario" *ngIf="enviaSegundaTestemunha()">
+          <div>
+            <h2>{{ enviaVendedorSegundaTestemunha() ? 'Dados Vendedor' : 'Dados Segunda Testemunha' }}</h2>
+            <simple-input [formGroup]="solicitacaoAssinaturaForm" [placeholder]="enviaVendedorSegundaTestemunha() ? 'Email do Vendedor' : 'Email da Segunda Testemunha'" name="emailSegundaTestemunha" email
+            [(model)]="solicitacaoAssinatura.emailSegundaTestemunha" required [noCase]="true"></simple-input>
+
+            <simple-input [formGroup]="solicitacaoAssinaturaForm" [placeholder]="enviaVendedorSegundaTestemunha() ? 'Nome Vendedor' : 'Nome Segunda Testemunha'"  name="nomeSegundaTestemunha"
+            [(model)]="solicitacaoAssinatura.nomeCompletoSegundaTestemunha"></simple-input>
+
+            <div class="container-signatario">
+              <cpf-input [formGroup]="solicitacaoAssinaturaForm" placeholder="CPF" name="cpfSegundaTestemunha"
+              [model]="solicitacaoAssinatura.cpfSegundaTestemunha" (modelChange)="setCpfCnpjSegundaTestemunha($event)"></cpf-input>
+
+              <date-picker [formGroup]="solicitacaoAssinaturaForm" placeholder="Data nascimento" name="dataNascimentoSegundaTestemunha"
+              [(model)]="solicitacaoAssinatura.dataNascimentoSegundaTestemunha"></date-picker>  
+            </div>
+          </div>
+          <div *ngIf="!isSmallScreen"></div>
+          <div>
+            <h2>Envio e Autenticação</h2>
+            <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Envio para Assinatura" name="envioAssinaturaSegundaTestemunha" [list]="metodoEnvioAssinaturaLista"
+                [(model)]="solicitacaoAssinatura.metodoEnvioAssinaturaSegundaTestemunha" (modelChange)="metodoEnvioAssinaturaSegundaTestemunhaChange($event)" [formatter]="metodoEnvioAssinaturaFormatter" [required]="enviaSegundaTestemunha()"></select-combo>
+
+            <select-combo [formGroup]="solicitacaoAssinaturaForm" placeholder="Autenticação" name="autenticacaoSegundaTestemunha" [list]="metodoAutenticacaoLista" [disabled]="envioAssinaturaWhatsApp"
+                [(model)]="solicitacaoAssinatura.metodoAutenticacaoSegundaTestemunha" [formatter]="metodoAutenticacaoFormatter" [required]="enviaSegundaTestemunha()"></select-combo>
+
+            <phone-input [formGroup]="solicitacaoAssinaturaForm" placeholder="Telefone" name="telefoneSegundaTestemunha"  [required]="telefoneObrigatorioSegundaTestemunha" *ngIf="telefoneObrigatorioSegundaTestemunha"
+            [(modelDdd)]="solicitacaoAssinatura.telefoneDddSegundaTestemunha" [(modelNumber)]="solicitacaoAssinatura.telefoneNumeroSegundaTestemunha"></phone-input> 
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        <div class="float-right">
+            <button mat-button color="accent" (click)="enviarSolicitacao()" 
+              [disabled]="solicitacaoAssinaturaForm.invalid || !validaMetodoAutenticacaoDadosPessoais() 
+                || (!solicitacaoAssinatura.metodoAutenticacaoResponsavelSolidario  && responsavelSolidarioExists() && clicksignParametro.enviaAssinaturaResponsavelSolidario)
+                || (!solicitacaoAssinatura.metodoAutenticacaoPrimeiraTestemunha  && enviaPrimeiraTestemunha()) || (!solicitacaoAssinatura.metodoAutenticacaoSegundaTestemunha  && enviaSegundaTestemunha())">
+              Enviar
+            </button>
+            <button mat-button color="warn" (click)="fecharSolicitacao()">Fechar</button>
+        </div>
+      </form>     
+    </div>
+
+   <div *ngIf="ultimoContratoClicksignEnvio != null">  
+    <div class="header mat-white-bg h-60" fxLayout="row" fxLayoutAlign="start left">
+      <h2>ASSINATURA JÁ SOLICITADA</h2>
+   </div>
+   <br *ngIf="isSmallScreen">
+    <mat-divider></mat-divider>   
+    <div>
+      <p>Status do ultimo documento enviado: <b>{{getstatusClicksignDocumento(ultimoContratoClicksignEnvio.statusClicksignDocumento).descricao}}</b> </p>
+      <p>Data solicitação: <b>{{ formataDataHora(ultimoContratoClicksignEnvio.dataEnvio) }}</b></p>
+      <p>Solicitado por: <b>{{ultimoContratoClicksignEnvio.idEnvio}} </b></p>
+      <div *ngIf="ultimoContratoClicksignEnvio.dataCancelamento">
+        <p>Data cancelamento: <b>{{ formataDataHora(ultimoContratoClicksignEnvio.dataCancelamento)}}</b></p>
+        <p>Cancelado por: <b>{{ultimoContratoClicksignEnvio.idCancelamento}}</b></p>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="float-right">
+      <button mat-button color="accent" (click)="cancelarDocumento()" *ngIf="botaoCancelarEnabled()">Cancelar Documento</button>
+      <button mat-button color="accent" (click)="reenviarSolicitacao()" *ngIf="botaoReenviarEnabled()">Reenviar Solicitação</button>
+      <button mat-button color="warn" (click)="fecharSolicitacao()">Fechar</button>
+  </div>
+
+   </div> 
+</div>

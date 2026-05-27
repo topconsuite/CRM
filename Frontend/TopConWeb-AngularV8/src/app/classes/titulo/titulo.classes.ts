@@ -1,0 +1,1 @@
+export { TituloContasAReceber } from './titulo-contas-a-receber';

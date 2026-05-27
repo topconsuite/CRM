@@ -1,0 +1,6 @@
+<simple-input [formGroup]="formGroup" [placeholder]="placeholder" [name]="name"
+  [model]="modelPhone" (modelChange)="setModel($event)" [mask]="{mask: maskTelefone(), placeholderChar: ' '}"
+  [minLength]="10" [errorMessages]="[{key: 'minLength', message: 'telefone inválido!'}]"
+  (focus)="onFocus()" (focusout)="onFocusout()" [required]="required" [disabled]="disabled"
+  [noCase]="noCase" [upperCase]="upperCase" [lowerCase]="lowerCase" [validator]="dddValidator">
+</simple-input>

@@ -1,0 +1,2 @@
+/* OP-4816 */
+INSERT IGNORE `topsys`.`ger_parametro` SET `grupo`='Topcon' , `chave`='PermiteVolumeAcimaContratado';

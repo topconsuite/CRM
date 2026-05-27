@@ -1,0 +1,20 @@
+.tab-group {
+    border: 1px solid #E8E8E8;
+}
+
+.centralize {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.centralize > span {
+    padding-left: 4px;
+    padding-right: 3px;
+}
+
+@media screen and (max-width: 599px) {
+    .step-title {
+        display: none;
+    }
+}

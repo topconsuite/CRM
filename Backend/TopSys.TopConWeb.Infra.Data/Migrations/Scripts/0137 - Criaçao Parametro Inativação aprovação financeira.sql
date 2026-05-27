@@ -1,0 +1,1 @@
+INSERT IGNORE INTO `topsys`.`ger_parametro` (`grupo`, `chave`, `valor`) VALUES ('web', 'InativarAprovacoesFinanceiras', '0');

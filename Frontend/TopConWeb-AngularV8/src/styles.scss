@@ -1,0 +1,51 @@
+// Import Fuse core library
+@import "@fuse/scss/core";
+
+// Import app.theme.scss
+@import "app/app.theme";
+
+.float-right {
+    float: right!important;
+}
+
+.float-left {
+    float: left!important;
+}
+
+.form-container {
+    min-width: 150px;
+    max-width: 640px;
+    width: 100%;
+}
+
+.input-full-width {
+  width: 100%;
+}
+
+.mat-form-field-label {
+    color: black !important;
+}
+
+.mat-focused .mat-form-field-label {
+    color: black !important;
+    font-weight: bold !important;
+}
+
+.mat-form-field input[disabled]
+,.mat-form-field textarea[disabled]
+,.mat-form-field select[disabled]
+,.mat-form-field-disabled .mat-select-value
+,.mat-checkbox-disabled .mat-checkbox-label {
+    color: rgb(107, 107, 107) !important;
+}
+
+.mat-pseudo-checkbox-checked:after {
+    width: 9px !important;
+    height: 4px !important;
+}
+
+@media screen and (max-width: 860px) {
+    .mat-expansion-panel-header {
+        font-size: 9pt;
+    }
+  }

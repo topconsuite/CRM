@@ -1,0 +1,54 @@
+<div class="form-container modal">
+  <h2 cdkFocusRegionstart>CODIGO/CCM POR USINA</h2>
+    
+  <form [formGroup]="tributacoesMunicipaisForm" class="form-container">
+    
+    <mat-accordion class="expansion-panel-headers-align">
+      <mat-expansion-panel class="remove-out-padding-left-right"><!-- NÃO REMOVER --></mat-expansion-panel>
+      <mat-expansion-panel class="remove-out-padding-left-right" *ngFor="let item of data.tributacoesMunicipais">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ usinaPorCodigoFormatter(item.usinaEntregaCodigo) }}</mat-panel-title>
+          <mat-panel-description>{{ item.codigoObraPrefeitura }}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <suggest-combo [formGroup]="tributacoesMunicipaisForm" placeholder="Usina" [disabled]="alteracaoNaoPermitida()"
+          name="tributacaoMunicipal{{data.tributacoesMunicipais.indexOf(item)}}Usina" [required]="!(item.usinaEntregaCodigo === 0)"
+          [(model)]="item.usinaEntregaCodigo" [formatter]="usinaPorCodigoFormatter" [list]="usinasCodigos()"></suggest-combo>
+
+        <simple-input [formGroup]="tributacoesMunicipaisForm" placeholder="Código da obra na prefeitura" [disabled]="alteracaoNaoPermitida()"
+          name="tributacaoMunicipal{{data.tributacoesMunicipais.indexOf(item)}}CodigoObraPrefeitura" [(model)]="item.codigoObraPrefeitura"></simple-input>
+
+        <simple-input [formGroup]="tributacoesMunicipaisForm" placeholder="CCM da obra" [disabled]="alteracaoNaoPermitida()"
+          name="tributacaoMunicipal{{data.tributacoesMunicipais.indexOf(item)}}ObraCCM" [(model)]="item.obraCCM"></simple-input>
+
+        <select-combo [formGroup]="tributacoesMunicipaisForm" placeholder="Tributação ISS" [disabled]="alteracaoNaoPermitida()"
+          name="tributacaoMunicipal{{data.tributacoesMunicipais.indexOf(item)}}TributacaoISS" required
+          [model]="item.tributacaoISS" (modelChange)="changeTributacaoISS($event, item)" [formatter]="tributacaoIssFormatter" [list]="tributacoesISS"></select-combo>
+
+        <select-combo [formGroup]="tributacoesMunicipaisForm" placeholder="Retenção ISS" [disabled]="alteracaoNaoPermitida() || alteracaoRetencaoIssNaoPermitida(item)"
+        name="tributacaoMunicipal{{data.tributacoesMunicipais.indexOf(item)}}RetencaoISS" required
+        [(model)]="item.retencaoISS" [formatter]="retencaoIssFormatter" [list]="opcoesRetencaoISS"></select-combo>
+
+        <mat-action-row>
+          <confirm-dialog-button buttonText="Excluir item" buttonColor="warn" icon="delete" [disabled]="alteracaoNaoPermitida()"
+            dialogMessage="Confirma exclusão do item?" (confirm)="removeTributacaoMunicipal(item)">
+          </confirm-dialog-button>
+        </mat-action-row>
+        
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <mat-action-row>
+      <button mat-button color="basic" (click)="addTributacaoMunicipal()" [disabled]="alteracaoNaoPermitida()">
+        <mat-icon>add_circle</mat-icon>ADICIONAR NOVO ITEM
+      </button>
+    </mat-action-row>
+
+    <mat-action-row>
+      <button mat-button color="accent" (click)="confirmTributacoesMunicipais()" [disabled]="tributacoesMunicipaisForm.invalid || alteracaoNaoPermitida()">Confirma</button>
+      <button mat-button color="warn" (click)="cancelTributacoesMunicipais()">Cancela</button>
+    </mat-action-row>
+
+  </form>
+  
+</div>

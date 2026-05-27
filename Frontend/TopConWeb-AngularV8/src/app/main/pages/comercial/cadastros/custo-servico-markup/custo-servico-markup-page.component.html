@@ -1,0 +1,188 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+        <h2>CUSTO SERVIÇO/MARKUP</h2>
+    </div>
+    <!-- / CONTENT HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content mat-white-bg" fusePerfectScrollbar>
+
+        <paginator [pagedList]="itens" (pageChange)="getPage($event)" [currentPage]="paginaAtual"
+            [pageSize]="registrosPorPagina">
+            <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro">
+                <suggest-combo [formGroup]="filter.form" placeholder="Usina" name="usina" [list]="usinas"
+                    [(model)]="filtro.usina" [formatter]="usinaFormatter"></suggest-combo>
+                <simple-input [formGroup]="filter.form" placeholder="Usina" name="==|usinaCodigo"
+                    [model]="filtro.usina.codigo" *ngIf="filtro.usina" hidden></simple-input>
+            </filter>
+        </paginator>
+
+        <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+            <mat-expansion-panel>
+                <!-- NÃO REMOVER -->
+            </mat-expansion-panel>
+        </mat-accordion>
+
+        <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+            <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+                <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+                <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+            </ng-container>
+
+            <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+            <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+                    <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                        <div *ngIf="element == expandedElement">
+                            <div *ngFor="let hColumn of hiddenColumns">
+                                <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValue(element, hColumn) }}
+                                <mat-divider></mat-divider>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="edit">
+                <th mat-header-cell *matHeaderCellDef>
+                    <button mat-mini-fab color="accent"
+                        (click)="showModal(custoServicoModal, custoServicoMarkupModalVCR, addCustoServico)">
+                        <mat-icon matTooltip="Adicionar">add</mat-icon>
+                    </button>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="accent"
+                        (click)="showModal(custoServicoModal, custoServicoMarkupModalVCR, updateCustoServico, null, element)">
+                        <mat-icon matTooltip="Editar">edit</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element">
+                    <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+                        dialogMessage="Confirma exclusão deste item?" (confirm)="removecustoServico(element)">
+                    </confirm-dialog-button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+            <tr mat-row *matRowDef="let element; columns: columnNames;" class="element-row"
+                [class.expanded-row]="expandedElement === element"
+                (click)="expandedElement = expandedElement === element ? null : element">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+        </table>
+
+        <div #csmModalVCR></div>
+        <ng-template #custoServicoModal>
+
+            <div class="form-container modal" [hidden]="!modalIsOpen">
+
+                <h2 cdkFocusRegionstart>CUSTO SERVIÇO/MARKUP</h2>
+
+                <form [formGroup]="custoServicoMarkupForm" class="form-container">
+
+                    <suggest-combo [formGroup]="custoServicoMarkupForm" placeholder="Usina" name="usina" [list]="usinas"
+                        [(model)]="item.usina" [formatter]="usinaFormatter" [disabled]="isEdicao" required>
+                    </suggest-combo>
+
+                    <date-picker [formGroup]="custoServicoMarkupForm" placeholder="Data Início de Vigência"
+                        name="dataInicioVigencia" [(model)]="item.dataInicioVigencia" [disabled]="isEdicao" required>
+                    </date-picker>
+
+                    <h4>Custos fixos por M3</h4>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Combustível"
+                        name="custoMedioCombustivel" [(model)]="item.custoMedioCombustivel" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Mão de Obra"
+                        name="custoMedioMaoDeObra" [(model)]="item.custoMedioMaoDeObra" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Impostos" name="custoMedioImpostos"
+                        [(model)]="item.custoMedioImpostos" [maxIntegerChars]="8" [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Manutenção"
+                        name="custoMedioManutencao" [(model)]="item.custoMedioManutencao" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Lubrificantes"
+                        name="custoMedioLubrificantes" [(model)]="item.custoMedioLubrificantes" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Lucro" name="lucro"
+                        [(model)]="item.lucro" [maxIntegerChars]="8" [decimalChars]="2"></decimal-input>
+
+                    <h4>Valores para cálculo de Ebitda</h4>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Custo Médio Produção"
+                        name="custoMedioProducao" [(model)]="item.custoMedioProducao" [maxIntegerChars]="8"
+                        [decimalChars]="2">
+                    </decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Custo médio Laboratório"
+                        name="custoMedioLaboratorio" [(model)]="item.custoMedioLaboratorio" [maxIntegerChars]="8"
+                        [decimalChars]="2">
+                    </decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Custo médio comercial"
+                        name="custoMedioComercial" [(model)]="item.custoMedioComercial" [maxIntegerChars]="8"
+                        [decimalChars]="2">
+                    </decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Custo médio administrativo"
+                        name="custoMedioAdministrativo" [(model)]="item.custoMedioAdministrativo" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Valor total do serviço"
+                        name="custoMedioServico" [(model)]="valorMedioServico" [maxIntegerChars]="8" [decimalChars]="2"
+                        disabled></decimal-input>
+
+                    <h4>Custos variáveis</h4>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Custo médio hora transporte"
+                        name="custoMedioHoraTransporte" [(model)]="item.custoMedioHoraTransporte" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Custo médio bombagem por M3"
+                        name="custoMedioBombagem" [(model)]="item.custoMedioBombagem" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm"
+                        placeholder="% Impostos sobre faturamento estadual" name="impostoEstadual"
+                        [(model)]="item.impostoEstadual" [maxIntegerChars]="8" [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm"
+                        placeholder="% Impostos sobre faturamento federal" name="impostoFederal"
+                        [(model)]="item.impostoFederal" [maxIntegerChars]="8" [decimalChars]="2"></decimal-input>
+
+                    <h4>Outros custos</h4>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="% Markup" name="markup"
+                        [(model)]="item.markup" [maxIntegerChars]="8" [decimalChars]="2"></decimal-input>
+
+                    <decimal-input [formGroup]="custoServicoMarkupForm" placeholder="Outros custos materiais"
+                        name="outrosCustosMateriais" [(model)]="item.outrosCustosMateriais" [maxIntegerChars]="8"
+                        [decimalChars]="2"></decimal-input>
+
+                    <mat-action-row>
+                        <button mat-button color="accent" (click)="confirmModal(item)"
+                            [disabled]="custoServicoMarkupForm.invalid">Confirma</button>
+                        <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+                    </mat-action-row>
+
+                </form>
+
+            </div>
+
+        </ng-template>
+
+    </div>
+    <!-- / CONTENT CARD -->
+
+</div>

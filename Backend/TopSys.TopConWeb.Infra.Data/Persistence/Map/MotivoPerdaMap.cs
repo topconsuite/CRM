@@ -1,0 +1,32 @@
+﻿using System.Data.Entity.ModelConfiguration;
+using TopSys.TopConWeb.Domain.Entities.MotivoPerdas;
+
+namespace TopSys.TopConWeb.Infra.Data.Persistence.Map
+{
+    public class MotivoPerdaMap : EntityTypeConfiguration<MotivoPerda>
+    {
+        public MotivoPerdaMap()
+        {
+            ToTable("topsys.con_motivo_perda");
+
+            HasKey(t => t.Codigo);
+
+            Property(t => t.Codigo)
+                .HasColumnOrder(0)
+                .HasColumnName("codigo")
+                .HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+
+            Property(t => t.Descricao)
+                .HasColumnName("descricao");
+
+            Property(t => t.Ativo)
+                .HasColumnName("ativo");
+
+            Property(t => t.IdCadastro)
+                .HasColumnName("id_cadast");
+
+            Property(t => t.IdAtualizacao)
+                .HasColumnName("id_atual");
+        }
+    }
+}

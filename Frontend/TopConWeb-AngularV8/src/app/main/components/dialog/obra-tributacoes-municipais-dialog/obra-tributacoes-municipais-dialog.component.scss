@@ -1,0 +1,30 @@
+.form-container.modal {
+    max-height: 70vh;
+}
+
+@media screen and (max-width: 860px) {
+    .form-container.modal {
+        min-width: 150px;
+    }
+}
+
+@media screen and (min-width: 861px) {
+    .form-container.modal {
+        width: 640px;
+    }
+}
+
+.remove-out-padding-left-right {
+    margin-left: -24px; 
+    margin-right: -24px; 
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-title, 
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}

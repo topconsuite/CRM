@@ -1,0 +1,274 @@
+<div class="page-layout simple fullwidth" fusePerfectScrollbar>
+
+  <!-- CONTENT HEADER -->
+  <div class="header mat-white-bg p-24 h-60" fxLayout="row" fxLayoutAlign="start center">
+      <h2>CONDIÇÕES DE PAGAMENTO</h2>
+  </div>
+  <!-- / CONTENT HEADER -->
+
+  <!-- CONTENT CARD -->
+  <div class="content mat-white-bg" fusePerfectScrollbar>
+
+    <paginator [pagedList]="itens" (pageChange)="getPage($event)"
+      [currentPage]="paginaAtual" [pageSize]="registrosPorPagina">
+
+      <view-selector [key]="'CAD-CONDICAO-PAGAMENTO'" [currentValue]="currentViewValue"
+      (selectedChange)="viewChanged($event)">
+
+      </view-selector><br *ngIf="isSmallScreen"/>
+    
+      <filter #filter (filterChange)="filtroChange($event)" [(model)]="filtro" application="CAD-CONDICAO-PAGAMENTO">
+
+        <integer-input [formGroup]="filter.form" placeholder="Codigo" name="==|codigo"
+            [(model)]="filtro.codigo" [maxIntegerChars]="10"></integer-input>
+
+        <select-combo [formGroup]="filter.form" placeholder="Tipo Cobrança" name="tipoCobranca"  [list]="tiposCobrancas"
+        [(model)]="filtro.tipoCobrancaIn" [formatter]="tiposCobrancaFormatter" multiple></select-combo>
+        <simple-input [formGroup]="filter.form" placeholder="Tipo Cobrança" name="%=|tiposDeCobrancaCodigos"
+          [model]="tiposDeCobrancaCodigos" *ngIf="filtro.tipoCobrancaIn && filtro.tipoCobrancaIn.length > 0" hidden></simple-input>
+
+        <simple-input [formGroup]="filter.form" placeholder="Descrição" name="%=|descricao"
+        [(model)]="filtro.descricao"></simple-input>
+
+      </filter>
+
+    </paginator>
+
+    <mat-accordion class="expansion-panel-headers-align" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+    </mat-accordion>
+    
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">    
+      <ng-container [matColumnDef]="column.name" *ngFor="let column of displayedColumns">
+          <th mat-header-cell *matHeaderCellDef> {{ column.placeholder }} </th>
+          <td mat-cell *matCellDef="let element"> {{ getFormattedValue(element, column) }}</td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length + fixedColumns.length">
+              <div class="element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                  <div *ngIf="element == expandedElement">
+                    <div *ngFor="let hColumn of foldedColumns">
+                      <b>{{ hColumn.placeholder }}: </b>{{ getFormattedValue(element, hColumn) }}
+                      <mat-divider></mat-divider>
+                    </div>
+                  </div>
+              </div>
+          </td>
+      </ng-container>
+
+      <ng-container matColumnDef="edit">        
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-mini-fab color="accent" (click)="showModal(condicaoPagamentoModal, condicaoPagamentoModalVCR, addCondicaoPagamento)">
+            <mat-icon matTooltip="Adicionar">add</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="accent" (click)="showModal(condicaoPagamentoModal, condicaoPagamentoModalVCR, updateCondicaoPagamento, undefined, element)">
+            <mat-icon matTooltip="Editar">edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <confirm-dialog-button toolTip="Excluir" buttonColor="warn" icon="delete_forever" onlyIcon
+              dialogMessage="Confirma exclusão deste item?" (confirm)="removeCondicaoPagamento(element)"></confirm-dialog-button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef>
+          <button mat-icon-button aria-label="Selecionar colunas visíveis" (click)="showSelecaoColunasModal(colunasVisualizacaoModal)">
+            <mat-icon matTooltip="Selecionar colunas visíveis">more_horiz</mat-icon>
+          </button>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnNames;"
+          class="element-row"
+          [class.expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+
+    <div #cpModalVCR></div>
+    <ng-template #condicaoPagamentoModal>
+        
+        <div class="form-container modal" [hidden]="!modalIsOpen">
+        <h2 cdkFocusRegionstart>CONDIÇÃO DE PAGAMENTO</h2>
+            
+        <form [formGroup]="condicaoPagamentoForm" class="form-container">
+
+          <simple-input [formGroup]="condicaoPagamentoForm" placeholder="Código" name="codigo" disabled
+          [model]="item.codigo"></simple-input>
+
+          <simple-input [formGroup]="condicaoPagamentoForm" placeholder="Descrição" name="descricao"
+          [(model)]="item.descricao" required></simple-input>
+
+          <select-combo [formGroup]="condicaoPagamentoForm" placeholder="Tipo Cobrança" name="tipoCobranca"  [list]="tiposCobrancas"
+          [(model)]="tiposCobrancasSelected" (modelChange)="atualizaTipoCobrancaCod()" [formatter]="tiposCobrancaFormatter" multiple></select-combo>
+
+          <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Quantidade Parcelas" name="quantidadeParcelas"
+          [(model)]="item.quantidadeParcelas" [maxIntegerChars]="2" (modelChange)="quantidadeParcelasChange($event)" required></integer-input>
+
+          <mat-card  *ngIf="item.quantidadeParcelas > 0">
+            <mat-card-subtitle>Vencimentos em dias das Parcelas</mat-card-subtitle>
+            <mat-card-content class="parcelas">
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 1º Parcela" name="primeiraParcela"
+              [(model)]="item.vencimento1Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(1)" ></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 2º Parcela" name="segundaParcela"
+              [(model)]="item.vencimento2Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(2)"
+              required="parcelaExistente(2)"></integer-input>
+              
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 3º Parcela" name="terceiraParcela"
+              [(model)]="item.vencimento3Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(3)"
+              required="parcelaExistente(3)"></integer-input>
+              
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 4º Parcela" name="quartaParcela"
+              [(model)]="item.vencimento4Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(4)"
+              required="parcelaExistente(4)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 5º Parcela" name="quintaParcela"
+              [(model)]="item.vencimento5Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(5)"
+              required="parcelaExistente(5)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 6º Parcela" name="sextaParcela"
+              [(model)]="item.vencimento6Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(6)"
+              required="parcelaExistente(6)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 7º Parcela" name="setimaParcela"
+              [(model)]="item.vencimento7Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(7)"
+              required="parcelaExistente(7)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 8º Parcela" name="oitavaParcela"
+              [(model)]="item.vencimento8Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(8)"
+              required="parcelaExistente(8)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 9º Parcela" name="nonaParcela"
+              [(model)]="item.vencimento9Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(9)"
+              required="parcelaExistente(9)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 10º Parcela" name="decimaParcela"
+              [(model)]="item.vencimento10Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(10)"
+              required="parcelaExistente(10)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 11º Primeira Parcela" name="decimaPrimeiraParcela"
+              [(model)]="item.vencimento11Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(11)"
+              required="parcelaExistente(11)"></integer-input>
+
+              <integer-input [formGroup]="condicaoPagamentoForm" placeholder="Vencimento 12º Segunda Parcela" name="decimaSegundaParcela"
+              [(model)]="item.vencimento12Parcela" [maxIntegerChars]="3" *ngIf="parcelaExistente(12)"
+              required="parcelaExistente(12)"></integer-input>
+              
+            </mat-card-content>
+          </mat-card>
+
+          <br>
+
+          <mat-card *ngIf="item.quantidadeParcelas > 0">
+            <mat-card-subtitle>Percentuais das Parcelas</mat-card-subtitle>
+            <div class="parcelas"> 
+              <mat-card-content *ngFor="let parcela of item.parcelas; index as i">
+                <decimal-input [formGroup]="condicaoPagamentoForm" placeholder="Percentual {{i+1}}º Parcela" name="parceladias{{i}}"
+                [(model)]="parcela.percentual" [maxIntegerChars]="3" [decimalChars]="5"></decimal-input>
+              </mat-card-content>
+            </div>
+          </mat-card>
+
+          <br>
+
+          <suggest-combo [formGroup]="condicaoPagamentoForm" placeholder="Condição do Pagamento" name="condicaoDoPagamento"  [list]="condicoesPagamento"
+          [(model)]="item.condicaoDaCobranca" [formatter]="condicoesPagamentoFormatter" (modelChange)="SetCondicaoDaCobranca()" required></suggest-combo>
+
+          <decimal-input [formGroup]="condicaoPagamentoForm" placeholder="Média de Dias" name="mediaDias"
+          [(model)]="item.mediaDias" (focus)="onFocusMediaDias()" [maxIntegerChars]="5" [decimalChars]="1"></decimal-input>
+
+          <div class="checkbox">
+            <mat-checkbox formControlName="analisaFraude" [ngModel]="booleanFormatter(item.analisaFraude)" (change)="checkBoxChange($event,'analisaFraude')" >
+              Analise Fraude
+            </mat-checkbox>
+
+            <mat-checkbox formControlName="mesFixo30Dias" [ngModel]="booleanFormatter(item.mesFixo30Dias)" (change)="checkBoxChange($event,'mesFixo30Dias')">
+              Mês fixo 30 dias
+            </mat-checkbox>
+
+            <mat-checkbox formControlName="retencaoPrimeiraParcela" [ngModel]="booleanFormatter(item.retencaoPrimeiraParcela)" (change)="checkBoxChange($event,'retencaoPrimeiraParcela')">
+              ISS/INSS Retido 1º Parcela
+            </mat-checkbox>
+
+            <mat-checkbox formControlName="ativo" [ngModel]="booleanFormatter(item.ativo)" (change)="checkBoxChange($event,'ativo')">
+              Ativo
+            </mat-checkbox>
+          </div>
+
+          <br>
+
+          <div>
+            <mat-checkbox formControlName="vencimentoFixoSemana" [ngModel]="booleanFormatter(item.vencimentoFixoSemana)" (change)="checkBoxChange($event,'vencimentoFixoSemana')">
+              Vencimento Fixo na Semana
+            </mat-checkbox>
+
+            <suggest-combo [formGroup]="condicaoPagamentoForm" placeholder="Dia da semana" name="diasSemanaFixo"  [list]="diasSemanaFixo"
+            [model]="getDiaVencimentoFixoSemana(item)" (modelChange)="setDiaVencimentoFixoSemana($event)" [formatter]="diasSemanaFixoFormatter" 
+            *ngIf="item.vencimentoFixoSemana === 'S'" required="item.vencimentoFixoSemana === 'S'"></suggest-combo>
+          </div>
+          
+          <br>
+
+          <suggest-combo [formGroup]="condicaoPagamentoForm" placeholder="Vencimento em dia não útil" name="vencimentoDiaUtil"  [list]="vencimentoEmDiaNaoUtil"
+            [model]="getVencimentoEmDiaNaoUtil(item)" (modelChange)="setVencimentoEmDiaNaoUtil($event)" [formatter]="vencimentoEmDiaNaoUtilFormatter" required></suggest-combo>
+          <br>
+
+          <mat-action-row>
+              <button mat-button color="accent" (click)="confirmModal(item)" [disabled]="condicaoPagamentoForm.invalid || disableConfirmButton">Confirma</button>
+              <button mat-button color="warn" (click)="cancelModal()">Cancela</button>
+          </mat-action-row>
+
+        </form>
+        
+        </div>
+        
+    </ng-template>
+
+    <div #colunasVisualizacaoModalVCR></div>
+    <ng-template #colunasVisualizacaoModal>
+        
+        <h2 cdkFocusRegionstart>COLUNAS EXIBIDAS</h2>
+        <div class="form-container modal" [hidden]="!modalIsOpen" fusePerfectScrollbar>
+          
+          <div *ngFor="let column of allColumnsOrdered">
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, -1)">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button class="arrow-button" color="primary" (click)="changeColumnOrder(column.name, +1)">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            
+            <mat-checkbox [checked]="!isHiddenColumn(column.name)"
+                (change)="setHiddenColumn(column.name, !$event.checked)">
+              {{ column.placeholder }}
+            </mat-checkbox>
+            <br/>
+          </div>
+        </div>
+
+        <div class="float-right">
+          <button mat-raised-button [ngClass]="['btn-aprovacao','aprovado']" (click)="closeModal()">Fechar</button>
+        </div>
+        
+    </ng-template>
+      
+  </div>
+  <!-- / CONTENT CARD -->
+
+</div>

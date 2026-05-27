@@ -1,0 +1,79 @@
+  <h2 cdkFocusRegionstart>PROPAGANDA DE PROPOSTA</h2>
+            
+  <button mat-raised-button color="accent" (click)="abrirSeletorDeArquivos(inputFile)">
+    <mat-icon matTooltip="Adicionar">add</mat-icon> Adicionar Propaganda
+  </button>
+  
+  <input #inputFile type="file" accept="image/*" (change)="arquivoSelecionado($event)" style="display: none;" />
+  
+  <div *ngFor="let element of records">
+    <br/>
+    <mat-accordion class="expansion-panel-headers-align" style="margin-bottom: 10px;" fusePerfectScrollbar>
+      <mat-expansion-panel><!-- NÃO REMOVER --></mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <div class="anexo-panel-content">
+              <mat-panel-title class="title-text">Nome</mat-panel-title>
+              <mat-panel-description class="descricao-text">{{removeFileExtension(element.nome)}}</mat-panel-description>
+            </div>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="anexoForm" class="form-container">
+
+            <table>
+              <tbody>
+                <tr>
+                  <td class="th-anexo">Arquivo :</td>
+                  <td class="td-anexo">{{ element.nome }}</td>
+                </tr>
+                <tr>
+                  <td class="th-anexo">Usuario :</td>
+                  <td class="td-anexo">{{ element.usuario }}</td>
+                </tr>
+                <tr>
+                  <td class="th-anexo">Data/Hora :</td>
+                  <td class="td-anexo">{{ formataDataHora(element.dataHora) }}</td>
+                </tr>
+                <tr>
+                  <td class="th-anexo">Ativa :</td>
+                  <td class="td-anexo">
+                    <mat-checkbox [formControlName]="'ativaCheck_' + element.id" (change)="checkBoxChange($event, element)">
+                      Ativa
+                    </mat-checkbox>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <br/>
+
+            <div style="float: left;">
+
+              <button mat-button color="accent" (click)="abrirAnexo(element)">
+                <mat-icon matTooltip="Abrir Anexo">visibility</mat-icon> Visualizar
+              </button>
+
+            </div> 
+
+            <div style="float: right;">
+
+              <button mat-button color="warn" (click)="removerAnexo(element)">
+                <mat-icon matTooltip="Excluir Anexo">delete</mat-icon> Excluir
+              </button>
+
+            </div>
+          
+          </form>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <div style="text-align: center; margin-bottom: 10px; margin-top: 10px;">
+    Resolução recomendada para propaganda: 720 x 1040<br/>
+    Tamanho máximo de upload de arquivo: 10 MB.
+  </div>
+
+  <mat-action-row class="action-buttons">
+    <button mat-button color="warn" (click)="cancelModal()">Fechar</button>
+  </mat-action-row>

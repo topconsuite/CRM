@@ -1,0 +1,170 @@
+.form-container.modal {
+    max-height: 70vh;
+}
+  
+@media screen and (max-width: 860px) {
+  .form-container.modal {
+      min-width: 150px;
+  }
+}
+
+@media screen and (min-width: 861px) {
+  .form-container.modal {
+      width: 640px;
+  }
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-title, 
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+table {
+  width: 100%;
+}
+
+tr.detail-row {
+  height: 0;
+}
+
+tr.element-row:not(.expanded-row):hover {
+  background: #f5f5f5;
+}
+
+tr.element-row:not(.expanded-row):active {
+  background: #efefef;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+}
+
+/*.mat-header-cell {
+  text-align: right;
+}*/
+.mat-column-codigo {
+  text-align: center;
+  padding-right: 10px;
+}
+
+.mat-column-descricao {
+  text-align: center;
+  padding-right: 10px;
+  min-width: 120px;
+}
+
+.mat-column-quantidadeUsuarios{
+  text-align: center;
+  padding-right: 10px;
+  min-width: 120px;
+}
+
+.mat-column-edit {
+  text-align: left;
+  max-width: 40px;
+}
+.mat-column-delete {
+  text-align: left;
+  max-width: 40px;
+}
+
+.checkbox {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.titulo {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.dias-semana {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -10px 0 0 0;
+}
+
+.custom-width {
+  width: 95px;
+  margin: 0;
+}
+
+.flecha{
+  position: relative;
+  top: -10px;
+}
+
+.margin-right {
+  margin-right: 30px;
+  padding: 0;
+}
+
+button[mat-fab] {
+  font-size: 20px;
+  margin: -30px 20px 0px 15px;
+}
+
+.blocked-button {
+  background-color: rgb(175, 174, 174) !important;
+}
+
+.periodo-ausencia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mat-checkbox {
+  margin: 0 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.date-fields {
+  display: flex;
+  gap: 20px;
+}
+
+.ausencia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.ausencia-tipo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.ausencia-periodo {
+  display: flex;
+  gap: 20px;
+}
+
+.action-buttons-usuario {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.botao-horario {
+  margin-left: auto;
+}
+
+.separador-usuarios {
+  margin: 0;
+}

@@ -1,0 +1,21 @@
+<h2 *ngIf="title">{{ title }}</h2>
+<div [formGroup]="formGroup" class="form-container">
+  <mat-radio-group formControlName="{{name}}" [disabled]="disabled"
+      [ngModel]="model" (ngModelChange)="setModel($event)">
+    
+    <div *ngIf="noneOption">
+      <mat-radio-button [value]="valueFormatter(null)" [disabled]="valueDisable(item)">
+        <div [style.font-weight]="model===valueFormatter(null) ? 'bold' : 'unset'">{{ noneDescription }}</div>
+      </mat-radio-button>
+      <br/><br/>
+    </div>
+
+    <div *ngFor="let item of list">
+      <mat-radio-button [value]="valueFormatter(item)" [disabled]="valueDisable(item)">
+        <div [style.font-weight]="model===valueFormatter(item) ? 'bold' : 'unset'" >{{ formatter(item) }}</div>
+      </mat-radio-button>
+      <br/><br/>
+    </div>
+
+  </mat-radio-group>
+</div>

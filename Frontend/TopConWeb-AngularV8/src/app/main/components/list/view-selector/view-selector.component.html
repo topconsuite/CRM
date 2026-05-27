@@ -1,0 +1,33 @@
+<mat-form-field style="min-width: 200px;">
+  <mat-label>Visualização</mat-label>
+  <mat-select [value]="selected" (valueChange)="setSelected($event)">
+    <mat-option [value]="newViewValue"> {{ format(newViewValue) }} </mat-option>
+    <mat-option *ngFor="let item of sortedList" [value]="item"> {{ format(item) }} </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opções">
+  <mat-icon matTooltip="Opções da visualização">more_vert</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="save()">
+    <mat-icon>save</mat-icon>
+    <span>Salvar visualização</span>
+  </button>
+  
+  <button mat-menu-item (click)="delete()" [disabled]="newViewValue.key === selected.key">
+    <mat-icon>delete</mat-icon>
+    <span>Excluir visualização</span>
+  </button>
+  
+  <button mat-menu-item *ngIf="isDefaultSelected" (click)="saveDefault(false)" [disabled]="newViewValue.key === selected.key">
+    <mat-icon>star</mat-icon>
+    <span>Definida como padrão</span>
+  </button>
+
+  <button mat-menu-item *ngIf="!isDefaultSelected" (click)="saveDefault(true)" [disabled]="newViewValue.key === selected.key">
+    <mat-icon>star_border</mat-icon>
+    <span>Definir como padrão</span>
+  </button>
+
+</mat-menu>
