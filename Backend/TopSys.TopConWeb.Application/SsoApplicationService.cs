@@ -20,5 +20,12 @@ namespace TopSys.TopConWeb.Application
 
             return parametros.FirstOrDefault();
         }
+
+        public ParametrosSSO ObterParametroAtivoB2C()
+        {
+            var parametros = _service.ListarFiltrados(t => t.TipoProvedor == ParametrosSSO.ETipoProvedor.B2C && t.Habilitado);
+
+            return parametros.FirstOrDefault();
+        }
     }
 }

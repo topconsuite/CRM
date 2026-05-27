@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { LoginModule } from './authentication/login/login.module';
+import { SsoCallbackModule } from './authentication/sso-callback/sso-callback.module';
 import { ComercialModule } from './comercial/comercial.module';
 import { MatIconModule } from '@angular/material';
 
@@ -28,6 +29,7 @@ const routes = [
     imports: [
         RouterModule.forChild(routes),
         LoginModule,
+        SsoCallbackModule,
         ComercialModule,
         MatIconModule
     ],

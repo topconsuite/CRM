@@ -14,7 +14,8 @@ namespace TopSys.TopConWeb.Domain.Entities
 
         public enum ETipoProvedor
         {
-            Microsoft = 0
+            Microsoft = 0,
+            B2C = 1
         }
     }
 }

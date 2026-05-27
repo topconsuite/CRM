@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -16,6 +17,7 @@ using System.Web;
 using TopSys.TopConWeb.API.Helpers;
 using TopSys.TopConWeb.Application.DTOS.Response.Usuario;
 using TopSys.TopConWeb.Application.Interfaces;
+using TopSys.TopConWeb.Domain.Entities;
 using TopSys.TopConWeb.SharedKernel;
 using TopSys.TopConWeb.SharedKernel.Events;
 using TopSys.TopConWeb.SharedKernel.Helpers;
@@ -115,6 +117,12 @@ namespace TopSys.TopConWeb.API.Security
 
         public override async Task GrantCustomExtension(OAuthGrantCustomExtensionContext context)
         {
+            if (context.GrantType == "b2c")
+            {
+                await HandleB2CGrant(context);
+                return;
+            }
+
             if (context.GrantType == "azure")
             {
 
@@ -204,6 +212,125 @@ namespace TopSys.TopConWeb.API.Security
 
                 await Task.FromResult(context.Validated(ticket));
             }
+        }
+
+        private static readonly B2CTokenValidator _b2cValidator = new B2CTokenValidator();
+
+        private async Task HandleB2CGrant(OAuthGrantCustomExtensionContext context)
+        {
+            // Common CORS / versioning headers — same as the legacy "azure" grant.
+            context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+            context.OwinContext.Response.Headers.Add("api-date-version", new[] { VersionHelper.topconApiDateVersion });
+            context.OwinContext.Response.Headers.Add("Access-Control-Expose-Headers", new[] { "api-date-version" });
+
+            // SSO B2C config + feature gate live together in topsys.parametros_sso
+            // (tipo_provedor = B2C). The row carries dominio (B2C subdomain),
+            // tenant_id (B2C directory GUID) and client_id (App Reg audience),
+            // mirroring how the Azure AD legacy grant reads its own row.
+            // See docs/sso-decisoes-implementacao.md (D2).
+            var ssoConfig = _ssoApplicationService.ObterParametroAtivoB2C();
+            if (ssoConfig == null)
+            {
+                context.SetError("invalid_grant", "SSO desabilitado.");
+                return;
+            }
+
+            var idToken = context.Parameters.Get("assertion") ?? context.Parameters.Get("id_token");
+            if (string.IsNullOrEmpty(idToken))
+            {
+                context.SetError("invalid_grant", "id_token ausente.");
+                return;
+            }
+
+            B2CValidatedToken validated;
+            try
+            {
+                validated = _b2cValidator.Validate(idToken, ssoConfig);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning("SSO B2C token validation failed: " + ex.GetType().Name + ": " + ex.Message);
+                context.SetError("invalid_grant", "Token inválido.");
+                return;
+            }
+
+            // ADMIN bypass: tokens carrying extension_Admin = true authenticate
+            // as the local "ADMIN" row in topsys.usr_usuario, skipping the
+            // CRM module gate and the JIT-by-email path. See D14 in
+            // docs/sso-decisoes-implementacao.md.
+            Usuario usuario;
+            bool isAdmin;
+            bool.TryParse(validated.GetClaim("extension_Admin"), out isAdmin);
+
+            if (isAdmin)
+            {
+                usuario = _usuarioAppService.ObterPorId("ADMIN");
+                if (usuario == null)
+                {
+                    context.SetError("invalid_grant", "Usuário ADMIN não encontrado.");
+                    return;
+                }
+            }
+            else
+            {
+                // Authorization gate: this deploy only accepts tokens whose
+                // extension_Modules carries the configured module name (CRM).
+                var moduleName = ConfigurationManager.AppSettings["Sso:ModuleName"] ?? "CRM";
+                var modules = validated.GetModules();
+                if (!modules.Contains(moduleName))
+                {
+                    context.SetError("invalid_grant",
+                        $"Você não tem acesso ao {moduleName}. Procure o administrador Topcon.");
+                    return;
+                }
+
+                var email = validated.GetClaim("email", "emails", "preferred_username", "upn", ClaimTypes.Email);
+                if (string.IsNullOrEmpty(email))
+                {
+                    context.SetError("invalid_grant", "Email não encontrado no token.");
+                    return;
+                }
+
+                // JIT provisioning: mirror the existing "azure" grant path —
+                // index by email. See docs/sso-decisoes-implementacao.md (D3).
+                usuario = _usuarioAppService.ObterUsuarioPeloEmail(email);
+                if (usuario == null)
+                {
+                    var register = new Application.DTOS.Request.Usuario.RegistrarUsuarioRequest(email);
+                    var registered = _usuarioAppService.Registrar(register);
+                    if (registered == null)
+                    {
+                        context.SetError("invalid_grant", "Não foi possível registrar o usuário.");
+                        return;
+                    }
+                    usuario = _usuarioAppService.ObterUsuarioPeloEmail(email);
+                }
+            }
+
+            AutenticarUsuarioResponse autenticarUsuarioResponse;
+            try
+            {
+                autenticarUsuarioResponse = _usuarioAppService.Autenticar(usuario.Id, StringHelper.EncrypTopSys(usuario.Senha));
+            }
+            catch (Exception ex)
+            {
+                context.SetError("internal_server_error", ex?.Message);
+                return;
+            }
+
+            if (autenticarUsuarioResponse == null)
+            {
+                context.SetError("invalid_grant", Notifications.Notify().FirstOrDefault()?.Message ?? "Falha de autenticação local.");
+                Notifications.Dispose();
+                return;
+            }
+            Notifications.Dispose();
+
+            var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+            AddClaimsToIdentity(autenticarUsuarioResponse, identity);
+
+            var ticket = GenerateAuthenticationTicket(autenticarUsuarioResponse, identity);
+            await Task.FromResult(context.Validated(ticket));
         }
 
         private void AddClaimsToIdentity(AutenticarUsuarioResponse autenticatUsuarioResponse, ClaimsIdentity identity)

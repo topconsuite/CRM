@@ -66,7 +66,7 @@ export class UserService extends BaseService {
 
         let deferred = this.createDeferred();
         let promise = deferred.promise;
-        
+
         let data = 'grant_type=azure&assertion='+azureToken+'&api_version='+this.constants.API_VERSION;
         let options: RequestOptionsArgs = { headers: new Headers()};
         options.headers.set('Content-Type', 'application/x-www-form-urlencoded');
@@ -82,6 +82,41 @@ export class UserService extends BaseService {
                 }
                 deferred.resolve(data);
             }else{
+                deferred.reject(data);
+            }
+        }, error => {
+            let data = this.getErrorData(error);
+            deferred.reject(data);
+        });
+
+        return promise;
+    }
+
+    loginWithB2C(idToken: string, hideLoading?: boolean) {
+        // Exchange the B2C id_token for a local CRM bearer token via the
+        // OAuth grant_type=b2c (see Security/AuthAuthorizationServerProvider
+        // and docs/sso-decisoes-implementacao.md, D1/D4).
+        this._auth.deleteToken();
+
+        let deferred = this.createDeferred();
+        let promise = deferred.promise;
+
+        let body = 'grant_type=b2c&assertion=' + encodeURIComponent(idToken)
+                 + '&api_version=' + this.constants.API_VERSION;
+        let options: RequestOptionsArgs = { headers: new Headers() };
+        options.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+
+        this.http.post(this.apiBaseUrlService.getUrl() + 'security/token', body, options)
+        .subscribe(response => {
+            let data = this.getResponseData(response);
+            if (response['status'] === this.constants.HTTP_STATUS_CODE.Success.OK) {
+                if (data.access_token) {
+                    this._auth.setToken(data.access_token);
+                    localStorage.setItem(lsKeyUser, data.user);
+                    localStorage.setItem(lsKeyLogged, 'true');
+                }
+                deferred.resolve(data);
+            } else {
                 deferred.reject(data);
             }
         }, error => {
