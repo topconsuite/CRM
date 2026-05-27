@@ -1,0 +1,8 @@
+{
+  "version": "2.00.0",
+  "name": "CRM",
+  "private": true,
+  "scripts": {
+	"prepare": "node scripts/prepare.mjs"
+  }
+}

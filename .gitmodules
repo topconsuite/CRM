@@ -1,0 +1,5 @@
+[submodule "topcon-ai-core"]
+	path = topcon-ai-core
+	url = https://github.com/topconsuite/topcon-ai-core.git
+	branch = master
+	ignore = all
