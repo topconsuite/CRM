@@ -93,9 +93,6 @@ export class UserService extends BaseService {
     }
 
     loginWithB2C(idToken: string, hideLoading?: boolean) {
-        // Exchange the B2C id_token for a local CRM bearer token via the
-        // OAuth grant_type=b2c (see Security/AuthAuthorizationServerProvider
-        // and docs/sso-decisoes-implementacao.md, D1/D4).
         this._auth.deleteToken();
 
         let deferred = this.createDeferred();

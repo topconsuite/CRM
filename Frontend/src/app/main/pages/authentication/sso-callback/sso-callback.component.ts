@@ -14,9 +14,6 @@ import { AlertDialogComponent } from '../../../components/dialog/alert-dialog/al
  *   #id_token=...&access_token=...&token_type=Bearer&expires_in=3600
  * exchanges the id_token for a local CRM bearer token via
  * grant_type=b2c, stores it, and navigates to the safe return_to.
- *
- * See docs/sso-implementacao-crm.md (sections 3, 5) and
- * docs/sso-decisoes-implementacao.md (D1, D5, D7).
  */
 @Component({
     selector: 'fuse-sso-callback',
@@ -89,8 +86,8 @@ export class SsoCallbackComponent implements OnInit {
     }
 
     /**
-     * Open-redirect guard — see D7 in docs/sso-decisoes-implementacao.md.
-     * Accept relative paths and absolute URLs on the same origin only.
+     * Open-redirect guard: accept relative paths and absolute URLs on
+     * the same origin only.
      */
     private resolveSafeReturn(returnTo: string): string {
         if (!returnTo || typeof returnTo !== 'string') return '/home';

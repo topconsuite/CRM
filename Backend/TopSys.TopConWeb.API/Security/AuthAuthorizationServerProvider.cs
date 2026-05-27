@@ -223,11 +223,8 @@ namespace TopSys.TopConWeb.API.Security
             context.OwinContext.Response.Headers.Add("api-date-version", new[] { VersionHelper.topconApiDateVersion });
             context.OwinContext.Response.Headers.Add("Access-Control-Expose-Headers", new[] { "api-date-version" });
 
-            // SSO B2C config + feature gate live together in topsys.parametros_sso
-            // (tipo_provedor = B2C). The row carries dominio (B2C subdomain),
-            // tenant_id (B2C directory GUID) and client_id (App Reg audience),
-            // mirroring how the Azure AD legacy grant reads its own row.
-            // See docs/sso-decisoes-implementacao.md (D2).
+            // Feature gate + B2C tenant config live in topsys.parametros_sso
+            // (tipo_provedor = B2C), mirroring the Azure AD legacy grant.
             var ssoConfig = _ssoApplicationService.ObterParametroAtivoB2C();
             if (ssoConfig == null)
             {
@@ -256,8 +253,7 @@ namespace TopSys.TopConWeb.API.Security
 
             // ADMIN bypass: tokens carrying extension_Admin = true authenticate
             // as the local "ADMIN" row in topsys.usr_usuario, skipping the
-            // CRM module gate and the JIT-by-email path. See D14 in
-            // docs/sso-decisoes-implementacao.md.
+            // CRM module gate and the JIT-by-email path.
             Usuario usuario;
             bool isAdmin;
             bool.TryParse(validated.GetClaim("extension_Admin"), out isAdmin);
@@ -292,7 +288,7 @@ namespace TopSys.TopConWeb.API.Security
                 }
 
                 // JIT provisioning: mirror the existing "azure" grant path —
-                // index by email. See docs/sso-decisoes-implementacao.md (D3).
+                // index by email.
                 usuario = _usuarioAppService.ObterUsuarioPeloEmail(email);
                 if (usuario == null)
                 {
