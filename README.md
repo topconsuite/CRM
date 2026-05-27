@@ -5,7 +5,7 @@ Monorepo containing the CRM application.
 ## Structure
 
 - [`Backend/`](Backend/) — .NET solution `TopSys.TopConWeb.sln` (API, Application, Domain, Infra, Tests).
-- [`Frontend/`](Frontend/) — Angular 8 client `TopConWeb-AngularV8`.
+- [`Frontend/`](Frontend/) — Angular 8 client.
 
 ## Getting started
 
@@ -20,7 +20,7 @@ dotnet build TopSys.TopConWeb.sln
 ### Frontend (Angular)
 
 ```bash
-cd Frontend/TopConWeb-AngularV8
+cd Frontend
 npm install
 npm start
 ```
