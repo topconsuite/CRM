@@ -334,6 +334,9 @@ namespace TopSys.TopConWeb.Domain.Services
             if (obra.ObraTaxas != null)
                 _obraTaxaService.AprovarTaxas(usuario, obra.ObraTaxas);
 
+            foreach (var tracoLog in _obra.ObraTracos)
+                _obraRepository.AdicionarLogPropostaItem(tracoLog, "ObraService.AprovarObraPendente");
+
         }
 
         public void AprovarObraPendente(string usuario, ObraVersao obra)
@@ -435,6 +438,9 @@ namespace TopSys.TopConWeb.Domain.Services
             //Aprovação ObraTaxas
             if (obra.ObraTaxas != null)
                 _obraTaxaService.AprovarTaxas(usuario, obra.ObraTaxas, obra.NumeroVersao);
+
+            foreach (var tracoLog in _obra.ObraTracos)
+                _obraRepository.AdicionarLogPropostaItem(tracoLog, "ObraService.AprovarObraPendente(Versão)");
 
         }
 
@@ -2690,6 +2696,7 @@ namespace TopSys.TopConWeb.Domain.Services
                 obraTraco.Ebitda = obraTraco.MargemPosTransporte - (custoServicoVigente.CustoMedioProducao + custoServicoVigente.CustoMedioLaboratorio + custoServicoVigente.CustoMedioComercial + custoServicoVigente.CustoMedioAdministrativo);
             }
 
+            _obraRepository.AdicionarLogPropostaItem(obraTraco, "ObraService.CalcularEbitdaObraTraco");
             _obraRepository.SaveChanges();
         }
 
@@ -2748,6 +2755,7 @@ namespace TopSys.TopConWeb.Domain.Services
                 obraTraco.Ebitda = obraTraco.MargemPosTransporte - (custoServicoVigente.CustoMedioProducao + custoServicoVigente.CustoMedioLaboratorio + custoServicoVigente.CustoMedioComercial + custoServicoVigente.CustoMedioAdministrativo);
             }
 
+            _obraRepository.AdicionarLogPropostaItem(obraTraco, "ObraService.CalcularEbitdaObraTraco");
             _obraRepository.SaveChanges();
         }
 
@@ -3047,6 +3055,21 @@ namespace TopSys.TopConWeb.Domain.Services
         public int ObterTempoDescarga(int idUsina)
         {
             return _obraRepository.ObterTempoDescarga(idUsina);
+        }
+
+        public void AdicionarLogPropostaItem(PropostaItemLog log)
+        {
+            _obraRepository.AdicionarLogPropostaItem(log);
+        }
+
+        public void AdicionarLogPropostaItem(ObraTraco obraTraco, string source)
+        {
+            _obraRepository.AdicionarLogPropostaItem(obraTraco, source);
+        }
+
+        public void AdicionarLogPropostaItem(ObraTracoVersao obraTracoVersao, string source)
+        {
+            _obraRepository.AdicionarLogPropostaItem(obraTracoVersao, source);
         }
     }
 }

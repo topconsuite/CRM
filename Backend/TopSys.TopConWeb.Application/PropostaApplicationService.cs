@@ -1478,6 +1478,7 @@ namespace TopSys.TopConWeb.Application
 
                 _propostaService.ValidarNumeracaoProdutoCorretaObraTracoVersao(tracoOld, obraOld.UsinaEntregaCodigo);
 
+                _obraService.AdicionarLogPropostaItem(tracoOld, "PropostaApplicationService.AtualizarContratoVersao");
                 Commit();
             }
 
@@ -1522,6 +1523,7 @@ namespace TopSys.TopConWeb.Application
                     _aprovacaoComercialPendenteService.RemoverAprovacaoAlcadaTracoVersao(propostaOld, t);
 
                 _obraService.Remover(t);
+                _obraService.AdicionarLogPropostaItem(t, "PropostaApplicationService.AtualizarContratoVersao(Exclusão)");
                  Commit();
             }
 
@@ -3824,6 +3826,7 @@ namespace TopSys.TopConWeb.Application
 
                 _propostaService.ValidarNumeracaoProdutoCorretaObraTraco(tracoOld, obraOld.UsinaEntregaCodigo);
 
+                _obraService.AdicionarLogPropostaItem(tracoOld, "PropostaApplicationService.AtualizarContrato");
                 Commit();
             }
 
@@ -3868,6 +3871,7 @@ namespace TopSys.TopConWeb.Application
                 if (utilizaAprovacaoComercicalPorAlcada)
                     _aprovacaoComercialPendenteService.RemoverAprovacaoAlcadaTraco(propostaOld, t);
 
+                _obraService.AdicionarLogPropostaItem(t, "PropostaApplicationService.AtualizarContrato(Exclusão)");
                 Commit();
             }
 

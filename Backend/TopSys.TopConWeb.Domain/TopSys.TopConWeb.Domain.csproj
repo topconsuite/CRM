@@ -50,6 +50,7 @@
     <Compile Include="Entities\Prensa.cs" />
     <Compile Include="Entities\ParametrosSSO.cs" />
     <Compile Include="Entities\PropostaPropaganda.cs" />
+    <Compile Include="Entities\PropostaItemLog.cs" />
     <Compile Include="Entities\TarefaLog.cs" />
     <Compile Include="Entities\TributacaoReforma.cs" />
     <Compile Include="Entities\UsuarioWebFiltro.cs" />

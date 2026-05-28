@@ -10,6 +10,24 @@ namespace TopSys.TopConWeb.Infra.Data.Helpers
     {
         public static int GravarLogGeral(this IDbConnection cnn, string userName, string tableName, string sql, object param = null, IDbTransaction transaction = null)
         {
+            string sqlFinal = SubstituirParametros(sql, param);
+
+            var sqlLog = new StringBuilder();
+
+            sqlLog.Append($"INSERT INTO ger_log");
+            sqlLog.Append($" SET usuario=@{nameof(userName)}");
+            sqlLog.Append($", tabela=@{nameof(tableName)}");
+            sqlLog.Append($", script=@{nameof(sqlFinal)}");
+            sqlLog.Append($", data=curdate()");
+            sqlLog.Append($", hora=curtime()");
+            sqlLog.Append($", local=999");
+            sqlLog.Append($", at=0");
+
+            return cnn.Execute(sqlLog.ToString(), new { userName, tableName, sqlFinal }, transaction);
+        }
+
+        public static string SubstituirParametros(string sql, object param)
+        {
             string sqlFinal = sql;
 
             if (param != null)
@@ -48,18 +66,7 @@ namespace TopSys.TopConWeb.Infra.Data.Helpers
                 }
             }
 
-            var sqlLog = new StringBuilder();
-
-            sqlLog.Append($"INSERT INTO ger_log");
-            sqlLog.Append($" SET usuario=@{nameof(userName)}");
-            sqlLog.Append($", tabela=@{nameof(tableName)}");
-            sqlLog.Append($", script=@{nameof(sqlFinal)}");
-            sqlLog.Append($", data=curdate()");
-            sqlLog.Append($", hora=curtime()");
-            sqlLog.Append($", local=999");
-            sqlLog.Append($", at=0");
-
-            return cnn.Execute(sqlLog.ToString(), new { userName, tableName, sqlFinal }, transaction);
+            return sqlFinal;
         }
     }
 }

@@ -12,10 +12,12 @@ namespace TopSys.TopConWeb.Domain.Services
     public class ContratoTracoReajusteService : ServiceBase<ContratoTracoReajuste>, IContratoTracoReajusteService
     {
         private readonly IContratoTracoReajusteRepository _contratoTracoReajusteRepository;
+        private readonly IObraRepository _obraRepository;
 
-        public ContratoTracoReajusteService(IContratoTracoReajusteRepository contratoTracoReajusteRepository) : base(contratoTracoReajusteRepository)
+        public ContratoTracoReajusteService(IContratoTracoReajusteRepository contratoTracoReajusteRepository, IObraRepository obraRepository) : base(contratoTracoReajusteRepository)
         {
             _contratoTracoReajusteRepository = contratoTracoReajusteRepository;
+            _obraRepository = obraRepository;
         }
 
         public IEnumerable<ContratoTracoReajuste> ListarContratoReajusteTracoPorContrato(int usina, int anoContrato, int numContrato, DateTime dataVigencia)
@@ -50,6 +52,7 @@ namespace TopSys.TopConWeb.Domain.Services
                 obraTracoVersao.PrecoReajustadoAtual = 0;
                 obraTracoVersao.DataUltimoReajuste = null;
 
+                _obraRepository.AdicionarLogPropostaItem(obraTracoVersao, "ContratoTracoReajusteService.AtualizarObraTracoReajustes");
                 _contratoTracoReajusteRepository.SaveChanges();
             }
                 
