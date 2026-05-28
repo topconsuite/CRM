@@ -139,5 +139,8 @@ namespace TopSys.TopConWeb.Domain.Interfaces.Repositories
         void AtualizarValorReajustePropostaItemVersao(int numVersao, int usina, int anoProposta, int numProposta, int sequencia, float valorReajustado, float valorServico, float descontoPercentual);
         void AtualizarValorReajustePropostaBombaVersao(int numVersao, int usina, int anoProposta, int numProposta, int sequencia, int m3ReajustadoAteAtual, float taxaMinimaReajustadaAtual, float m3PrecoReajustadoAtual, float descontoPercentual);
         void AtualizarTracoAtivoPropostaItemVersao(int numVersao, int usina, int anoProposta, int numProposta, int sequencia, string ativo);
+        void AdicionarLogPropostaItem(PropostaItemLog log);
+        void AdicionarLogPropostaItem(ObraTraco obraTraco, string source);
+        void AdicionarLogPropostaItem(ObraTracoVersao obraTracoVersao, string source);
     }
 }

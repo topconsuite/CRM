@@ -4593,6 +4593,7 @@ namespace TopSys.TopConWeb.Infra.Legacy.Services
 
                 cnn.Execute(sql.ToString(), new { pTipoResistencia, pFck, pConsumo, pUso, pPedra, pSlump, propostaUsina, numeroObra, sequenciaProposta });
                 cnn.GravarLogGeral(_identityHelperService.GetUserName(), "con_proposta_item", sql.ToString(), new { pTipoResistencia, pFck, pConsumo, pUso, pPedra, pSlump, propostaUsina, numeroObra, sequenciaProposta });
+                _obraRepository.AdicionarLogPropostaItem(new PropostaItemLog(propostaUsina, numeroObra, 0, 0, sequenciaProposta, 0, _identityHelperService.GetUserName(), "ComercialLegacyService.VerificaRegrasAlteracaoTraco", DapperHelper.SubstituirParametros(sql.ToString(), new { pTipoResistencia, pFck, pConsumo, pUso, pPedra, pSlump, propostaUsina, numeroObra, sequenciaProposta })));
             }
         }
 
@@ -4690,6 +4691,7 @@ namespace TopSys.TopConWeb.Infra.Legacy.Services
 
                 cnn.Execute(sql.ToString(), new { pTipoResistencia, pFck, pConsumo, pUso, pPedra, pSlump, propostaUsina, numeroObra, sequenciaProposta });
                 cnn.GravarLogGeral(_identityHelperService.GetUserName(), "con_proposta_item_versao", sql.ToString(), new { pTipoResistencia, pFck, pConsumo, pUso, pPedra, pSlump, propostaUsina, numeroObra, sequenciaProposta });
+                _obraRepository.AdicionarLogPropostaItem(new PropostaItemLog(propostaUsina, numeroObra, 0, 0, sequenciaProposta, numVersao, _identityHelperService.GetUserName(), "ComercialLegacyService.VerificaRegrasAlteracaoTraco(Versao)", DapperHelper.SubstituirParametros(sql.ToString(), new { pTipoResistencia, pFck, pConsumo, pUso, pPedra, pSlump, propostaUsina, numeroObra, sequenciaProposta, numVersao })));
             }
         }
 

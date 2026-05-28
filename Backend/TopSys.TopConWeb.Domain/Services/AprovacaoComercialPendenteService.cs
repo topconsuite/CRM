@@ -162,6 +162,10 @@ namespace TopSys.TopConWeb.Domain.Services
                 obra.CondicaoPagamentoStatusComercial = novoStatus;
             }
 
+            if (obra.ObraTracos != null)
+                foreach (var obraTracoLog in obra.ObraTracos)
+                    _obraService.AdicionarLogPropostaItem(obraTracoLog, "AprovacaoComercialPendenteService.ValidarComercialObra");
+
             _aprovacaoComercialPendenteRepository.SaveChanges();
 
             RevisarAprovacaoComercialPendente(obra, pendentes);
@@ -1532,6 +1536,10 @@ namespace TopSys.TopConWeb.Domain.Services
                         );
                 }
 
+                if (obra.ObraTracos != null)
+                    foreach (var obraTracoLog in obra.ObraTracos)
+                        _obraService.AdicionarLogPropostaItem(obraTracoLog, "AprovacaoComercialPendenteService.RevisarAprovacaoComercialPendente");
+
                 _aprovacaoComercialPendenteRepository.SaveChanges();
 
             }
@@ -1663,6 +1671,10 @@ namespace TopSys.TopConWeb.Domain.Services
                         new AprovacaoComercialLog(obra.UsinaCodigo, obra.Numero, ultimaVersao, "", "AprovacaoComercialPendenteService.RevisarAprovacaoComercialPendente", PayloadHelper.ConvertToJson(payload))
                         );
                 }
+
+                if (obra.ObraTracos != null)
+                    foreach (var obraTracoLog in obra.ObraTracos)
+                        _obraService.AdicionarLogPropostaItem(obraTracoLog, "AprovacaoComercialPendenteService.RevisarAprovacaoComercialPendenteVersao");
 
                 _aprovacaoComercialPendenteRepository.SaveChanges();
 
@@ -2090,6 +2102,10 @@ namespace TopSys.TopConWeb.Domain.Services
 
                 obra.VolumeStatusComercial = novoStatus;
             }
+
+            if (obra.ObraTracos != null)
+                foreach (var obraTracoLog in obra.ObraTracos)
+                    _obraService.AdicionarLogPropostaItem(obraTracoLog, "AprovacaoComercialPendenteService.ValidarComercialObraVersao");
 
             _aprovacaoComercialPendenteRepository.SaveChanges();
 

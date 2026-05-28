@@ -3,10 +3,12 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Topsys.TopConWeb.SharedKernel.Common;
+using Topsys.TopConWeb.SharedKernel.Helpers;
 using Topsys.TopConWeb.SharedKernel.Services;
 using TopSys.TopConWeb.Domain.Entities;
 using TopSys.TopConWeb.Domain.Enums;
@@ -157,6 +159,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                 _context.Database.Connection.Execute(sqlComando);
 
                 _context.Database.Connection.GravarLogGeral(_identityHelperService.GetUserName(), "con_proposta_item", sqlComando.ToString(), obraTraco);
+                AdicionarLogPropostaItem(new PropostaItemLog(obraTraco.UsinaCodigo, obraTraco.ObraCodigo, obraTraco.PropostaNumero, obraTraco.PropostaAno, obraTraco.Sequencia, 0,_identityHelperService.GetUserName(), "ObraRepository.Adicionar", sqlComando.ToString()));
             }
 
             foreach (var obraBomba in obra.ObraBombas)
@@ -389,6 +392,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                 _context.Database.Connection.Execute(sqlComando);
 
                 _context.Database.Connection.GravarLogGeral(_identityHelperService.GetUserName(), "con_proposta_item_versao", sqlComando.ToString(), obraTracoVersao);
+                AdicionarLogPropostaItem(new PropostaItemLog(obraTracoVersao.UsinaCodigo, obraTracoVersao.ObraCodigo, obraTracoVersao.PropostaNumero, obraTracoVersao.PropostaAno, obraTracoVersao.Sequencia, obraTracoVersao.NumeroVersao, _identityHelperService.GetUserName(), "ObraRepository.Adicionar(Versao)", sqlComando.ToString()));
             }
 
             foreach (var obraBombaVersao in obra.ObraBombas)
@@ -1668,6 +1672,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
             sqlComando.Append($" and c.ano_chamada={anoProposta}");
             sqlComando.Append($" and c.no_chamada={numeroProposta};");
             _context.Database.Connection.Execute(sqlComando.ToString());
+            AdicionarLogPropostaItem(new PropostaItemLog(codUsina, numObra, numeroProposta, anoProposta, 0, numVersao, _identityHelperService.GetUserName(), "ObraRepository.AdicionarVersaoContrato", sqlComando.ToString()));
             sqlComando.Clear();
 
             sqlComando.Append($"REPLACE INTO topsys.con_prop_bomba_versao");
@@ -1740,6 +1745,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
             sqlComando.Append($" and ano_chamada={anoProposta}");
             sqlComando.Append($" and no_chamada={numeroProposta};");
             _context.Database.Connection.Execute(sqlComando.ToString());
+            AdicionarLogPropostaItem(new PropostaItemLog(codUsina, numObra, numeroProposta, anoProposta, 0, numVersao, _identityHelperService.GetUserName(), "ObraRepository.ExcluirVersaoContrato", sqlComando.ToString()));
             sqlComando.Clear();
 
             sqlComando.Append($"DELETE FROM topsys.con_prop_bomba_versao");
@@ -1837,6 +1843,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
             sqlComando.Append($" AND no_chamada={numeroProposta}");
             sqlComando.Append($" AND num_versao={numVersao};");
             _context.Database.Connection.Execute(sqlComando.ToString());
+            AdicionarLogPropostaItem(new PropostaItemLog(codUsina, numObra, numeroProposta, anoProposta, 0, 0, _identityHelperService.GetUserName(), "ObraRepository.AdicionarContrato", sqlComando.ToString()));
             sqlComando.Clear();
 
             colunas = _databaseRepository.ObterColunasEmComumEntreTabelas("con_prop_bomba_versao", "con_prop_bomba");
@@ -1933,6 +1940,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
             sqlComando.Append($" and ano_chamada={anoProposta}");
             sqlComando.Append($" and no_chamada={numeroProposta};");
             _context.Database.Connection.Execute(sqlComando.ToString());
+            AdicionarLogPropostaItem(new PropostaItemLog(codUsina, numObra, numeroProposta, anoProposta, 0, 0, _identityHelperService.GetUserName(), "ObraRepository.ExcluirContrato", sqlComando.ToString()));
             sqlComando.Clear();
 
             sqlComando.Append($"DELETE FROM topsys.con_prop_bomba");
@@ -2099,6 +2107,7 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                     sequencia
                 };
                 _context.Database.Connection.Execute(sqlComando.ToString(), filtro);
+                AdicionarLogPropostaItem(new PropostaItemLog(usina, obraNumero, 0, 0, sequencia, 0, _identityHelperService.GetUserName(), "ObraRepository.AtualizaObraTracoReajuste", DapperHelper.SubstituirParametros(sqlComando.ToString(), filtro)));
             }
         }
 
@@ -2277,7 +2286,20 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                 obraTraco.ObraCodigo,
                 obraTraco.Sequencia
             });
-		}
+
+            AdicionarLogPropostaItem(new PropostaItemLog(obraTraco.UsinaCodigo, obraTraco.ObraCodigo, 0, 0, obraTraco.Sequencia, 0,_identityHelperService.GetUserName(), "ObraRepository.AtualizarDadosReajuste", 
+                DapperHelper.SubstituirParametros(sqlComando.ToString(), new
+                {
+                    obraTraco.CustoServicoReajustado,
+                    obraTraco.CustoServicoAnterior,
+                    obraTraco.PrecoReajustadoAtual,
+                    obraTraco.PrecoReajustadoAnterior,
+                    obraTraco.DataUltimoReajuste,
+                    obraTraco.UsinaCodigo,
+                    obraTraco.ObraCodigo,
+                    obraTraco.Sequencia
+                })));
+        }
 
         public void ObterStatusObra(int obraUsina, int obraNumero, int versao, out int obraStatusCadastro, out int obraStatusComercial, out int statusContrato)
         {
@@ -2421,6 +2443,19 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                 descontoPercentual
             });
 
+            AdicionarLogPropostaItem(new PropostaItemLog(usina, 0, numProposta, anoProposta, sequencia, numVersao, _identityHelperService.GetUserName(), "ObraRepository.AtualizarValorReajustePropostaItemVersao", 
+                DapperHelper.SubstituirParametros(sqlComando.ToString(), new
+                {
+                    numVersao,
+                    usina,
+                    anoProposta,
+                    numProposta,
+                    sequencia,
+                    valorReajustado,
+                    valorServico,
+                    descontoPercentual
+                })));
+
             sqlComando.Clear();
             sqlComando.Append($"UPDATE con_proposta_item SET");
             sqlComando.Append($" pr_reajustado_a=@{nameof(valorReajustado)}");
@@ -2439,6 +2474,17 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                 valorReajustado,
                 valorServico
             });
+
+            AdicionarLogPropostaItem(new PropostaItemLog(usina, 0, numProposta, anoProposta, sequencia, 0, _identityHelperService.GetUserName(), "ObraRepository.AtualizarValorReajustePropostaItemVersao", 
+                DapperHelper.SubstituirParametros(sqlComando.ToString(), new
+                {
+                    usina,
+                    anoProposta,
+                    numProposta,
+                    sequencia,
+                    valorReajustado,
+                    valorServico
+                })));
 
         }
 
@@ -2521,6 +2567,16 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
                 sequencia,
                 ativo
             });
+            AdicionarLogPropostaItem(new PropostaItemLog(usina, 0, numProposta, anoProposta, sequencia, numVersao, _identityHelperService.GetUserName(), "ObraRepository.AtualizarValorReajustePropostaItemVersao",
+                DapperHelper.SubstituirParametros(sqlComando.ToString(), new
+                {
+                    numVersao,
+                    usina,
+                    anoProposta,
+                    numProposta,
+                    sequencia,
+                    ativo
+                })));
         }
 
         public int ObterTempoDescarga(int idUsina)
@@ -2530,6 +2586,93 @@ namespace TopSys.TopConWeb.Infra.Data.Repositories
             sqlComando.Append($"SELECT tempo_bt_usina FROM con_ponto_carga WHERE usina={idUsina} LIMIT 1");
 
             return _context.Database.Connection.QueryFirstOrDefault<int>(sqlComando.ToString());
+        }
+
+        public void AdicionarLogPropostaItem(PropostaItemLog log)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendLine("INSERT INTO con_proposta_item_log SET");
+            sql.AppendLine($"    id = @{nameof(PropostaItemLog.Id)},");
+            sql.AppendLine($"    usina = @{nameof(PropostaItemLog.Usina)},");
+            sql.AppendLine($"    obra_numero = @{nameof(PropostaItemLog.ObraNumero)},");
+            sql.AppendLine($"    proposta_numero = @{nameof(PropostaItemLog.PropostaNumero)},");
+            sql.AppendLine($"    proposta_ano = @{nameof(PropostaItemLog.PropostaAno)},");
+            sql.AppendLine($"    sequencia = @{nameof(PropostaItemLog.Sequencia)},");
+            sql.AppendLine($"    obra_versao = @{nameof(PropostaItemLog.NumeroVersao)},");
+            sql.AppendLine($"    tabela = @{nameof(PropostaItemLog.Tabela)},");
+            sql.AppendLine($"    data = @{nameof(PropostaItemLog.Data)},");
+            sql.AppendLine($"    usuario = @{nameof(PropostaItemLog.User)},");
+            sql.AppendLine($"    source = @{nameof(PropostaItemLog.Source)},");
+            sql.AppendLine($"    script = @{nameof(PropostaItemLog.Script)},");
+            sql.AppendLine($"    payload = @{nameof(PropostaItemLog.Payload)};");
+
+            _context.Database.Connection.Execute(sql.ToString(), log);
+        }
+
+        public void AdicionarLogPropostaItem(ObraTraco obraTraco, string source)
+        {
+            var entry = _context.Entry(obraTraco);
+
+            if (entry.State != EntityState.Added && entry.State != EntityState.Modified && entry.State != EntityState.Deleted)
+                return;
+
+            AdicionarLogPropostaItem(new PropostaItemLog(obraTraco.UsinaCodigo, obraTraco.ObraCodigo, obraTraco.PropostaNumero, obraTraco.PropostaAno, obraTraco.Sequencia, 0, _identityHelperService.GetUserName(), source, $"EntityFramework.SaveChanges ({entry.State}) con_proposta_item", ObterAlteracoesEntidade(entry)));
+        }
+
+        public void AdicionarLogPropostaItem(ObraTracoVersao obraTracoVersao, string source)
+        {
+            var entry = _context.Entry(obraTracoVersao);
+
+            if (entry.State != EntityState.Added && entry.State != EntityState.Modified && entry.State != EntityState.Deleted)
+                return;
+
+            AdicionarLogPropostaItem(new PropostaItemLog(obraTracoVersao.UsinaCodigo, obraTracoVersao.ObraCodigo, obraTracoVersao.PropostaNumero, obraTracoVersao.PropostaAno, obraTracoVersao.Sequencia, obraTracoVersao.NumeroVersao, _identityHelperService.GetUserName(), source, $"EntityFramework.SaveChanges ({entry.State}) con_proposta_item_versao", ObterAlteracoesEntidade(entry)));
+        }
+
+        /// Monta um JSON com as alterações detectadas pelo Entity Framework para a entidade. Para entidades
+        /// Modified, registra o "De"/"Para" de cada coluna alterada; para Added/Deleted, registra os valores da linha.
+        private string ObterAlteracoesEntidade(DbEntityEntry entry)
+        {
+            object alteracoes;
+
+            if (entry.State == EntityState.Added)
+            {
+                alteracoes = ValoresParaDicionario(entry.CurrentValues);
+            }
+            else if (entry.State == EntityState.Deleted)
+            {
+                alteracoes = ValoresParaDicionario(entry.OriginalValues);
+            }
+            else
+            {
+                var atuais = entry.CurrentValues;
+                var originais = entry.OriginalValues;
+                var diff = new Dictionary<string, object>();
+
+                foreach (var propriedade in atuais.PropertyNames)
+                {
+                    var valorAtual = atuais[propriedade];
+                    var valorOriginal = originais[propriedade];
+
+                    if (!Equals(valorAtual, valorOriginal))
+                        diff[propriedade] = new { De = valorOriginal, Para = valorAtual };
+                }
+
+                alteracoes = diff;
+            }
+
+            return PayloadHelper.ConvertToJson(alteracoes);
+        }
+
+        private static Dictionary<string, object> ValoresParaDicionario(DbPropertyValues valores)
+        {
+            var dicionario = new Dictionary<string, object>();
+
+            foreach (var propriedade in valores.PropertyNames)
+                dicionario[propriedade] = valores[propriedade];
+
+            return dicionario;
         }
     }
 }

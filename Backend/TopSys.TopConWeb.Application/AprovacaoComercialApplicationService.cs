@@ -507,6 +507,9 @@ namespace TopSys.TopConWeb.Application
                         _obraTaxaService.AprovarTaxas(usuario, _obra.ObraTaxas);
                     }
 
+                    foreach (var traco in _obra.ObraTracos)
+                        _obraService.AdicionarLogPropostaItem(traco, "AprovacaoComercialApplicationService.AprovarObraPendente");
+
                     Commit();
 
                     var statusObra = new Dictionary<string, EObraStatusComercial>();
@@ -607,6 +610,9 @@ namespace TopSys.TopConWeb.Application
                         _obra.ObraTaxas = AutoMapper.Mapper.Map(obra.ObraTaxas, new List<ObraTaxaVersao>());
                         _obraTaxaService.AprovarTaxas(usuario, _obra.ObraTaxas, versaoAtual);
                     }
+
+                    foreach (var traco in _obra.ObraTracos)
+                        _obraService.AdicionarLogPropostaItem(traco, "AprovacaoComercialApplicationService.AprovarObraPendente(Versão)");
 
                     Commit();
 

@@ -825,6 +825,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\Scripts\0139 - ClicksignConfiguracao.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\0146 - Criacao con_proposta_item_log.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
