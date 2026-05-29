@@ -271,14 +271,14 @@ namespace TopSys.TopConWeb.API.Security
             {
                 // Authorization gate: this deploy only accepts tokens whose
                 // extension_Modules carries the configured module name (CRM).
-                // var moduleName = ConfigurationManager.AppSettings["Sso:ModuleName"] ?? "CRM";
-                // var modules = validated.GetModules();
-                // if (!modules.Contains(moduleName))
-                // {
-                //     context.SetError("invalid_grant",
-                //         $"Você não tem acesso ao {moduleName}. Procure o administrador Topcon.");
-                //     return;
-                // }
+                var moduleName = ConfigurationManager.AppSettings["Sso:ModuleName"] ?? "CRM";
+                var modules = validated.GetModules();
+                if (!modules.Contains(moduleName))
+                {
+                    context.SetError("invalid_grant",
+                        $"Você não tem acesso ao {moduleName}. Procure o administrador Topcon.");
+                    return;
+                }
 
                 var email = validated.GetClaim("email", "emails", "preferred_username", "upn", ClaimTypes.Email);
                 if (string.IsNullOrEmpty(email))
